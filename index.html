@@ -890,19 +890,20 @@
             
             useEffect(() => {
                 const handleResize = () => {
-                    // Calculamos el espacio disponible
-                    const availableWidth = window.innerWidth - 40; // 20px padding por lado
-                    const availableHeight = window.innerHeight - 40;
+                    // Maximizamos el espacio disponible quitando el padding restrictivo
+                    const availableWidth = window.innerWidth; 
+                    const availableHeight = window.innerHeight;
                     
-                    // El planner tiene 1080x810
+                    // El planner tiene dimensiones base de 1080x810
                     const scaleW = availableWidth / 1080;
                     const scaleH = availableHeight / 810;
                     
-                    // Tomamos el menor para que encaje todo
-                    let newScale = Math.min(scaleW, scaleH, 1.2); // max scale 1.2
-                    if (newScale < 0.3) newScale = 0.3; // min scale
+                    // Tomamos el menor para que encaje todo. Aumentamos drásticamente el límite máximo a 3.0 para pantallas grandes.
+                    let newScale = Math.min(scaleW, scaleH, 3.0); 
+                    if (newScale < 0.3) newScale = 0.3; // escala mínima permitida
                     
-                    setScale(newScale);
+                    // Usamos el 96% de la escala para que ocupe casi toda la pantalla dejando solo un borde sutil
+                    setScale(newScale * 0.96);
                 };
                 
                 handleResize();
