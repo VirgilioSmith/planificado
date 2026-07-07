@@ -1,971 +1,698 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Digital Interactivo | Linen Paper Co.</title>
-    
-    <!-- Fuentes Google -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+    <title>Dashboard de Metas con Histórico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        serif: ['"Cormorant Garamond"', 'serif'],
-                        sans: ['Manrope', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        cream: '#F5EFE6',
-                        creamDeep: '#EDE4D2',
-                        paper: '#FAF6EE',
-                        ink: '#2B2622',
-                        ink2: '#5A4F45',
-                        ink3: '#8C8275',
-                        ink4: '#B8AE9D',
-                        line: '#D8CFC0',
-                        lineSoft: '#E8DFD0',
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155'
+                        },
+                        brand: {
+                            glow: '#3b82f6'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
         }
     </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <!-- React & Babel -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg-dom@18/umd/react-dom.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <style>
-        body { background-color: #2e2e2e; font-family: 'Manrope', sans-serif; color: #2B2622; overflow: hidden; margin: 0; padding: 0; }
-        .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Efecto de ruido sutil */
-        .grain-overlay {
-            position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply; z-index: 50;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-        
-        /* Patrones para página de notas */
-        .bg-lined { background-image: repeating-linear-gradient(transparent, transparent 23px, #D8CFC0 23px, #D8CFC0 24px); }
-        .bg-dotted { background-image: radial-gradient(#D8CFC0 1px, transparent 1px); background-size: 18px 18px; }
+        body { font-family: 'Inter', sans-serif; }
 
-        /* Estilos para inputs invisibles */
-        .editable-line {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--color-line);
-            outline: none;
-            width: 100%;
-            font-family: 'Manrope', sans-serif;
-            color: var(--color-ink);
-            transition: border-color 0.2s;
+        .progress-bar-fill {
+            transition: width 1.5s ease-out, background-color 0.5s ease;
         }
-        .editable-line:focus {
-            border-bottom-color: var(--color-ink);
+
+        /* Scrollbars personalizados */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .glass-header {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .editable-line-dashed {
-            border-bottom: 1px dashed var(--color-line);
+
+        /* ── RESPONSIVE: Estructura del item del leaderboard ── */
+        .leaderboard-item {
+            background: rgba(15,23,42,0.5);
+            border: 1px solid rgba(51,65,85,0.4);
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
         }
-        .editable-textarea {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            height: 100%;
-            resize: none;
-            font-family: 'Manrope', sans-serif;
-            color: var(--color-ink);
-            line-height: 24px; /* Coincide con bg-lined */
+        
+        .leaderboard-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #475569;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 2.5rem 1fr; 
+            grid-template-rows: auto auto;
+            gap: 0.25rem 0.75rem;
+            padding: 0.875rem 1rem;
+        }
+
+        .row-rank {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row-name {
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        .row-progress {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        /* Desktop layout */
+        @media (min-width: 768px) {
+            .leaderboard-row {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+                padding: 0.875rem 1.25rem;
+            }
+            .row-rank   { width: 2.5rem; flex-shrink: 0; }
+            .row-name   { width: 200px; flex-shrink: 0; justify-content: flex-start; }
+            .row-progress { flex: 1; flex-direction: column; gap: 0.25rem; }
+            .row-amount { flex-shrink: 0; text-align: right; width: 7rem; }
+            .row-amount-mobile { display: none !important; }
+        }
+
+        @media (max-width: 767px) {
+            .row-amount { display: none !important; }
+        }
+
+        .header-title { font-size: clamp(0.95rem, 3vw, 1.25rem); }
+        
+        /* Transiciones de vistas */
+        .view-section {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .view-hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+            transform: translateY(10px);
+        }
+        .view-active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+            visibility: visible;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="bg-dark-bg text-slate-200 min-h-screen flex flex-col antialiased selection:bg-brand-glow selection:text-white relative overflow-x-hidden">
 
-    <script type="text/babel">
-        const { useState, useEffect, Fragment } = React;
+    <!-- Glow background -->
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-600/20 blur-[120px] pointer-events-none z-0"></div>
 
-        // ==========================================
-        // 0. BRAND SYSTEM & TOKENS
-        // ==========================================
-        const themes = {
-            greige: { tint:'#EFE6D2', mid:'#C9BBA0', deep:'#8A7B62', ink:'#5C4F3B', name:'Greige', id: 'greige' },
-            sage: { tint:'#DCE4D2', mid:'#A8B895', deep:'#6E8059', ink:'#4D5C3D', name:'Salvia', id: 'sage' },
-            lavender: { tint:'#E1DAE6', mid:'#B6A8C4', deep:'#8473A0', ink:'#5C4E73', name:'Lavanda', id: 'lavender' },
-            sky: { tint:'#D8E1E7', mid:'#A7BACA', deep:'#6F8DA4', ink:'#4D6577', name:'Cielo', id: 'sky' },
-            blush: { tint:'#ECD9D2', mid:'#D2A99A', deep:'#A87567', ink:'#76493D', name:'Rubor', id: 'blush' },
-            clay: { tint:'#E5C9B3', mid:'#C99577', deep:'#9A6243', ink:'#6B4029', name:'Arcilla', id: 'clay' }
-        };
-
-        const icons = {
-            home: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-            grid: "M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z",
-            cal: "M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm12-4v4M8 1v4M4 9h16",
-            week: "M4 5h16v14H4z M4 10h16 M9 5v14 M14 5v14",
-            sun: "M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M12 1v2 M12 21v2 M4.22 4.22l1.42 1.42 M18.36 18.36l1.42 1.42 M1 12h2 M21 12h2 M4.22 19.78l1.42-1.42 M18.36 5.64l1.42-1.42",
-            moon: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z",
-            drop: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z",
-            heart: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z",
-            leaf: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z",
-            coin: "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-2-8h4m-2-3v6",
-            star: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
-            target: "M12 22a10 10 0 100-20 10 10 0 000 20zm0-4a6 6 0 100-12 6 6 0 000 12zm0-4a2 2 0 100-4 2 2 0 000 4z",
-            book: "M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5v14zM4 19.5A2.5 2.5 0 006.5 22H20",
-            edit: "M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z",
-            arrowR: "M5 12h14M12 5l7 7-7 7",
-            arrowL: "M19 12H5M12 19l-7-7 7-7",
-            plus: "M12 5v14M5 12h14",
-            sticker: "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z",
-            flag: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7",
-            cloud: "M17.5 19C19.985 19 22 16.985 22 14.5 22 12.138 20.19 10.207 17.88 10.021 17.382 6.643 14.47 4 11 4 7.618 4 4.802 6.6 4.143 9.94 2.378 10.36 1 11.967 1 13.9 1 16.164 2.836 18 5.1 18H17.5z",
-            pencil: "M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z",
-            note: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8",
-            folder: "M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z",
-            chart: "M18 20V10M12 20V4M6 20v-6",
-            flower: "M12 15a3 3 0 100-6 3 3 0 000 6z M12 2v7 M12 15v7 M4.93 4.93l4.95 4.95 M14.12 14.12l4.95 4.95 M2 12h7 M15 12h7 M4.93 19.07l4.95-4.95 M14.12 9.88l4.95-4.95",
-            bowl: "M2 12c0 5.523 4.477 10 10 10s10-4.477 10-10H2z"
-        };
-
-        // ==========================================
-        // 1. PRIMITIVES & INTERACTIVE COMPONENTS
-        // ==========================================
-        const Icon = ({ name, size = 16, stroke = "currentColor", color = "none", className = "", onClick }) => (
-            <svg onClick={onClick} width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d={icons[name]} />
-            </svg>
-        );
-
-        const CB = ({ size = 14 }) => {
-            const [on, setOn] = useState(false);
-            return (
-                <span onClick={() => setOn(!on)} className={`inline-flex items-center justify-center border rounded-sm relative cursor-pointer shrink-0 transition-colors duration-200 hover:bg-black/5`} 
-                      style={{ width: size, height: size, borderColor: on ? 'var(--color-ink)' : 'var(--color-ink3)', color: 'var(--color-ink)' }}>
-                    {on && <span className="absolute inset-0 border-t border-l transform -rotate-45 translate-y-[2px]" style={{ borderColor: 'currentColor', borderWidth: '1.2px', borderRight:'none', borderBottom:'none', width:'80%', height:'50%', top:'15%', left:'10%' }}></span>}
-                </span>
-            );
-        };
-
-        const LinkChip = ({ theme, active, onClick, children }) => (
-            <span onClick={onClick} className={`text-[11px] font-mono tracking-wide px-3 py-1 rounded-full border transition-colors cursor-pointer flex items-center gap-1.5 hover:opacity-80`}
-                  style={{ 
-                      borderColor: active ? theme.deep : 'var(--color-line)',
-                      backgroundColor: active ? theme.tint : 'transparent',
-                      color: active ? theme.ink : 'var(--color-ink3)'
-                  }}>
-                {children}
-            </span>
-        );
-
-        const EditableLine = ({ placeholder = "", dashed = false, className = "", align = "left", textClassName="" }) => (
-            <input type="text" placeholder={placeholder} 
-                   className={`editable-line ${dashed ? 'editable-line-dashed' : ''} ${className} ${textClassName}`} 
-                   style={{ textAlign: align }}/>
-        );
-
-        const Eyebrow = ({ text, theme, line = true }) => (
-            <div className="flex items-center gap-3 w-full">
-                <span className="font-mono text-[9px] tracking-[0.1em] uppercase whitespace-nowrap" style={{ color: theme ? theme.deep : 'var(--color-ink3)' }}>{text}</span>
-                {line && <div className="h-px w-full" style={{ backgroundColor: theme ? theme.mid : 'var(--color-line)' }}></div>}
+    <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- Logo y Título -->
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <i class="ph-fill ph-trophy text-white text-xl sm:text-2xl"></i>
             </div>
-        );
-
-        // ==========================================
-        // 2. LAYOUT COMPONENTS
-        // ==========================================
-        const SideTabs = ({ theme, activeTab, setNav, setTab }) => {
-            const tabs = ["Estilo", "Bienestar", "Productividad", "Finanzas"];
-            
-            const handleTabClick = (tab) => {
-                setTab(tab);
-                if (tab === "Estilo") setNav("Índice");
-                else setNav("Notas"); // Por defecto las otras pestañas van a la sección notas/especializada
-            };
-
-            return (
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col w-10 z-40 shadow-[-2px_0_10px_rgba(0,0,0,0.02)]">
-                    {tabs.map(tab => {
-                        const isActive = activeTab === tab;
-                        return (
-                            <div key={tab} onClick={() => handleTabClick(tab)} className="w-10 h-[150px] flex items-center justify-center border-l cursor-pointer rounded-l-md transition-all duration-200 hover:brightness-95"
-                                 style={{ 
-                                     backgroundColor: isActive ? 'var(--color-cream)' : 'var(--color-paper)',
-                                     borderColor: isActive ? 'transparent' : 'var(--color-lineSoft)',
-                                     borderLeftColor: isActive ? theme.deep : 'var(--color-lineSoft)',
-                                     borderLeftWidth: isActive ? '3px' : '1px'
-                                 }}>
-                                <span className="vertical-text font-sans font-medium text-[9px] tracking-[-0.02em] uppercase" 
-                                      style={{ color: isActive ? theme.ink : 'var(--color-ink3)' }}>
-                                    {tab}
-                                </span>
-                            </div>
-                        )
-                    })}
-                </div>
-            );
-        };
-
-        const TopNav = ({ theme, currentNav, setNav, setTab }) => {
-            const links = ["Índice", "Año", "Mes", "Semana", "Día", "Notas"];
-            
-            const handleNavClick = (link) => {
-                setNav(link);
-                setTab(''); // Limpiar tab activa si navegamos por el menú principal
-            };
-
-            return (
-                <div className="h-16 px-8 flex items-center justify-between border-b relative z-40" style={{ borderColor: 'var(--color-lineSoft)' }}>
-                    <div onClick={() => setNav('Cover')} className="font-serif italic text-xl tracking-tight cursor-pointer hover:opacity-70 transition-opacity" style={{ color: 'var(--color-ink)' }}>Linen Paper Co.</div>
-                    <div className="flex gap-2">
-                        {links.map(link => (
-                            <div key={link} onClick={() => handleNavClick(link)} 
-                                 className="px-3 py-1.5 rounded text-[10px] uppercase font-sans font-medium tracking-wider cursor-pointer transition-colors hover:bg-black/5"
-                                 style={{ 
-                                     backgroundColor: currentNav === link ? theme.tint : 'transparent',
-                                     color: currentNav === link ? theme.ink : 'var(--color-ink3)'
-                                 }}>
-                                {link}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="font-mono text-[10px]" style={{ color: 'var(--color-ink4)' }}>
-                        SIN FECHAR <span className="mx-2">·</span> <span style={{ color: theme.deep }}>{theme.name.toUpperCase()}</span>
-                    </div>
-                </div>
-            );
-        };
-
-        const Page = ({ theme, currentNav, activeTab, setNav, setTab, children }) => (
-            <div className="w-[1080px] h-[810px] relative overflow-hidden flex flex-col font-sans shrink-0 bg-cream text-ink shadow-2xl rounded-xl ring-1 ring-black/10">
-                <div className="grain-overlay"></div>
-                <div className="flex-1 flex flex-col z-10 w-[1040px] h-full"> {/* Leave space for tabs */}
-                    {currentNav !== 'Cover' && <TopNav theme={theme} currentNav={currentNav} setNav={setNav} setTab={setTab} />}
-                    <div className="flex-1 overflow-hidden relative">
-                        {children}
-                    </div>
-                </div>
-                {currentNav !== 'Cover' && <SideTabs theme={theme} activeTab={activeTab} setNav={setNav} setTab={setTab} />}
+            <div class="min-w-0">
+                <h1 class="header-title font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 truncate">
+                    Metas del Equipo
+                </h1>
+                <p class="text-[10px] sm:text-xs text-slate-400 font-medium tracking-wider uppercase">
+                    Métricas <span id="current-month" class="text-emerald-400 font-bold">...</span>
+                </p>
             </div>
-        );
+        </div>
+        
+        <!-- Controles y Toggle de Vistas -->
+        <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            
+            <!-- Toggle Switch (Mes Actual vs Histórico) -->
+            <div class="flex p-1 bg-dark-bg/80 border border-dark-border rounded-lg shadow-inner">
+                <button id="btn-view-current" onclick="switchView('current')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md bg-brand-glow/20 text-brand-glow transition-all">
+                    Mes Actual
+                </button>
+                <button id="btn-view-historical" onclick="switchView('historical')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md text-slate-400 hover:text-white transition-all">
+                    Vista Histórica
+                </button>
+            </div>
 
-        // ==========================================
-        // 3. PLANNER PAGES (SCREENS)
-        // ==========================================
+            <!-- Botón Actualizar -->
+            <button onclick="fetchData()" class="p-2 rounded-lg bg-dark-card border border-dark-border hover:bg-slate-700 hover:text-white transition-colors group" title="Actualizar datos">
+                <i class="ph ph-arrows-clockwise text-lg sm:text-xl group-hover:rotate-180 transition-transform duration-500"></i>
+            </button>
+        </div>
+    </header>
 
-        const Cover = ({ theme, setNav }) => (
-            <Page theme={theme} currentNav="Cover" activeTab="" setNav={setNav} setTab={()=>{}}>
-                <div className="w-full h-full flex flex-col items-center justify-center relative p-12 cursor-pointer transition-transform duration-700 hover:scale-[1.01]" onClick={() => setNav('Índice')}>
-                    <div className="absolute inset-8 border border-line opacity-50 p-2 pointer-events-none">
-                        <div className="w-full h-full border border-line p-2">
-                             <div className="w-full h-full border border-line relative flex flex-col items-center justify-center bg-paper shadow-inner">
-                                 <Icon name="flower" size={48} color="none" stroke={theme.deep} className="mb-12 opacity-80 stroke-[0.8]" />
-                                 <h1 className="font-serif text-[72px] tracking-tight leading-none text-ink text-center">Planner Digital<br/><span className="italic" style={{color: theme.ink}}>Todo en Uno</span></h1>
-                                 <p className="font-mono text-[11px] tracking-[0.2em] uppercase mt-8" style={{color: theme.deep}}>Linen Paper Co. · Toca para abrir</p>
-                             </div>
-                        </div>
+    <main class="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8 relative z-10">
+        
+        <!-- ========================================== -->
+        <!-- VISTA 1: MES ACTUAL                        -->
+        <!-- ========================================== -->
+        <div id="view-current" class="view-section view-active">
+            <!-- Stats cards -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-8">
+                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm">
+                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
+                        <i class="ph ph-users text-sm sm:text-base"></i>
+                        <span class="hidden sm:inline">Equipo Total</span>
+                        <span class="sm:hidden">Equipo</span>
+                    </p>
+                    <h2 id="stat-total-team" class="text-2xl sm:text-3xl font-bold text-white">0</h2>
+                </div>
+                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 w-16 h-16 sm:w-20 sm:h-20 bg-emerald-500/10 rounded-full blur-xl"></div>
+                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
+                        <i class="ph ph-trend-up text-emerald-400 text-sm sm:text-base"></i>
+                        <span class="hidden sm:inline">Superaron la Meta</span>
+                        <span class="sm:hidden">Superaron</span>
+                    </p>
+                    <h2 id="stat-achievers" class="text-2xl sm:text-3xl font-bold text-emerald-400">0</h2>
+                </div>
+                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm">
+                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
+                        <i class="ph ph-currency-dollar text-sm sm:text-base"></i>
+                        <span class="hidden sm:inline">Total Generado</span>
+                        <span class="sm:hidden">Total</span>
+                    </p>
+                    <h2 id="stat-total-money" class="text-lg sm:text-3xl font-bold text-white">$0</h2>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="bg-dark-card/50 border border-dark-border rounded-xl sm:rounded-2xl p-1 backdrop-blur-sm shadow-2xl">
+                <!-- Encabezados solo desktop -->
+                <div class="hidden md:flex items-center gap-4 px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-dark-border/50">
+                    <div class="w-10 text-center flex-shrink-0">Pos.</div>
+                    <div style="width:200px" class="flex-shrink-0">Nombre</div>
+                    <div class="flex-1">Progreso</div>
+                    <div class="w-28 text-right flex-shrink-0">Alcanzado</div>
+                    <div class="w-8 flex-shrink-0"></div> <!-- Espacio para flecha acordeón -->
+                </div>
+
+                <div id="leaderboard-container" class="flex flex-col gap-1 p-1.5 sm:p-2">
+                    <div id="loading-state" class="py-12 flex flex-col items-center justify-center text-slate-500">
+                        <i class="ph ph-spinner-gap animate-spin text-4xl mb-3 text-brand-glow"></i>
+                        <p class="text-sm">Obteniendo datos de la nube...</p>
                     </div>
                 </div>
-            </Page>
-        );
+            </div>
+        </div>
 
-        const IndexHub = ({ theme, setTheme, setNav }) => (
-            <div className="flex h-full p-10 gap-10">
-                {/* Izquierda */}
-                <div className="w-[45%] flex flex-col justify-between">
-                    <div>
-                        <h1 className="font-serif text-[56px] leading-[1.1] mb-2">Todo en uno</h1>
-                        <p className="font-mono text-[10px] tracking-widest uppercase mb-8" style={{color: theme.deep}}>Panel de Control y Estilo</p>
-                        
-                        {/* Selector de Temas Interactivo */}
-                        <div className="mb-8">
-                            <span className="font-mono text-[9px] uppercase tracking-widest mb-3 block text-ink3">Selecciona tu Paleta:</span>
-                            <div className="flex flex-wrap gap-2">
-                                {Object.values(themes).map(t => (
-                                    <div key={t.id} onClick={() => setTheme(t)} 
-                                         className={`w-8 h-8 rounded-full cursor-pointer transition-transform hover:scale-110 border-2 ${theme.id === t.id ? 'border-ink scale-110' : 'border-transparent'}`}
-                                         style={{backgroundColor: t.tint}}
-                                         title={t.name}>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Mini Calendario Anual (Navegación) */}
-                    <div>
-                        <span className="font-mono text-[9px] uppercase tracking-widest mb-3 block text-ink3">Ir al mes:</span>
-                        <div className="grid grid-cols-4 gap-4">
-                            {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'].map((m, i) => (
-                                <div key={m} onClick={() => setNav('Mes')} className="group flex flex-col items-center justify-center p-3 rounded-lg border border-transparent hover:border-lineSoft cursor-pointer transition-colors shadow-sm" style={{backgroundColor: 'var(--color-paper)'}}>
-                                    <span className="font-mono text-[9px] mb-1 text-ink4">{String(i+1).padStart(2, '0')}</span>
-                                    <span className="font-sans text-[11px] font-medium text-ink2 group-hover:text-ink">{m}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+
+        <!-- ========================================== -->
+        <!-- VISTA 2: HISTÓRICA INDIVIDUAL              -->
+        <!-- ========================================== -->
+        <div id="view-historical" class="view-section view-hidden">
+            
+            <!-- Matriz de Cumplimiento por Persona (Foco Individual) -->
+            <div class="bg-dark-card/50 border border-dark-border rounded-xl sm:rounded-2xl backdrop-blur-sm shadow-2xl overflow-hidden">
+                <div class="px-5 py-4 border-b border-dark-border/50 bg-slate-900/30">
+                    <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        <i class="ph-fill ph-calendar-check text-emerald-400"></i>
+                        Matriz de Consistencia Individual
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Monitorea el progreso, porcentaje y meta alcanzada mes a mes por cada integrante.</p>
                 </div>
                 
-                {/* Derecha */}
-                <div className="flex-1 rounded-2xl p-10 flex flex-col border border-lineSoft shadow-sm" style={{backgroundColor: theme.tint}}>
-                    <Eyebrow text="Directorio Rápido" theme={theme} />
-                    <div className="flex-1 flex flex-col justify-center gap-3 mt-6">
-                        {[
-                            {icon: 'cal', t: 'Vista Anual', m: 'Metas y vista de pájaro', route: 'Año'},
-                            {icon: 'grid', t: 'Mes Actual', m: 'Planificación mensual', route: 'Mes'},
-                            {icon: 'week', t: 'Semana Actual', m: 'Prioridades en 7 días', route: 'Semana'},
-                            {icon: 'sun', t: 'Día Actual', m: 'Agenda y foco diario', route: 'Día'},
-                            {icon: 'note', t: 'Notas y Borradores', m: 'Rayado y punteado libre', route: 'Notas'}
-                        ].map((item, i) => (
-                            <div key={i} onClick={() => setNav(item.route)} className="flex items-center gap-4 p-4 rounded-xl bg-white/40 hover:bg-white/70 cursor-pointer transition-all hover:translate-x-1 group shadow-sm">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm" style={{color: theme.deep}}><Icon name={item.icon} size={18}/></div>
-                                <div className="flex-1">
-                                    <div className="font-serif italic text-xl text-ink">{item.t}</div>
-                                    <div className="font-sans text-[11px] text-ink3">{item.m}</div>
-                                </div>
-                                <div className="font-mono text-[10px] text-ink4 mr-2 transition-transform group-hover:translate-x-1"><Icon name="arrowR" size={14}/></div>
-                            </div>
-                        ))}
+                <!-- Contenedor con scroll horizontal para la tabla detallada -->
+                <div class="w-full overflow-x-auto pb-2">
+                    <div class="min-w-[950px]">
+                        <!-- Encabezado de la Matriz -->
+                        <div id="matrix-header" class="grid grid-cols-[4rem_160px_repeat(6,minmax(120px,1fr))] gap-4 px-4 py-3 bg-slate-900/50 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-dark-border/50">
+                            <!-- Los meses se inyectan aquí -->
+                        </div>
+                        
+                        <!-- Filas de la Matriz -->
+                        <div id="matrix-container" class="flex flex-col text-sm">
+                            <!-- Filas generadas por JS -->
+                        </div>
                     </div>
                 </div>
             </div>
-        );
+        </div>
 
-        const Yearly = ({ theme, setNav }) => {
-            const MiniCal = ({month}) => (
-                <div className="flex flex-col">
-                    <div onClick={() => setNav('Mes')} className="font-serif italic text-lg mb-2 cursor-pointer hover:text-ink3 transition-colors">{month}</div>
-                    <div className="grid grid-cols-7 gap-x-1 gap-y-1.5 text-center">
-                        {['L','M','M','J','V','S','D'].map(d=><div key={d} className="text-[7px] font-mono text-ink4">{d}</div>)}
-                        {Array(31).fill(0).map((_,i) => <div key={i} onClick={() => setNav('Día')} className="text-[9px] font-sans text-ink3 cursor-pointer hover:bg-lineSoft hover:text-ink rounded transition-colors">{i+1}</div>)}
-                    </div>
-                </div>
-            );
+    </main>
 
-            return (
-                <div className="flex h-full p-8 gap-12">
-                    <div className="w-[60%] grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-8">
-                        {['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map(m => <MiniCal key={m} month={m}/>)}
-                    </div>
-                    
-                    <div className="w-px bg-line"></div>
-                    
-                    <div className="flex-1 flex flex-col gap-8">
-                        <div>
-                            <Eyebrow text="Palabra del Año" theme={theme} />
-                            <div className="mt-3 flex items-end pb-1">
-                                <EditableLine placeholder="Escribe tu palabra guía..." textClassName="font-serif italic text-2xl text-ink2" />
-                            </div>
-                        </div>
-                        
-                        <div className="flex-1">
-                            <Eyebrow text="Metas por Área" theme={theme} />
-                            <div className="mt-4 flex flex-col gap-4">
-                                {['Cuerpo', 'Mente', 'Dinero', 'Oficio', 'Hogar', 'Gente', 'Alegría'].map(area => (
-                                    <div key={area} className="flex gap-4 items-baseline">
-                                        <span className="font-mono text-[9px] uppercase w-12 text-ink3">{area}</span>
-                                        <EditableLine dashed={true} placeholder={`Meta para ${area.toLowerCase()}...`} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+    <script>
+        const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
 
-                        <div className="h-[200px] rounded-xl p-6 shadow-sm" style={{backgroundColor: theme.tint}}>
-                            <Eyebrow text="Soltar / Dejar Ir" theme={null} line={false} />
-                            <div className="mt-2 flex flex-col gap-3">
-                                {[1,2,3,4].map(i => (
-                                    <div key={i} className="flex items-center gap-3">
-                                        <CB />
-                                        <EditableLine placeholder="Algo que dejar ir..." className="border-white/50 focus:border-ink/50 text-ink/80" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+        const leaderboardContainer = document.getElementById('leaderboard-container');
+        const matrixContainer = document.getElementById('matrix-container');
+        const matrixHeader = document.getElementById('matrix-header');
+        const loadingState = document.getElementById('loading-state');
+        const currentMonthElement = document.getElementById('current-month');
+        
+        const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-        const MonthlySpread = ({ theme, setNav }) => (
-            <div className="flex h-full relative">
-                {/* Lomo visual */}
-                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-line -translate-x-1/2 z-0 shadow-[0_0_10px_rgba(0,0,0,0.05)]"></div>
+        const currencyFormatter = new Intl.NumberFormat('en-US', {
+            style: 'currency', currency: 'USD', maximumFractionDigits: 0
+        });
+
+        // ── Lógica de Cambio de Vista (Tabs) ──
+        function switchView(viewName) {
+            const currentView = document.getElementById('view-current');
+            const histView = document.getElementById('view-historical');
+            const btnCurrent = document.getElementById('btn-view-current');
+            const btnHist = document.getElementById('btn-view-historical');
+
+            if (viewName === 'current') {
+                histView.classList.replace('view-active', 'view-hidden');
+                setTimeout(() => currentView.classList.replace('view-hidden', 'view-active'), 50);
                 
-                {/* Izquierda: Calendario */}
-                <div className="w-1/2 p-8 pr-12 flex flex-col relative z-10">
-                    <div className="flex justify-between items-end mb-6">
-                        <EditableLine placeholder="Enero" textClassName="font-serif text-[40px] leading-none w-48 border-none bg-transparent" />
-                        <EditableLine placeholder="2026" align="right" textClassName="font-mono text-xs text-ink4 w-16 border-none bg-transparent" />
-                    </div>
-                    <div className="grid grid-cols-7 border-t border-l border-line flex-1">
-                        {['L','M','M','J','V','S','D'].map(d => <div key={d} className="border-r border-b border-line p-2 text-center text-[10px] font-mono text-ink4 bg-paper">{d}</div>)}
-                        {Array(35).fill(0).map((_,i) => (
-                            <div key={i} onClick={(e) => { if(e.target.tagName !== 'INPUT') setNav('Día') }} className={`border-r border-b border-line p-1.5 flex flex-col gap-1 cursor-pointer hover:bg-white/50 transition-colors ${(i%7===5||i%7===6)?'bg-paper/50':''}`}>
-                                <div className="text-right text-[11px] text-ink3 mb-1">{i+1 <= 31 ? i+1 : ''}</div>
-                                {i+1 <= 31 && <input type="text" className="w-full bg-transparent border-none outline-none text-[8px] font-sans text-ink focus:bg-white/80 px-1 rounded-sm" placeholder={i===14?"Evento...":""}/>}
-                                {i+1 <= 31 && <input type="text" className="w-full bg-transparent border-none outline-none text-[8px] font-sans text-ink focus:bg-white/80 px-1 rounded-sm" />}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                btnCurrent.classList.replace('text-slate-400', 'text-brand-glow');
+                btnCurrent.classList.add('bg-brand-glow/20');
+                btnHist.classList.remove('text-brand-glow', 'bg-brand-glow/20');
+                btnHist.classList.add('text-slate-400');
+            } else {
+                currentView.classList.replace('view-active', 'view-hidden');
+                setTimeout(() => histView.classList.replace('view-hidden', 'view-active'), 50);
+                
+                btnHist.classList.replace('text-slate-400', 'text-brand-glow');
+                btnHist.classList.add('bg-brand-glow/20');
+                btnCurrent.classList.remove('text-brand-glow', 'bg-brand-glow/20');
+                btnCurrent.classList.add('text-slate-400');
+            }
+        }
 
-                {/* Derecha: Widgets */}
-                <div className="w-1/2 p-8 pl-12 flex flex-col gap-6 relative z-10">
-                    <div className="p-5 rounded-xl border border-lineSoft flex items-center justify-center text-center shadow-sm" style={{backgroundColor: theme.tint}}>
-                        <EditableLine placeholder="« Foco o intención de este mes »" align="center" textClassName="font-serif italic text-xl border-none bg-transparent" style={{color: theme.ink}} />
-                    </div>
+        // ── Lógica Acordeón Desplegable ──
+        function toggleAccordion(id) {
+            const content = document.getElementById(`acc-${id}`);
+            const chevron = document.getElementById(`chevron-${id}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                chevron.classList.replace('text-slate-500', 'text-brand-glow');
+            } else {
+                content.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+                chevron.classList.replace('text-brand-glow', 'text-slate-500');
+            }
+        }
 
-                    <div className="flex gap-8">
-                        <div className="flex-1">
-                            <Eyebrow text="Prioridades" theme={theme} />
-                            <div className="mt-3 flex flex-col gap-3">
-                                {[1,2,3,4,5].map(i => (
-                                    <div key={i} className="flex items-center gap-2">
-                                        <CB /> <EditableLine placeholder={`Prioridad ${i}...`} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="flex-1">
-                            <Eyebrow text="Fechas / Pagos" theme={theme} />
-                            <div className="mt-3 flex flex-col gap-3">
-                                {[1,2,3,4,5].map(i => (
-                                    <div key={i} className="flex items-center gap-2">
-                                        <input type="text" className="w-6 border-b border-line bg-transparent outline-none text-[9px] font-mono text-ink4 text-center focus:border-ink" placeholder="DD"/>
-                                        <EditableLine placeholder="Descripción..." />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+        function updateCurrentMonth() {
+            currentMonthElement.textContent = meses[new Date().getMonth()];
+        }
 
-                    <div>
-                        <Eyebrow text="Hábitos del Mes" theme={theme} />
-                        <div className="mt-3 flex flex-col gap-3">
-                            {[1,2,3,4].map(i => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <EditableLine placeholder="Hábito..." className="w-24" />
-                                    <div className="flex-1 h-1.5 bg-lineSoft rounded-full overflow-hidden relative group cursor-pointer">
-                                        {/* Barra interactiva visual simulada */}
-                                        <div className="absolute inset-0 bg-transparent z-10 flex">
-                                            {Array(31).fill(0).map((_,j) => <div key={j} className="flex-1 hover:bg-black/10"></div>)}
-                                        </div>
-                                        <div className="h-full" style={{backgroundColor: theme.mid, width: `${(i*15)+20}%`}}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+        function parseNumber(val) {
+            if (!val) return 0;
+            let cleaned = String(val).replace(/[$€A-Za-z\s]/g, '').replace(/,/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+        
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+                const values = lines[i].split(regex);
+                const rowObject = {};
+                for (let j = 0; j < headers.length; j++) {
+                    let val = values[j] ? values[j].trim().replace(/"/g, '') : '';
+                    rowObject[headers[j]] = val;
+                }
+                data.push(rowObject);
+            }
+            return data;
+        }
 
-                    <div className="flex-1 flex flex-col">
-                        <Eyebrow text="Reflexión" theme={theme} />
-                        <div className="mt-3 flex-1">
-                            <textarea className="editable-textarea bg-lined pt-1" placeholder="Escribe tu reflexión mensual aquí..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        // Generar Histórico de prueba de los últimos 6 meses
+        function generateMockHistory(currentMeta, currentVentas) {
+            const currentMonthIndex = new Date().getMonth();
+            const history = [];
+            
+            for (let i = 5; i >= 1; i--) {
+                let pastMonthIndex = currentMonthIndex - i;
+                if (pastMonthIndex < 0) pastMonthIndex += 12; 
+                
+                const randomFactor = 0.5 + (Math.random() * 0.7); 
+                const pastVentas = Math.round(currentMeta * randomFactor);
+                
+                history.push({
+                    month: meses[pastMonthIndex],
+                    ventas: pastVentas,
+                    meta: currentMeta,
+                    percentage: (pastVentas / currentMeta) * 100,
+                    isOverGoal: pastVentas >= currentMeta
+                });
+            }
+            
+            // Mes actual real
+            history.push({
+                month: meses[currentMonthIndex],
+                ventas: currentVentas,
+                meta: currentMeta,
+                percentage: currentMeta > 0 ? (currentVentas / currentMeta) * 100 : 0,
+                isOverGoal: currentVentas >= currentMeta
+            });
+            
+            return history; 
+        }
 
-        const WeeklySpread = ({ theme, setNav }) => {
-            const days = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'];
-            return (
-                <div className="flex flex-col h-full p-8 pt-4 gap-6">
-                    {/* Cabecera semana */}
-                    <div className="flex justify-between items-center mb-2">
-                        <div className="font-serif italic text-2xl text-ink flex items-center gap-2">
-                            Semana del <input type="text" className="w-12 border-b border-line bg-transparent outline-none text-center focus:border-ink" placeholder="DD/MM"/> 
-                            al <input type="text" className="w-12 border-b border-line bg-transparent outline-none text-center focus:border-ink" placeholder="DD/MM"/>
-                        </div>
-                        <div className="flex gap-2">
-                            <LinkChip theme={theme} active={true}>Semana Actual</LinkChip>
-                        </div>
-                    </div>
+        async function fetchData() {
+            setLoading(true);
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                const csvData = await response.text();
+                if (csvData.trim().startsWith('<!DOCTYPE html>')) {
+                    throw new Error("La hoja no está publicada como CSV.");
+                }
+                const rawData = parseCSV(csvData);
+                processAndRenderData(rawData);
+            } catch (error) {
+                console.error("Error:", error);
+                leaderboardContainer.innerHTML = `
+                    <div class="py-12 flex flex-col items-center justify-center text-red-400 px-4">
+                        <i class="ph ph-warning-circle text-4xl mb-3"></i>
+                        <p class="font-medium text-center">No se pudo cargar los datos.</p>
+                        <p class="text-sm mt-2 opacity-70 max-w-md text-center">${error.message}</p>
+                    </div>`;
+            } finally {
+                setLoading(false);
+            }
+        }
 
-                    {/* Columnas días */}
-                    <div className="flex-1 grid grid-cols-7 gap-4">
-                        {days.map((d, i) => (
-                            <div key={d} className="flex flex-col">
-                                <div className="flex items-baseline gap-2 mb-4 group cursor-pointer" onClick={() => setNav('Día')}>
-                                    <span className="font-mono text-[10px] text-ink4">{d}</span>
-                                    <span className="font-serif italic text-2xl group-hover:opacity-70 transition-opacity" style={{color: theme.deep}}>{12+i}</span>
-                                </div>
-                                <div className="flex-1 flex flex-col gap-4">
-                                    {Array(8).fill(0).map((_,j) => (
-                                        <div key={j} className="flex items-end gap-2">
-                                            <CB />
-                                            <EditableLine />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+        function processAndRenderData(data) {
+            const validData = data.filter(item => item.Nombre && item.Nombre.trim() !== '');
+            const processedData = validData.map((item, index) => {
+                const nombre = item.Nombre || "Desconocido";
+                const ventas = parseNumber(item.Progreso);
+                const meta = parseNumber(item.Objetivo);
+                let percentage = meta > 0 ? (ventas / meta) * 100 : 0;
+                
+                const history = generateMockHistory(meta || 1000, ventas);
 
-                    <div className="h-px w-full bg-line"></div>
+                let streak = 0;
+                for(let i = history.length - 1; i >= 0; i--) {
+                    if(history[i].isOverGoal) streak++;
+                    else break;
+                }
 
-                    {/* Tira inferior */}
-                    <div className="h-[180px] flex gap-8">
-                        <div className="w-[200px] flex flex-col">
-                            <Eyebrow text="Top 3 Prioridades" theme={theme} />
-                            <div className="mt-4 flex flex-col gap-3">
-                                {[1,2,3].map(i => (
-                                    <div key={i} className="flex items-center gap-2">
-                                        <span className="font-mono text-[9px] text-ink4">{i}</span>
-                                        <EditableLine placeholder="Prioridad..." />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        
-                        <div className="w-[300px] flex flex-col">
-                            <Eyebrow text="Hábitos" theme={theme} />
-                            <div className="mt-4 grid grid-cols-[1fr_repeat(7,16px)] gap-1">
-                                <div className="text-[7px] font-mono text-transparent">H</div>
-                                {days.map(d=><div key={d} className="text-[7px] font-mono text-ink4 text-center">{d[0]}</div>)}
-                                {[1,2,3,4].map(h => (
-                                    <React.Fragment key={h}>
-                                        <EditableLine placeholder="Hábito..." className="text-[10px]" />
-                                        {Array(7).fill(0).map((_,i) => {
-                                            const [checked, setChecked] = useState(false);
-                                            return (
-                                                <div key={i} onClick={() => setChecked(!checked)} 
-                                                     className={`border border-line h-4 rounded-sm flex items-center justify-center cursor-pointer transition-colors ${checked ? 'bg-ink/60 border-transparent' : 'hover:bg-lineSoft'}`}>
-                                                     {checked && <span className="text-white text-[8px] leading-none">✓</span>}
-                                                </div>
-                                            )
-                                        })}
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </div>
+                return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak };
+            });
 
-                        <div className="flex-1 flex flex-col">
-                            <Eyebrow text="Notas" theme={theme} />
-                            <div className="mt-4 flex-1">
-                                <textarea className="editable-textarea bg-lined pt-0" placeholder="Anotaciones semanales..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+            // Ordenar por cumplimiento actual
+            processedData.sort((a, b) => b.percentage - a.percentage);
+            
+            updateStats(processedData);
+            renderHistoricalMatrix(processedData);
 
-        const Daily = ({ theme }) => {
-            const [weather, setWeather] = useState('sun');
-            const toggleWeather = () => {
-                const w = ['sun', 'cloud', 'drop'];
-                setWeather(w[(w.indexOf(weather) + 1) % w.length]);
-            };
+            leaderboardContainer.innerHTML = '';
 
-            return (
-                <div className="flex h-full p-8 pt-4 gap-8">
-                    {/* Columna 1: Horario */}
-                    <div className="w-[30%] flex flex-col border-r border-lineSoft pr-8 relative">
-                        <div className="flex items-baseline gap-3 mb-4">
-                            <input type="text" defaultValue="14" className="font-serif italic text-5xl bg-transparent outline-none w-16 text-center border-b border-transparent focus:border-line" style={{color: theme.deep}}/>
-                            <input type="text" defaultValue="JUEVES" className="font-mono text-[11px] tracking-widest uppercase text-ink3 bg-transparent outline-none w-20 border-b border-transparent focus:border-line"/>
-                        </div>
-                        
-                        <div className="flex gap-2 mb-6 overflow-hidden">
-                            <div onClick={toggleWeather} className="text-[9px] font-sans px-2 py-1 rounded bg-paper border border-lineSoft flex items-center gap-1 cursor-pointer hover:bg-white transition-colors"><Icon name={weather} size={10}/> <input type="text" className="w-6 bg-transparent outline-none text-center" defaultValue="22°"/></div>
-                            <div className="text-[9px] font-sans px-2 py-1 rounded bg-paper border border-lineSoft flex items-center gap-1"><Icon name="heart" size={10}/> <input type="text" className="w-12 bg-transparent outline-none" placeholder="Estado"/></div>
-                            <div className="text-[9px] font-sans px-2 py-1 rounded bg-paper border border-lineSoft flex items-center gap-1"><Icon name="moon" size={10}/> <input type="text" className="w-6 bg-transparent outline-none text-center" placeholder="7h"/></div>
-                        </div>
-
-                        <div className="flex-1 flex flex-col gap-0 relative">
-                            {['6:00','7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].map(t => (
-                                <div key={t} className="flex-1 flex items-start gap-3 border-b border-lineSoft group cursor-text relative">
-                                    <span className="font-mono text-[8px] text-ink4 w-6 pt-1">{t}</span>
-                                    <input type="text" className="w-full h-full bg-transparent outline-none text-[10px] text-ink2 group-hover:bg-white/50 transition-colors px-1" />
-                                </div>
-                            ))}
-                            {/* Block visual de evento arrastrable (simulado visualmente) */}
-                            <div className="absolute top-[20%] left-10 right-0 h-[10%] rounded-r flex items-center px-2 text-[9px] text-ink border-l-2 shadow-sm pointer-events-none" style={{backgroundColor: theme.tint, borderLeftColor: theme.deep}}>Trabajo profundo</div>
-                        </div>
-                    </div>
-
-                    {/* Columna 2: Foco y Tareas */}
-                    <div className="w-[35%] flex flex-col pr-8">
-                        <Eyebrow text="Las Tres del Día" theme={theme} />
-                        <div className="mt-4 flex flex-col gap-4 mb-8">
-                            {[1,2,3].map(i => (
-                                <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-paper border border-lineSoft shadow-sm">
-                                    <span className="font-serif italic text-lg text-ink3">{i}</span>
-                                    <EditableLine className="border-none" placeholder="Tarea clave..." />
-                                    <CB />
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="p-4 rounded-xl mb-8 border border-lineSoft shadow-sm" style={{backgroundColor: theme.tint}}>
-                            <div className="font-mono text-[9px] uppercase mb-2" style={{color: theme.deep}}>Foco del día</div>
-                            <EditableLine className="border-white/50 focus:border-ink/50" placeholder="¿Cuál es tu intención hoy?" />
-                        </div>
-
-                        <Eyebrow text="Para Hacer" theme={theme} />
-                        <div className="mt-4 flex flex-col gap-4 flex-1">
-                            {Array(8).fill(0).map((_,i) => (
-                                <div key={i} className="flex items-end gap-2">
-                                    <CB />
-                                    <EditableLine placeholder="Tarea..." />
-                                </div>
-                            ))}
-                        </div>
-
-                        <Eyebrow text="Gratitud" theme={theme} />
-                        <div className="mt-4 flex flex-col gap-4">
-                            {[1,2,3].map(i => <EditableLine key={i} placeholder="Agradezco por..." />)}
-                        </div>
-                    </div>
-
-                    {/* Columna 3: Bienestar y Notas */}
-                    <div className="flex-1 flex flex-col">
-                        <Eyebrow text="Hidratación" theme={theme} />
-                        <div className="mt-4 flex gap-1 mb-8">
-                            {Array(8).fill(0).map((_,i) => {
-                                const [drank, setDrank] = useState(false);
-                                return (
-                                    <Icon key={i} onClick={() => setDrank(!drank)} name="drop" size={18} color={drank ? theme.tint : 'none'} stroke={drank ? theme.deep : 'var(--color-line)'} className="cursor-pointer hover:scale-110 transition-transform"/>
-                                )
-                            })}
-                        </div>
-
-                        <Eyebrow text="Comidas" theme={theme} />
-                        <div className="mt-4 flex flex-col gap-4 mb-8">
-                            {['Desayuno','Almuerzo','Cena','Snacks'].map(m => (
-                                <div key={m} className="flex flex-col">
-                                    <span className="font-mono text-[8px] text-ink4">{m}</span>
-                                    <EditableLine placeholder="..." />
-                                </div>
-                            ))}
-                        </div>
-
-                        <Eyebrow text="Hábitos" theme={theme} />
-                        <div className="mt-4 flex flex-col gap-3 mb-8">
-                            {[1,2,3,4].map(i => (
-                                <div key={i} className="flex items-end gap-2">
-                                    <CB />
-                                    <EditableLine placeholder="Hábito..." />
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="flex-1 flex flex-col">
-                            <Eyebrow text="Notas Libres" theme={theme} />
-                            <div className="mt-4 flex-1">
-                                <textarea className="editable-textarea bg-dotted pt-1 text-sm" placeholder="Anota lo que necesites..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // ==========================================
-        // 4. SECTIONS (TABS)
-        // ==========================================
-        const HabitTracker = ({ theme }) => (
-            <div className="flex flex-col h-full p-8 gap-6">
-                <div className="flex justify-between items-end">
-                    <div>
-                        <h2 className="font-serif text-4xl mb-1">Tracker de Hábitos</h2>
-                        <p className="font-mono text-[10px] text-ink4 uppercase tracking-widest">Un día a la vez</p>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="text-right flex flex-col items-end">
-                            <div className="font-mono text-[9px] text-ink4 uppercase">Mes</div>
-                            <input type="text" className="border-b border-line w-24 bg-transparent outline-none text-right focus:border-ink font-serif text-lg italic text-ink2" placeholder="Mes..."/>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex-1 flex flex-col border border-line bg-white rounded-lg overflow-hidden shadow-sm">
-                    {/* Cabecera números */}
-                    <div className="flex bg-paper border-b border-line">
-                        <div className="w-[200px] border-r border-line p-3 font-sans text-[11px] font-medium flex items-center">Hábito</div>
-                        <div className="flex-1 grid grid-cols-[repeat(31,1fr)]">
-                            {Array(31).fill(0).map((_,i) => <div key={i} className="border-r border-line flex items-center justify-center font-mono text-[8px] text-ink3">{i+1}</div>)}
-                        </div>
-                        <div className="w-12 flex items-center justify-center font-mono text-[9px] bg-paper">Σ</div>
-                    </div>
-                    {/* Filas */}
-                    {Array(11).fill(0).map((_, row) => {
-                        const [count, setCount] = useState(0);
-                        const toggleDay = (checked) => setCount(prev => checked ? prev + 1 : prev - 1);
-                        
-                        return (
-                            <div key={row} className="flex border-b border-line last:border-0 bg-white">
-                                <div className="w-[200px] border-r border-line p-2 flex items-center">
-                                    <EditableLine dashed={true} placeholder={`Hábito ${row+1}`} className="border-none" />
-                                </div>
-                                <div className="flex-1 grid grid-cols-[repeat(31,1fr)]">
-                                    {Array(31).fill(0).map((_,i) => {
-                                        const [checked, setChecked] = useState(false);
-                                        const handleClick = () => { setChecked(!checked); toggleDay(!checked); };
-                                        return (
-                                            <div key={i} className="border-r border-line flex items-center justify-center p-1">
-                                                <div onClick={handleClick} className={`w-full h-full border border-lineSoft rounded-sm cursor-pointer transition-colors ${checked ? 'bg-ink/70 border-transparent' : 'hover:bg-lineSoft'}`}>
-                                                    {checked && <div className="w-full h-full flex items-center justify-center"><span className="text-white text-[6px]">✓</span></div>}
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                                <div className="w-12 border-l border-line flex items-center justify-center font-mono text-[10px] text-ink2">{count > 0 ? count : ''}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-
-                <div className="h-16 rounded-xl flex items-center justify-between px-6 border border-lineSoft shadow-sm" style={{backgroundColor: theme.tint}}>
-                    <div className="flex items-center gap-6">
-                        <span className="font-mono text-[9px] uppercase" style={{color: theme.deep}}>Estado de ánimo</span>
-                        <div className="flex gap-4">
-                            {['😫','😕','😐','🙂','🤩'].map((e,i) => {
-                                const [active, setActive] = useState(false);
-                                return <span key={i} onClick={() => setActive(!active)} className={`text-xl cursor-pointer transition-all hover:scale-125 ${active ? 'grayscale-0 scale-125' : 'grayscale opacity-50'}`}>{e}</span>
-                            })}
-                        </div>
-                    </div>
-                    <div className="font-serif italic text-lg" style={{color: theme.ink}}>« Progreso antes que perfección »</div>
-                </div>
-            </div>
-        );
-
-        const Finance = ({ theme }) => (
-            <div className="flex h-full p-8 gap-12">
-                {/* Resumen y Presupuesto */}
-                <div className="w-[40%] flex flex-col gap-8">
-                    <div>
-                        <h2 className="font-serif text-4xl mb-1">Plan Financiero</h2>
-                        <input type="text" className="font-mono text-[10px] text-ink4 uppercase tracking-widest bg-transparent border-b border-transparent focus:border-line outline-none w-full" placeholder="MES DE _________"/>
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-4 p-5 rounded-xl border border-lineSoft shadow-sm" style={{backgroundColor: theme.tint}}>
-                        {[
-                            {l: 'ENTRA', c: theme.deep}, 
-                            {l: 'SALE', c: 'var(--color-ink2)'}, 
-                            {l: 'QUEDA', c: theme.ink}
-                        ].map(item => (
-                            <div key={item.l} className="flex flex-col">
-                                <span className="font-mono text-[9px] mb-1 opacity-70" style={{color: item.c}}>{item.l}</span>
-                                <div className="flex items-center font-sans text-xl font-medium" style={{color: item.c}}>
-                                    $ <input type="number" className="bg-transparent border-b border-current opacity-50 focus:opacity-100 outline-none w-16 ml-1 font-sans text-xl" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex-1 flex flex-col">
-                        <Eyebrow text="Presupuesto" theme={theme} />
-                        <div className="mt-5 flex flex-col gap-5 overflow-y-auto pr-2 hide-scrollbar">
-                            {['Vivienda','Comida','Transporte','Servicios','Salud','Ocio','Ahorro','Deudas'].map(cat => {
-                                const [pct, setPct] = useState(Math.floor(Math.random() * 60)); // Random inicial para preview
-                                return (
-                                    <div key={cat} className="flex flex-col gap-1.5">
-                                        <div className="flex justify-between font-sans text-[11px] items-center">
-                                            <EditableLine placeholder={cat} className="border-none w-24 text-[11px]" />
-                                            <div className="font-mono text-[9px] text-ink3 flex items-center">
-                                                $ <input type="number" className="w-8 bg-transparent border-b border-transparent focus:border-line outline-none text-right" placeholder="0"/> / 
-                                                $ <input type="number" className="w-8 bg-transparent border-b border-transparent focus:border-line outline-none text-right" placeholder="0"/>
-                                            </div>
-                                        </div>
-                                        {/* Barra interactiva simulada */}
-                                        <div className="h-1.5 w-full bg-lineSoft rounded-full overflow-hidden cursor-pointer" onClick={(e) => {
-                                            const rect = e.target.getBoundingClientRect();
-                                            const x = e.clientX - rect.left;
-                                            setPct((x / rect.width) * 100);
-                                        }}>
-                                            <div className="h-full transition-all duration-300 pointer-events-none" style={{backgroundColor: theme.mid, width: `${pct}%`}}></div>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                    
-                    <div className="border border-dashed border-line p-4 rounded-lg text-center bg-white/50">
-                        <EditableLine placeholder="Meta financiera del mes..." align="center" textClassName="font-serif italic text-lg text-ink3 border-none bg-transparent" />
-                    </div>
-                </div>
-
-                {/* Registro de Gastos */}
-                <div className="flex-1 flex flex-col">
-                    <Eyebrow text="Registro de Movimientos" theme={theme} />
-                    <div className="mt-4 flex-1 flex flex-col bg-white border border-line rounded-lg shadow-sm overflow-hidden">
-                        <div className="flex bg-paper border-b border-line font-mono text-[9px] text-ink3 p-2 px-4 uppercase">
-                            <div className="w-16">Día</div>
-                            <div className="flex-1">Descripción</div>
-                            <div className="w-24">Categoría</div>
-                            <div className="w-20 text-right">Importe</div>
-                        </div>
-                        <div className="flex-1 flex flex-col overflow-y-auto hide-scrollbar">
-                            {Array(15).fill(0).map((_,i) => (
-                                <div key={i} className="flex border-b border-line last:border-0 p-2 px-4 hover:bg-paper transition-colors group">
-                                    <input type="text" className="w-16 text-[11px] font-mono text-ink2 bg-transparent outline-none border-b border-transparent focus:border-line" placeholder="--/--"/>
-                                    <input type="text" className="flex-1 text-[12px] bg-transparent outline-none border-b border-transparent focus:border-line" placeholder="Concepto..."/>
-                                    <input type="text" className="w-24 text-[10px] text-ink3 bg-transparent outline-none border-b border-transparent focus:border-line" placeholder="Categoría..."/>
-                                    <input type="number" className="w-20 text-right text-[12px] font-medium bg-transparent outline-none border-b border-transparent focus:border-line" placeholder="$ 0.00"/>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="mt-4 flex justify-end items-center gap-4">
-                        <span className="font-mono text-[10px] uppercase text-ink4">Total Gastos</span>
-                        <div className="font-serif italic text-3xl flex items-center gap-2">
-                            $ <input type="number" className="w-32 bg-transparent border-b border-line outline-none focus:border-ink font-serif text-3xl italic" placeholder="0.00"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-
-        const Notes = ({ theme, activeTab }) => {
-            // Contenido especial para la pestaña de Productividad si se selecciona, de lo contrario notas genéricas
-            if (activeTab === "Productividad") {
-                return (
-                    <div className="flex flex-col h-full p-8 gap-8">
-                        <h2 className="font-serif text-4xl">Plan de Proyecto</h2>
-                        <div className="flex gap-8 flex-1">
-                            <div className="w-1/3 flex flex-col gap-6">
-                                <div><Eyebrow text="Proyecto" theme={theme}/><EditableLine className="mt-2 text-lg font-serif italic"/></div>
-                                <div><Eyebrow text="Objetivo" theme={theme}/><textarea className="editable-textarea border border-lineSoft p-3 mt-2 h-32 rounded-lg bg-white" placeholder="Describe el objetivo final..."></textarea></div>
-                                <div><Eyebrow text="Fechas Clave" theme={theme}/>
-                                    <div className="mt-2 flex flex-col gap-2">
-                                        {[1,2,3].map(i => <div key={i} className="flex gap-2"><input type="text" placeholder="DD/MM" className="w-16 bg-transparent border-b border-line outline-none text-[10px] font-mono"/><EditableLine placeholder="Hito..."/></div>)}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex-1 flex flex-col">
-                                <Eyebrow text="Pasos a Seguir" theme={theme}/>
-                                <div className="mt-4 flex flex-col gap-3 flex-1 bg-white p-6 rounded-xl border border-line shadow-sm">
-                                    {Array(10).fill(0).map((_,i) => <div key={i} className="flex items-center gap-3"><CB size={16}/> <EditableLine placeholder={`Paso ${i+1}...`} className="text-sm py-1"/></div>)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
+            if (processedData.length === 0) {
+                leaderboardContainer.innerHTML = `
+                    <div class="py-12 flex flex-col items-center text-slate-500">
+                        <i class="ph ph-empty text-4xl mb-3"></i>
+                        <p>No hay datos disponibles.</p>
+                    </div>`;
+                return;
             }
 
-            return (
-                <div className="flex h-full relative">
-                    <div className="absolute left-1/2 top-8 bottom-8 w-px bg-line -translate-x-1/2"></div>
-                    
-                    <div className="w-1/2 p-8 pr-12 flex flex-col">
-                        <Eyebrow text="Rayado" theme={theme} />
-                        <div className="mt-6 flex-1 relative">
-                            <textarea className="absolute inset-0 editable-textarea bg-lined text-sm p-1 leading-[24px]" placeholder="Empieza a escribir tus notas aquí..."></textarea>
-                        </div>
-                    </div>
-                    
-                    <div className="w-1/2 p-8 pl-12 flex flex-col">
-                        <Eyebrow text="Punteado" theme={theme} />
-                        <div className="mt-6 flex-1 relative">
-                            <textarea className="absolute inset-0 editable-textarea bg-dotted text-sm p-2" placeholder="Dibuja, haz diagramas o escribe libremente..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+            // ── RENDERIZAR VISTA MES ACTUAL (CON ACORDEÓN) ──
+            processedData.forEach((person, index) => {
+                const rank = index + 1;
+                const isOverGoal = person.ventas >= person.meta;
+                const visualPercentage = Math.min(person.percentage, 100);
 
-        // ==========================================
-        // MAIN APP RENDER & STATE
-        // ==========================================
-        const App = () => {
-            const [currentNav, setCurrentNav] = useState('Cover');
-            const [activeTab, setActiveTab] = useState('');
-            const [theme, setTheme] = useState(themes.greige);
-            
-            // Lógica de escalado para que parezca un iPad en la pantalla
-            const [scale, setScale] = useState(1);
-            
-            useEffect(() => {
-                const handleResize = () => {
-                    // Maximizamos el espacio disponible quitando el padding restrictivo
-                    const availableWidth = window.innerWidth; 
-                    const availableHeight = window.innerHeight;
-                    
-                    // El planner tiene dimensiones base de 1080x810
-                    const scaleW = availableWidth / 1080;
-                    const scaleH = availableHeight / 810;
-                    
-                    // Tomamos el menor para que encaje todo. Aumentamos drásticamente el límite máximo a 3.0 para pantallas grandes.
-                    let newScale = Math.min(scaleW, scaleH, 3.0); 
-                    if (newScale < 0.3) newScale = 0.3; // escala mínima permitida
-                    
-                    // Usamos el 96% de la escala para que ocupe casi toda la pantalla dejando solo un borde sutil
-                    setScale(newScale * 0.96);
-                };
-                
-                handleResize();
-                window.addEventListener('resize', handleResize);
-                return () => window.removeEventListener('resize', handleResize);
-            }, []);
+                let barColorClass = "bg-blue-500";
+                let textColorClass = "text-slate-300";
+                let iconHtml = "";
+                let nameClass = "text-white";
 
-            // Enrutador simple
-            const renderContent = () => {
-                switch(currentNav) {
-                    case 'Cover': return <Cover theme={theme} setNav={setCurrentNav} />;
-                    case 'Índice': return <IndexHub theme={theme} setTheme={setTheme} setNav={setCurrentNav} />;
-                    case 'Año': return <Yearly theme={theme} setNav={setCurrentNav} />;
-                    case 'Mes': return <MonthlySpread theme={theme} setNav={setCurrentNav} />;
-                    case 'Semana': return <WeeklySpread theme={theme} setNav={setCurrentNav} />;
-                    case 'Día': return <Daily theme={theme} />;
-                    case 'Notas': 
-                        if (activeTab === 'Bienestar') return <HabitTracker theme={theme} />;
-                        if (activeTab === 'Finanzas') return <Finance theme={theme} />;
-                        return <Notes theme={theme} activeTab={activeTab} />;
-                    default: return <Cover theme={theme} setNav={setCurrentNav} />;
+                if (isOverGoal) {
+                    barColorClass = "bg-gradient-to-r from-emerald-500 to-green-400";
+                    textColorClass = "text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]";
+                    nameClass = "text-emerald-50";
+                    iconHtml = `<i class="ph-fill ph-check-circle text-emerald-400" title="¡Meta Alcanzada!"></i>`;
+                } else if (person.percentage >= 80) {
+                    barColorClass = "bg-gradient-to-r from-yellow-500 to-amber-400";
+                } else if (person.percentage <= 30) {
+                    barColorClass = "bg-gradient-to-r from-rose-500 to-red-400";
                 }
-            };
 
-            return (
-                <div className="fixed inset-0 flex items-center justify-center bg-[#2e2e2e] overflow-hidden">
-                    {/* Background Ambiente basado en el tema actual */}
-                    <div className="absolute inset-0 opacity-20 transition-colors duration-1000" style={{backgroundColor: theme.deep}}></div>
-                    
-                    {/* Contenedor del Planner Escalado */}
-                    <div style={{ 
-                            width: '1080px', 
-                            height: '810px', 
-                            transform: `scale(${scale})`, 
-                            transformOrigin: 'center center',
-                            transition: 'transform 0.2s ease-out'
-                         }} 
-                         className="relative z-10 flex items-center justify-center">
+                let rankClass = 'bg-slate-800 text-slate-400 border-dark-border';
+                if (rank === 1) rankClass = 'bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]';
+                else if (rank === 2) rankClass = 'bg-slate-300/20 text-slate-300 border-slate-400/50';
+                else if (rank === 3) rankClass = 'bg-orange-600/20 text-orange-400 border-orange-600/50';
+
+                const faltaMonto = person.ventas < person.meta
+                    ? `falta ${currencyFormatter.format(person.meta - person.ventas)}`
+                    : '✓ meta cumplida';
+
+                // Generar tarjetas miniatura del acordeón histórico
+                const historyCardsHtml = person.history.map(h => {
+                    const cardColor = h.isOverGoal ? 'text-emerald-400' : 'text-slate-200';
+                    const miniBarColor = h.isOverGoal ? 'bg-emerald-400' : (h.percentage >= 80 ? 'bg-amber-400' : 'bg-brand-glow');
+                    return `
+                        <div class="flex-shrink-0 w-[140px] bg-dark-bg border border-dark-border rounded-lg p-3 snap-center shadow-inner">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-slate-400">${h.month}</span>
+                                <span class="text-[10px] font-bold ${cardColor}">${h.percentage.toFixed(0)}%</span>
+                            </div>
+                            <div class="font-bold ${cardColor} text-sm mb-1">${currencyFormatter.format(h.ventas)}</div>
+                            <div class="text-[10px] text-slate-500 mb-2">Meta: ${currencyFormatter.format(h.meta)}</div>
+                            <div class="w-full bg-slate-800 rounded-full h-1">
+                                 <div class="${miniBarColor} h-1 rounded-full" style="width: ${Math.min(h.percentage, 100)}%"></div>
+                            </div>
+                        </div>`;
+                }).join('');
+
+                const rowHtml = `
+                <div class="leaderboard-item cursor-pointer group" onclick="toggleAccordion('${person.id}')">
+                    <div class="leaderboard-row transition-colors group-hover:bg-slate-800/50">
+                        <div class="row-rank">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full ${rankClass} border font-bold text-sm flex-shrink-0">
+                                ${rank}
+                            </div>
+                        </div>
+
+                        <div class="row-name min-w-0">
+                            <h3 class="text-sm sm:text-base font-semibold ${nameClass} flex items-center gap-1.5 truncate">
+                                <span class="truncate">${person.nombre}</span>
+                                ${iconHtml}
+                                ${person.streak >= 3 ? `<i class="ph-fill ph-fire text-orange-500 text-sm" title="¡Racha de ${person.streak} meses!"></i>` : ''}
+                            </h3>
+                            <div class="row-amount-mobile text-right flex-shrink-0 ml-2">
+                                <div class="text-sm font-bold ${isOverGoal ? 'text-emerald-400' : 'text-white'} whitespace-nowrap">
+                                    ${currencyFormatter.format(person.ventas)}
+                                </div>
+                                <div class="text-[10px] text-slate-500 whitespace-nowrap">${faltaMonto}</div>
+                            </div>
+                        </div>
+
+                        <div class="row-progress">
+                            <div class="flex justify-between items-end">
+                                <span class="text-xs font-bold ${textColorClass}">
+                                    ${person.percentage.toFixed(1)}%
+                                </span>
+                                <span class="text-[10px] text-slate-500 hidden sm:inline">
+                                    Meta: ${currencyFormatter.format(person.meta)}
+                                </span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/50 relative">
+                                <div class="progress-bar-fill h-full rounded-full ${barColorClass} relative"
+                                     style="width: 0%;"
+                                     data-width="${visualPercentage}%">
+                                    ${isOverGoal ? '<div class="absolute inset-0 bg-white/20 animate-pulse-slow"></div>' : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row-amount">
+                            <div class="font-bold ${isOverGoal ? 'text-emerald-400' : 'text-white'}">
+                                ${currencyFormatter.format(person.ventas)}
+                            </div>
+                            <div class="text-[10px] text-slate-500">${faltaMonto}</div>
+                        </div>
                         
-                        {/* El Planner en sí */}
-                        <div className="w-full h-full">
-                            {/* Pestañas y contenido manejado por el componente Page que envuelve a la mayoría */}
-                            {currentNav === 'Cover' ? (
-                                <Cover theme={theme} setNav={setCurrentNav} />
-                            ) : (
-                                <Page theme={theme} currentNav={currentNav} activeTab={activeTab} setNav={setCurrentNav} setTab={setActiveTab}>
-                                    {renderContent()}
-                                </Page>
-                            )}
+                        <!-- Flecha Desplegable -->
+                        <div class="ml-1 sm:ml-2 flex items-center justify-center text-slate-500 group-hover:text-brand-glow transition-colors">
+                            <i class="ph ph-caret-down text-lg sm:text-xl transition-transform duration-300" id="chevron-${person.id}"></i>
                         </div>
                     </div>
-                    
-                    {/* Hint flotante de ayuda */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 font-mono text-[10px] tracking-widest uppercase pointer-events-none z-50">
-                        {currentNav === 'Cover' ? 'Haz clic en la portada para abrir' : 'Puedes escribir sobre las líneas y hacer clic en las pestañas'}
-                    </div>
-                </div>
-            );
-        };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+                    <!-- Contenido Acordeón (Histórico) -->
+                    <div id="acc-${person.id}" class="hidden border-t border-dark-border/50 bg-slate-900/60 p-4 rounded-b-xl cursor-default" onclick="event.stopPropagation()">
+                        <h4 class="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider flex items-center gap-2">
+                            <i class="ph ph-clock-counter-clockwise"></i> Histórico Reciente
+                        </h4>
+                        <div class="flex gap-3 overflow-x-auto pb-2 snap-x scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                            ${historyCardsHtml}
+                        </div>
+                    </div>
+                </div>`;
+
+                leaderboardContainer.insertAdjacentHTML('beforeend', rowHtml);
+            });
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                }, 100);
+            });
+        }
+
+        // ── RENDERIZAR MATRIZ HISTÓRICA DETALLADA ──
+        function renderHistoricalMatrix(data) {
+            if(data.length === 0) return;
+            
+            // 1. Usamos el historial del primer usuario para construir el encabezado
+            // Colocando la META debajo del nombre del mes, una sola vez.
+            let headerHtml = `
+                <div class="text-center flex items-center justify-center" title="Racha consecutiva de meses cumpliendo">
+                    <span class="text-slate-400 font-bold text-xs"><i class="ph-fill ph-fire text-orange-500"></i> Racha</span>
+                </div>
+                <div class="flex items-center text-slate-300">Miembro del Equipo</div>
+            `;
+            
+            data[0].history.forEach((hist, idx) => {
+                const isCurrent = idx === data[0].history.length - 1;
+                headerHtml += `
+                    <div class="text-center flex flex-col items-center justify-center py-1 ${isCurrent ? 'bg-brand-glow/10 rounded-lg border border-brand-glow/20' : ''}">
+                        <span class="${isCurrent ? 'text-brand-glow font-bold' : 'text-slate-300'}">${hist.month}</span>
+                        <span class="text-[10px] text-slate-500 font-normal mt-0.5 tracking-wide">Meta: ${currencyFormatter.format(hist.meta)}</span>
+                    </div>`;
+            });
+            matrixHeader.innerHTML = headerHtml;
+
+            const matrixData = [...data].sort((a, b) => {
+                if(b.streak !== a.streak) return b.streak - a.streak;
+                return b.percentage - a.percentage;
+            });
+
+            matrixContainer.innerHTML = '';
+            
+            matrixData.forEach(person => {
+                // Estilo de la racha más refinado
+                let streakBadge = '-';
+                if (person.streak >= 6) streakBadge = `<span class="px-2 py-1 rounded-md bg-gradient-to-r from-orange-500/20 to-amber-500/20 text-orange-400 text-xs font-bold border border-orange-500/30 shadow-[0_0_10px_rgba(249,115,22,0.2)]" title="¡6 Meses Perfectos!">🏆 x${person.streak}</span>`;
+                else if (person.streak >= 3) streakBadge = `<span class="px-2 py-1 rounded-md bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/20">🔥 x${person.streak}</span>`;
+                else if (person.streak > 0) streakBadge = `<span class="px-2 py-1 rounded-md bg-slate-800 text-slate-400 text-xs font-bold border border-slate-700/50">x${person.streak}</span>`;
+
+                let monthsHtml = '';
+                person.history.forEach((hist, idx) => {
+                    const isCurrent = idx === person.history.length - 1;
+                    
+                    // Lógica de colores refinada para cada "tarjeta" mensual
+                    let bgColor = 'bg-slate-800/20';
+                    let borderColor = 'border-slate-700/30';
+                    let moneyColor = 'text-slate-200';
+                    let pctBg = 'bg-slate-700/50';
+                    let pctText = 'text-slate-300';
+                    let iconHtml = '';
+                    let progressWidth = Math.min(hist.percentage, 100);
+
+                    if (hist.isOverGoal) {
+                        bgColor = 'bg-emerald-900/20';
+                        borderColor = 'border-emerald-500/30';
+                        moneyColor = 'text-emerald-400';
+                        pctBg = 'bg-emerald-500/20';
+                        pctText = 'text-emerald-400';
+                        iconHtml = '<i class="ph-fill ph-check-circle text-emerald-400 mr-1.5 text-sm"></i>';
+                    } else if (hist.percentage >= 80) {
+                        bgColor = 'bg-amber-900/10';
+                        borderColor = 'border-amber-500/30';
+                        moneyColor = 'text-amber-400';
+                        pctBg = 'bg-amber-500/20';
+                        pctText = 'text-amber-400';
+                    } else {
+                        pctBg = 'bg-rose-500/10';
+                        pctText = 'text-rose-400';
+                    }
+
+                    // Cuadro de mes individual refinado
+                    monthsHtml += `
+                        <div class="flex items-center justify-center p-1">
+                            <div class="w-full h-full flex flex-col items-center justify-center p-2 rounded-lg ${bgColor} border ${borderColor} relative overflow-hidden transition-transform duration-300 hover:scale-[1.03] hover:shadow-lg cursor-default">
+                                <div class="font-bold ${moneyColor} text-[13px] flex items-center mb-1.5">
+                                    ${iconHtml}${currencyFormatter.format(hist.ventas)}
+                                </div>
+                                <div class="text-[10px] font-bold px-1.5 py-0.5 rounded-md ${pctBg} ${pctText}">
+                                    ${hist.percentage.toFixed(0)}%
+                                </div>
+                                <!-- Línea de progreso inferior -->
+                                <div class="absolute bottom-0 left-0 h-[2px] bg-slate-800/50 w-full">
+                                    <div class="h-full ${hist.isOverGoal ? 'bg-emerald-400' : (hist.percentage >= 80 ? 'bg-amber-400' : 'bg-brand-glow')} transition-all duration-1000" style="width: ${progressWidth}%"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+
+                const rowHtml = `
+                    <div class="grid grid-cols-[4rem_160px_repeat(6,minmax(120px,1fr))] gap-2 px-4 py-1.5 border-b border-dark-border/50 hover:bg-slate-800/40 transition-colors items-center group">
+                        <div class="text-center flex justify-center items-center h-full">${streakBadge}</div>
+                        <div class="font-semibold text-slate-200 truncate pr-2 group-hover:text-white transition-colors">${person.nombre}</div>
+                        ${monthsHtml}
+                    </div>
+                `;
+                matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
+        function updateStats(data) {
+            document.getElementById('stat-total-team').innerText = data.length;
+            document.getElementById('stat-achievers').innerText = data.filter(p => p.ventas >= p.meta).length;
+            document.getElementById('stat-total-money').innerText = currencyFormatter.format(data.reduce((s, p) => s + p.ventas, 0));
+        }
+
+        function setLoading(isLoading) {
+            loadingState.style.display = isLoading ? 'flex' : 'none';
+        }
+
+        window.onload = () => {
+            updateCurrentMonth();
+            fetchData();
+        };
     </script>
 </body>
 </html>
