@@ -276,11 +276,11 @@
         // 1. Configuracion de Base de Datos y URLs
         const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
         
-        // URL para la pestaña Principal (Mes Actual)
+        // URL para la pestaña Principal (Mes Actual) - Usa la primera pestaña por defecto
         const currentDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
         
-        // URL Específica para la pestaña Histórico
-        const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Historico`;
+        // URL Específica para la pestaña Histórico - Usando la MISMA estructura pero con el GID exacto de tu imagen
+        const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=2095726805`;
 
         const leaderboardContainer = document.getElementById('leaderboard-container');
         const matrixContainer = document.getElementById('matrix-container');
