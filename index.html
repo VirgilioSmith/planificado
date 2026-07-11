@@ -25,12 +25,12 @@
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in-up': 'fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
                         fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '10%': { opacity: '1', transform: 'translateY(0)' },
+                            '0%': { opacity: '0', transform: 'translateY(8px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         }
                     }
                 }
@@ -44,36 +44,36 @@
         body { font-family: 'Inter', sans-serif; }
 
         .progress-bar-fill {
-            transition: width 1.5s ease-out, background-color 0.5s ease;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
         }
 
         /* ── Custom Scrollbars Elegantes ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.5); border-radius: 10px; transition: background 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(71, 85, 105, 0.8); }
 
         .glass-header {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         /* ── Estructura del item del leaderboard (Mes Actual) ── */
         .leaderboard-item {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(51, 65, 85, 0.4);
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(51, 65, 85, 0.3);
             border-radius: 0.75rem;
             margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .leaderboard-item:hover {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(71, 85, 105, 0.8);
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(71, 85, 105, 0.6);
             transform: translateY(-2px);
-            box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 25px -10px rgba(0,0,0,0.5);
         }
 
         .leaderboard-row {
@@ -104,28 +104,38 @@
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; transform: translateY(10px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; visibility: visible; transform: translateY(0); }
 
-        /* ── Utilidades Matriz Premium ── */
+        /* ── NUEVA ESTRUCTURA: MATRIZ CONTINUA TIPO TABLA ── */
         .matrix-grid-layout {
             display: grid;
-            gap: 1rem;
-            align-items: stretch; /* Permite que las tarjetas llenen el alto */
+            align-items: stretch;
+            /* El gap fue removido para que las celdas se toquen y formen una tabla real */
         }
         
-        /* Efecto Sticky para las primeras dos columnas */
-        .sticky-col-racha { position: sticky; left: 0; z-index: 10; background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); }
-        .sticky-col-nombre { position: sticky; left: 5rem; z-index: 10; background: #0f172a; }
-        
-        /* Sombra sutil al hacer scroll para indicar que hay contenido oculto debajo del sticky */
-        .sticky-shadow::after {
-            content: ''; position: absolute; top: 0; right: -10px; width: 10px; height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent); pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        .sticky-col-racha { 
+            position: sticky; left: 0; z-index: 10; 
+            background-color: #0f172a; /* Fondo sólido para evitar transparencias al hacer scroll */
         }
-        .is-scrolled .sticky-shadow::after { opacity: 1; }
+        .sticky-col-nombre { 
+            position: sticky; left: 4.5rem; z-index: 10; 
+            background-color: #0f172a; 
+        }
+        
+        /* Efecto de sombra dinámica solo en la columna Nombre al hacer scroll */
+        .sticky-col-nombre::after {
+            content: ''; position: absolute; top: 0; right: -15px; width: 15px; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.5), transparent); pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .is-scrolled .sticky-col-nombre::after { opacity: 1; }
 
-        /* Hover de la fila en la matriz */
+        .matrix-row-hover {
+            background-color: rgba(15, 23, 42, 0.4);
+        }
+        
+        /* Unifica el color de la fila al pasar el ratón, incluyendo las columnas sticky */
+        .matrix-row-hover:hover,
         .matrix-row-hover:hover .sticky-col-racha, 
         .matrix-row-hover:hover .sticky-col-nombre {
-            background-color: #1e293b; /* Coincide con el hover de la fila */
+            background-color: #1e293b; 
         }
 
     </style>
@@ -133,10 +143,10 @@
 <body class="bg-dark-bg text-slate-200 min-h-screen flex flex-col antialiased selection:bg-brand-glow selection:text-white relative overflow-x-hidden">
 
     <!-- Efectos de iluminación de fondo -->
-    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-600/10 blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[130px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-600/10 blur-[130px] pointer-events-none z-0"></div>
 
-    <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shadow-sm shadow-black/20">
+    <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shadow-sm shadow-black/10">
         <div class="flex items-center gap-3 min-w-0">
             <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]">
                 <i class="ph-fill ph-trophy text-white text-3xl"></i>
@@ -153,7 +163,7 @@
         
         <div class="flex items-center justify-between xl:justify-end gap-4 w-full xl:w-auto">
             <!-- Toggle Premium (MÁS VISUAL) -->
-            <div class="flex p-1.5 bg-slate-900/60 border border-slate-700/50 rounded-xl shadow-inner backdrop-blur-xl relative overflow-x-auto">
+            <div class="flex p-1.5 bg-slate-900/40 border border-slate-700/30 rounded-xl shadow-inner backdrop-blur-xl relative overflow-x-auto">
                 <button id="btn-view-current" onclick="switchView('current')" class="flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg bg-brand-glow text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 flex-shrink-0">
                     <i class="ph-bold ph-chart-pie-slice text-lg"></i>
                     <span>Mes Actual</span>
@@ -164,7 +174,7 @@
                 </button>
             </div>
             
-            <button onclick="fetchData()" class="p-3 rounded-xl bg-dark-card border border-dark-border hover:bg-slate-700 hover:text-white hover:border-brand-glow transition-colors group flex-shrink-0" title="Sincronizar Datos">
+            <button onclick="fetchData()" class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700 hover:text-white hover:border-brand-glow transition-colors group flex-shrink-0" title="Sincronizar Datos">
                 <i class="ph-bold ph-arrows-clockwise text-xl group-hover:rotate-180 transition-transform duration-500"></i>
             </button>
         </div>
@@ -176,14 +186,14 @@
         <div id="view-current" class="view-section view-active">
             <!-- Tarjetas de Resumen -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-black/20 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
+                <div class="bg-dark-card/80 border border-slate-700/40 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-xl shadow-black/10 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
                     <p class="text-slate-400 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5">
                         <i class="ph-fill ph-users text-slate-300 text-lg"></i>
                         <span>Equipo Total</span>
                     </p>
                     <h2 id="stat-total-team" class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">0</h2>
                 </div>
-                <div class="bg-gradient-to-b from-dark-card to-[#13231f] border border-emerald-900/50 rounded-2xl p-5 sm:p-6 backdrop-blur-sm relative overflow-hidden shadow-xl shadow-emerald-900/10 transition-transform hover:-translate-y-1 duration-300">
+                <div class="bg-gradient-to-b from-dark-card/90 to-[#13231f]/90 border border-emerald-900/40 rounded-2xl p-5 sm:p-6 backdrop-blur-md relative overflow-hidden shadow-xl shadow-emerald-900/10 transition-transform hover:-translate-y-1 duration-300">
                     <div class="absolute -right-4 -top-4 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
                     <p class="text-emerald-400/80 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5 relative z-10">
                         <i class="ph-bold ph-trend-up text-emerald-400 text-lg"></i>
@@ -191,7 +201,7 @@
                     </p>
                     <h2 id="stat-achievers" class="text-4xl sm:text-5xl font-extrabold text-emerald-400 tracking-tight drop-shadow-[0_0_10px_rgba(52,211,153,0.3)] relative z-10">0</h2>
                 </div>
-                <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-black/20 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
+                <div class="bg-dark-card/80 border border-slate-700/40 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-xl shadow-black/10 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
                     <p class="text-slate-400 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5">
                         <i class="ph-fill ph-currency-circle-dollar text-slate-300 text-lg"></i>
                         <span>Total Generado</span>
@@ -201,8 +211,8 @@
             </div>
 
             <!-- Leaderboard -->
-            <div class="bg-dark-card/60 border border-slate-700/50 rounded-2xl p-2 sm:p-3 backdrop-blur-md shadow-2xl">
-                <div class="hidden md:flex items-center gap-4 px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-dark-border/50">
+            <div class="bg-dark-card/40 border border-slate-700/30 rounded-2xl p-2 sm:p-3 backdrop-blur-xl shadow-2xl">
+                <div class="hidden md:flex items-center gap-4 px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/40">
                     <div class="w-10 text-center flex-shrink-0">Pos</div>
                     <div style="width:200px" class="flex-shrink-0">Nombre del Asesor</div>
                     <div class="flex-1">Progreso Hacia la Meta</div>
@@ -219,28 +229,28 @@
             </div>
         </div>
 
-        <!-- ================= VISTA: HISTÓRICA ================= -->
+        <!-- ================= VISTA: HISTÓRICA CONTINUA (MATRIX) ================= -->
         <div id="view-historical" class="view-section view-hidden">
-            <div class="bg-dark-card/60 border border-slate-700/50 rounded-3xl backdrop-blur-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="bg-dark-card/40 border border-slate-700/30 rounded-3xl backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
                 
                 <!-- Cabecera de la matriz -->
-                <div class="px-6 py-6 sm:py-8 border-b border-slate-700/50 bg-slate-900/40 relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-80 h-full bg-gradient-to-l from-brand-glow/10 to-transparent pointer-events-none"></div>
+                <div class="px-6 py-6 sm:py-8 border-b border-slate-700/40 bg-slate-900/40 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-80 h-full bg-gradient-to-l from-brand-glow/5 to-transparent pointer-events-none"></div>
                     
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
                         <div>
-                            <h3 class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-3">
-                                <i class="ph-fill ph-calendar-check text-brand-glow text-2xl"></i>
-                                Matriz de Consistencia Histórica
+                            <h3 class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-3 tracking-tight">
+                                <i class="ph-fill ph-calendar-check text-brand-glow text-2xl drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"></i>
+                                Matriz de Rendimiento
                             </h3>
                             <p class="text-sm text-slate-400 mt-2 font-medium max-w-3xl leading-relaxed">
-                                Evaluación del rendimiento mensual de cada integrante. La distribución se ajusta automáticamente. Desliza hacia la derecha para ver meses anteriores.
+                                Histórico detallado de metas y pronósticos futuros. Desliza hacia los lados para visualizar.
                             </p>
                         </div>
 
-                        <!-- 🚀 BOTÓN PREDECIR FUTURO -->
-                        <button onclick="togglePrediction()" id="btn-predict" class="flex-shrink-0 px-6 py-3.5 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 text-purple-300 font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(147,51,234,0.15)] flex items-center justify-center gap-2.5 text-sm w-full md:w-auto">
-                            <i class="ph-fill ph-magic-wand text-xl animate-pulse"></i>
+                        <!-- 🚀 BOTÓN PREDECIR FUTURO (Estilo Minimalista) -->
+                        <button onclick="togglePrediction()" id="btn-predict" class="flex-shrink-0 px-6 py-3 bg-slate-800/50 hover:bg-purple-900/30 border border-slate-700 hover:border-purple-500/50 text-purple-400 font-bold rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2.5 text-sm w-full md:w-auto">
+                            <i class="ph-fill ph-magic-wand text-xl"></i>
                             <span id="predict-text" class="tracking-wide">Predecir Futuro</span>
                         </button>
                     </div>
@@ -248,13 +258,13 @@
                 
                 <!-- Contenedor con Scroll Estilizado -->
                 <div class="w-full overflow-x-auto custom-scrollbar" id="matrix-scroll-wrapper" onscroll="handleMatrixScroll()">
-                    <div id="matrix-scroll-inner" class="w-full pb-4">
-                        <!-- Header Dinámico -->
-                        <div id="matrix-header" class="matrix-grid-layout px-4 py-4 bg-slate-900/80 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50">
+                    <div id="matrix-scroll-inner" class="w-full">
+                        <!-- Header Dinámico de Columnas -->
+                        <div id="matrix-header" class="matrix-grid-layout bg-slate-900/80 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/60">
                         </div>
                         
                         <!-- Filas de Datos -->
-                        <div id="matrix-container" class="flex flex-col text-sm pt-2">
+                        <div id="matrix-container" class="flex flex-col text-sm">
                         </div>
                     </div>
                 </div>
@@ -297,12 +307,14 @@
             
             if (isPredicting) {
                 btnText.innerText = "Ocultar Predicción";
-                btn.classList.replace('bg-purple-600/20', 'bg-purple-600/50');
-                btn.classList.add('shadow-[0_0_25px_rgba(147,51,234,0.4)]');
+                btn.classList.replace('bg-slate-800/50', 'bg-purple-600/20');
+                btn.classList.replace('border-slate-700', 'border-purple-500/50');
+                btn.classList.add('shadow-[0_0_25px_rgba(147,51,234,0.3)]');
             } else {
                 btnText.innerText = "Predecir Futuro";
-                btn.classList.replace('bg-purple-600/50', 'bg-purple-600/20');
-                btn.classList.remove('shadow-[0_0_25px_rgba(147,51,234,0.4)]');
+                btn.classList.replace('bg-purple-600/20', 'bg-slate-800/50');
+                btn.classList.replace('border-purple-500/50', 'border-slate-700');
+                btn.classList.remove('shadow-[0_0_25px_rgba(147,51,234,0.3)]');
             }
             
             renderHistoricalMatrix(globalProcessedData);
@@ -316,7 +328,7 @@
         }
 
         function handleMatrixScroll() {
-            if (matrixScrollWrapper.scrollLeft > 10) {
+            if (matrixScrollWrapper.scrollLeft > 5) {
                 matrixScrollWrapper.classList.add('is-scrolled');
             } else {
                 matrixScrollWrapper.classList.remove('is-scrolled');
@@ -330,8 +342,8 @@
             const btnCurrent = document.getElementById('btn-view-current');
             const btnHist = document.getElementById('btn-view-historical');
 
-            const activeClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg bg-brand-glow text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 flex-shrink-0";
-            const inactiveClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-300 flex-shrink-0";
+            const activeClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg bg-brand-glow text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all duration-300 flex-shrink-0";
+            const inactiveClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300 flex-shrink-0";
 
             if (viewName === 'current') {
                 histView.classList.replace('view-active', 'view-hidden');
@@ -348,15 +360,20 @@
             }
         }
 
+        // Animación suave del acordeón
         function toggleAccordion(id) {
             const content = document.getElementById(`acc-${id}`);
             const chevron = document.getElementById(`chevron-${id}`);
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    content.classList.add('animate-fade-in-up');
+                });
                 chevron.classList.add('rotate-180');
                 chevron.classList.replace('text-slate-500', 'text-brand-glow');
             } else {
                 content.classList.add('hidden');
+                content.classList.remove('animate-fade-in-up');
                 chevron.classList.remove('rotate-180');
                 chevron.classList.replace('text-brand-glow', 'text-slate-500');
             }
@@ -398,7 +415,6 @@
                 let currentCsvData = "";
                 let historicalCsvData = "";
 
-                // 1. Fetch de Pestaña Principal (Indispensable)
                 try {
                     const currentResponse = await fetch(currentDataUrl);
                     if (!currentResponse.ok) throw new Error(`HTTP ${currentResponse.status}`);
@@ -408,7 +424,6 @@
                     throw new Error("No pudimos conectar con los datos del mes actual. Revisa el enlace: " + err.message);
                 }
 
-                // 2. Fetch de Pestaña Histórico (Opcional - Si falla no tumba la app)
                 try {
                     const historicalResponse = await fetch(historicalDataUrl);
                     if (historicalResponse.ok) {
@@ -492,7 +507,7 @@
                      history.push({ month: currentMonthName, ventas: ventas, meta: meta, percentage: percentage, isOverGoal: ventas >= meta });
                 }
 
-                // ── LÓGICA DE RACHA MEJORADA (Ignorando el mes en curso) ──
+                // ── LÓGICA DE RACHA (Ignorando el mes en curso estrictamente) ──
                 let streak = 0;
                 for(let i = history.length - 1; i >= 0; i--) {
                     if (history[i].month === currentMonthName) continue; // Ignoramos el mes actual
@@ -564,13 +579,13 @@
                                 <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md ${pctBg}">${h.percentage.toFixed(0)}%</span>
                             </div>
                             <div class="font-extrabold ${numColor} text-sm mb-0.5">${currencyFormatter.format(h.ventas)}</div>
-                            <div class="text-[9px] text-slate-500 font-medium">Meta: ${currencyFormatter.format(h.meta)}</div>
+                            <div class="text-[9px] text-slate-500 font-medium flex items-center gap-1"><i class="ph-bold ph-target"></i> ${currencyFormatter.format(h.meta)}</div>
                             <div class="absolute bottom-0 left-0 h-[2px] w-full bg-slate-800"><div class="h-full ${barIndicator}" style="width: ${Math.min(h.percentage, 100)}%"></div></div>
                         </div>`;
                 }).join('');
 
                 const rowHtml = `
-                <div class="leaderboard-item cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 50}ms" onclick="toggleAccordion('${person.id}')">
+                <div class="leaderboard-item cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 40}ms" onclick="toggleAccordion('${person.id}')">
                     <div class="leaderboard-row transition-colors group-hover:bg-slate-800/30 rounded-t-xl rounded-b-xl group-hover:rounded-b-none">
                         <div class="row-rank">
                             <div class="flex items-center justify-center w-8 h-8 rounded-full ${rankClass} border font-bold text-sm flex-shrink-0">
@@ -592,11 +607,11 @@
                         </div>
 
                         <div class="row-progress">
-                            <div class="flex justify-between items-end mb-1">
+                            <div class="flex justify-between items-end mb-1.5">
                                 <span class="text-xs font-bold ${textColorClass}">${person.percentage.toFixed(1)}%</span>
-                                <span class="text-[10px] font-medium text-slate-500 hidden sm:inline">Objetivo: ${currencyFormatter.format(person.meta)}</span>
+                                <span class="text-[10px] font-medium text-slate-500 hidden sm:inline flex items-center gap-1"><i class="ph-bold ph-target"></i> ${currencyFormatter.format(person.meta)}</span>
                             </div>
-                            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700/50 shadow-inner">
+                            <div class="w-full bg-slate-900/80 rounded-full h-3 overflow-hidden border border-slate-700/40 shadow-inner">
                                 <div class="progress-bar-fill h-full rounded-full ${barColorClass} relative" style="width: 0%;" data-width="${visualPercentage}%">
                                     ${isOverGoal ? '<div class="absolute inset-0 bg-white/20 animate-pulse-slow"></div>' : ''}
                                 </div>
@@ -615,12 +630,12 @@
                         </div>
                     </div>
 
-                    <div id="acc-${person.id}" class="hidden border-t border-slate-700/50 bg-slate-900/40 p-4 sm:p-5 rounded-b-xl cursor-default" onclick="event.stopPropagation()">
+                    <div id="acc-${person.id}" class="hidden border-t border-slate-700/40 bg-slate-900/30 p-4 sm:p-5 rounded-b-xl cursor-default" onclick="event.stopPropagation()">
                         <h4 class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-1.5">
                             <i class="ph-bold ph-clock-counter-clockwise"></i> Tendencia de los últimos meses
                         </h4>
                         <div class="flex gap-4 overflow-x-auto pb-2 snap-x custom-scrollbar">
-                            ${historyCardsHtml || '<div class="w-full text-center py-4 text-xs text-slate-500 font-medium border border-dashed border-slate-700 rounded-lg">Sin historial disponible.</div>'}
+                            ${historyCardsHtml || '<div class="w-full text-center py-4 text-xs text-slate-500 font-medium border border-dashed border-slate-700/50 rounded-lg">Sin historial disponible.</div>'}
                         </div>
                     </div>
                 </div>`;
@@ -634,31 +649,32 @@
             });
         }
 
-        // ── RENDERIZADO: MATRIZ HISTÓRICA (MEJOR DISTRIBUCIÓN) ──
+        // ── RENDERIZADO: MATRIZ HISTÓRICA (DISEÑO CONTINUO TIPO TABLA) ──
         function renderHistoricalMatrix(data) {
             if(data.length === 0) return;
             
             let matrixData = JSON.parse(JSON.stringify(data));
             
+            // ── LÓGICA DE PREDICCIÓN (Ventas a 0, Meta multiplicada) ──
             if (isPredicting) {
                 const currentMonthIdx = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
                 
                 matrixData.forEach(person => {
-                    const baseData = person.history[person.history.length - 1];
-                    let baseVentas = baseData.ventas > 0 ? baseData.ventas : (person.meta > 0 ? person.meta : 1000);
+                    const baseData = person.history[person.history.length - 1]; // Toma el mes actual como base
+                    let baseMeta = baseData.meta > 0 ? baseData.meta : 1000;
                     
                     for (let i = currentMonthIdx + 1; i <= 11; i++) {
                         const multiplier = (i - currentMonthIdx) + 1;
-                        const predictedVentas = baseVentas * multiplier;
-                        const predictedPercentage = baseData.meta > 0 ? (predictedVentas / baseData.meta) * 100 : 0;
+                        const predictedMeta = baseMeta * multiplier; // Multiplica la meta 
+                        const predictedVentas = 0; // Lo alcanzado se queda en cero
                         
                         person.history.push({
                             month: `${fullMonthNames[i]}-${currentYear}`,
                             ventas: predictedVentas,
-                            meta: baseData.meta,
-                            percentage: predictedPercentage,
-                            isOverGoal: predictedVentas >= baseData.meta,
+                            meta: predictedMeta,
+                            percentage: 0,
+                            isOverGoal: false,
                             isPrediction: true 
                         });
                     }
@@ -668,15 +684,14 @@
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
             
-            // Mayor distribución: Pasamos de 130px a 145px mínimo por celda
-            const gridStyle = `grid-template-columns: 5rem 180px repeat(${colsCount}, minmax(145px, 1fr));`;
-            
-            const calculatedMinWidth = 280 + (colsCount * 145);
+            // Grid de tabla continua sin espacios huecos
+            const gridStyle = `grid-template-columns: 4.5rem 180px repeat(${colsCount}, minmax(130px, 1fr));`;
+            const calculatedMinWidth = 280 + (colsCount * 130);
             matrixScrollInner.style.minWidth = `${calculatedMinWidth}px`;
 
             let headerHtml = `
-                <div class="sticky-col-racha sticky-shadow flex items-center justify-center" title="Meses consecutivos pasados logrando meta">Racha</div>
-                <div class="sticky-col-nombre sticky-shadow flex items-center">Nombre del Asesor</div>
+                <div class="sticky-col-racha flex items-center justify-center p-3 border-r border-slate-700/60" title="Meses consecutivos pasados logrando meta">Racha</div>
+                <div class="sticky-col-nombre flex items-center p-3 border-r border-slate-700/60">Nombre del Asesor</div>
             `;
             
             historyMonths.forEach((month, idx) => {
@@ -689,12 +704,16 @@
                 if (isPredictionCol) titleColor = 'text-purple-400 drop-shadow-[0_0_5px_rgba(147,51,234,0.4)]';
 
                 headerHtml += `
-                    <div class="flex flex-col items-center justify-center text-center">
+                    <div class="flex flex-col items-center justify-center text-center py-2 px-3 border-r border-slate-700/60 last:border-0">
                         <span class="${titleColor} font-bold text-xs sm:text-sm flex items-center gap-1.5">
                             ${isPredictionCol ? '<i class="ph-fill ph-magic-wand text-xs"></i>' : ''}
                             ${formatMonthName(month)}
                         </span>
-                        ${monthMeta > 0 ? `<span class="text-[10px] text-slate-500 font-medium tracking-widest uppercase mt-1">Meta: ${currencyFormatter.format(monthMeta)}</span>` : ''}
+                        ${monthMeta > 0 ? `
+                        <div class="mt-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/60 shadow-inner">
+                            <i class="ph-bold ph-target text-brand-glow text-[11px]"></i>
+                            <span class="text-[10px] text-slate-200 font-bold tracking-wide">META: ${currencyFormatter.format(monthMeta)}</span>
+                        </div>` : ''}
                     </div>`;
             });
             
@@ -712,33 +731,34 @@
 
                 let monthsHtml = '';
                 person.history.forEach((hist) => {
-                    if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) {
-                        monthsHtml += `<div class="flex items-center justify-center p-2"><div class="w-full h-full min-h-[65px] border border-dashed border-slate-700/50 rounded-xl flex items-center justify-center text-xs text-slate-600 font-medium">Sin datos</div></div>`;
-                        return;
-                    }
-
-                    let cardClass = 'bg-slate-800/30 border-slate-700/50';
+                    
                     let moneyColor = 'text-white';
                     let pctBg = 'bg-slate-700/60 text-slate-300';
                     let iconHtml = '';
-                    let barIndicator = 'bg-brand-glow shadow-[0_0_8px_rgba(59,130,246,0.5)]';
+                    let barIndicator = 'bg-brand-glow';
                     let progressWidth = Math.min(hist.percentage, 100);
 
+                    // Si no hay datos (y no es predicción), mostramos vacío
+                    if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) {
+                        monthsHtml += `
+                        <div class="flex items-center justify-center p-3 border-r border-slate-700/30 last:border-0 relative">
+                            <span class="text-[10px] font-medium text-slate-600 border border-dashed border-slate-700/50 px-3 py-1 rounded-lg">Sin datos</span>
+                        </div>`;
+                        return;
+                    }
+
                     if (hist.isPrediction) {
-                        cardClass = 'bg-purple-900/10 border-purple-500/30 shadow-[inset_0_0_15px_rgba(147,51,234,0.05)]';
                         moneyColor = 'text-purple-400 drop-shadow-[0_0_5px_rgba(147,51,234,0.2)]';
-                        pctBg = 'bg-purple-500/20 text-purple-400 border border-purple-500/20';
-                        iconHtml = '<i class="ph-fill ph-magic-wand text-purple-400 mr-1.5 text-sm"></i>';
+                        pctBg = 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
+                        iconHtml = '<i class="ph-fill ph-magic-wand text-purple-400 mr-1.5 text-xs"></i>';
                         barIndicator = 'bg-purple-400 shadow-[0_0_8px_rgba(147,51,234,0.8)]';
                     }
                     else if (hist.isOverGoal && hist.ventas > 0) {
-                        cardClass = 'bg-emerald-900/10 border-emerald-500/30 shadow-[inset_0_0_15px_rgba(52,211,153,0.05)]';
                         moneyColor = 'text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.2)]';
                         pctBg = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20';
-                        iconHtml = '<i class="ph-fill ph-check-circle text-emerald-400 mr-1.5 text-sm"></i>';
+                        iconHtml = '<i class="ph-fill ph-check-circle text-emerald-400 mr-1.5 text-xs"></i>';
                         barIndicator = 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
                     } else if (hist.percentage >= 80) {
-                        cardClass = 'bg-amber-900/10 border-amber-500/30';
                         moneyColor = 'text-amber-400';
                         pctBg = 'bg-amber-500/20 text-amber-400';
                         barIndicator = 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]';
@@ -748,25 +768,23 @@
                     }
 
                     monthsHtml += `
-                        <div class="p-2 flex items-stretch">
-                            <div class="w-full flex flex-col items-center justify-center py-4 px-2 rounded-xl border ${cardClass} relative overflow-hidden transition-all duration-300 hover:scale-[1.04] hover:shadow-lg hover:border-slate-500 cursor-default group">
-                                <div class="font-extrabold ${moneyColor} text-sm sm:text-base flex items-center mb-2 tracking-tight">
-                                    ${iconHtml}${hist.ventas > 0 ? currencyFormatter.format(hist.ventas) : '-'}
-                                </div>
-                                <div class="text-[10px] font-bold px-2 py-0.5 rounded-md ${pctBg}">
-                                    ${hist.percentage.toFixed(0)}%
-                                </div>
-                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-slate-900/50 opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <div class="h-full ${barIndicator} transition-all duration-1000" style="width: ${progressWidth}%"></div>
-                                </div>
+                        <div class="flex flex-col items-center justify-center p-3 border-r border-slate-700/30 last:border-0 relative group">
+                            <div class="font-extrabold ${moneyColor} text-[13px] sm:text-sm mb-1.5 flex items-center">
+                                ${iconHtml}${hist.ventas > 0 || hist.isPrediction ? currencyFormatter.format(hist.ventas) : (hist.meta === 0 ? '-' : '$0')}
+                            </div>
+                            <div class="text-[10px] font-bold px-2 py-0.5 rounded-md ${pctBg}">
+                                ${hist.percentage.toFixed(0)}%
+                            </div>
+                            <div class="absolute bottom-0 left-0 w-full h-[2px] bg-transparent group-hover:bg-slate-700/50 transition-colors">
+                                <div class="h-full ${barIndicator} transition-all duration-1000 ease-out" style="width: ${progressWidth}%"></div>
                             </div>
                         </div>`;
                 });
 
                 const rowHtml = `
-                    <div class="matrix-grid-layout matrix-row-hover px-4 py-1.5 border-b border-slate-700/30 transition-colors animate-fade-in-up" style="${gridStyle}; animation-delay: ${index * 40}ms">
-                        <div class="sticky-col-racha sticky-shadow flex justify-center items-center h-full">${streakBadge}</div>
-                        <div class="sticky-col-nombre sticky-shadow font-bold text-slate-200 text-sm truncate pr-2 flex items-center h-full">${person.nombre}</div>
+                    <div class="matrix-grid-layout matrix-row-hover border-b border-slate-700/30 transition-colors animate-fade-in-up" style="${gridStyle}; animation-delay: ${index * 40}ms">
+                        <div class="sticky-col-racha flex justify-center items-center p-3 border-r border-slate-700/50">${streakBadge}</div>
+                        <div class="sticky-col-nombre font-bold text-slate-200 text-[13px] sm:text-sm truncate p-3 border-r border-slate-700/50">${person.nombre}</div>
                         ${monthsHtml}
                     </div>
                 `;
