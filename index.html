@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Metas con Histórico</title>
+    <title>Dashboard de Metas Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,12 +25,19 @@
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '10%': { opacity: '1', transform: 'translateY(0)' },
+                        }
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <style>
@@ -40,33 +47,33 @@
             transition: width 1.5s ease-out, background-color 0.5s ease;
         }
 
-        /* Scrollbars personalizados */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        /* ── Custom Scrollbars Elegantes ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(71, 85, 105, 0.8); }
 
         .glass-header {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* ── RESPONSIVE: Estructura del item del leaderboard ── */
+        /* ── Estructura del item del leaderboard (Mes Actual) ── */
         .leaderboard-item {
-            background: rgba(15,23,42,0.5);
-            border: 1px solid rgba(51,65,85,0.4);
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(51, 65, 85, 0.4);
             border-radius: 0.75rem;
             margin-bottom: 0.5rem;
-            transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
         
         .leaderboard-item:hover {
             background: rgba(30, 41, 59, 0.8);
-            border-color: #475569;
+            border-color: rgba(71, 85, 105, 0.8);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
         }
 
         .leaderboard-row {
@@ -77,193 +84,177 @@
             padding: 0.875rem 1rem;
         }
 
-        .row-rank {
-            grid-column: 1;
-            grid-row: 1 / 3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .row-rank { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; }
+        .row-name { grid-column: 2; grid-row: 1; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-width: 0; }
+        .row-progress { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 0.25rem; }
 
-        .row-name {
-            grid-column: 2;
-            grid-row: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-            min-width: 0;
-        }
-
-        .row-progress {
-            grid-column: 2;
-            grid-row: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        /* Desktop layout */
         @media (min-width: 768px) {
-            .leaderboard-row {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: 1rem;
-                padding: 0.875rem 1.25rem;
-            }
-            .row-rank   { width: 2.5rem; flex-shrink: 0; }
-            .row-name   { width: 200px; flex-shrink: 0; justify-content: flex-start; }
+            .leaderboard-row { display: flex; flex-direction: row; align-items: center; gap: 1rem; padding: 0.875rem 1.25rem; }
+            .row-rank { width: 2.5rem; flex-shrink: 0; }
+            .row-name { width: 200px; flex-shrink: 0; justify-content: flex-start; }
             .row-progress { flex: 1; flex-direction: column; gap: 0.25rem; }
             .row-amount { flex-shrink: 0; text-align: right; width: 7rem; }
             .row-amount-mobile { display: none !important; }
         }
 
-        @media (max-width: 767px) {
-            .row-amount { display: none !important; }
-        }
+        @media (max-width: 767px) { .row-amount { display: none !important; } }
 
-        .header-title { font-size: clamp(0.95rem, 3vw, 1.25rem); }
-        
-        /* Transiciones de vistas */
-        .view-section {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-        .view-hidden {
-            opacity: 0;
-            pointer-events: none;
-            position: absolute;
-            visibility: hidden;
-            transform: translateY(10px);
-        }
-        .view-active {
-            opacity: 1;
-            pointer-events: auto;
-            position: relative;
-            visibility: visible;
-            transform: translateY(0);
-        }
+        /* ── Transiciones de vistas ── */
+        .view-section { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+        .view-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; transform: translateY(10px); }
+        .view-active { opacity: 1; pointer-events: auto; position: relative; visibility: visible; transform: translateY(0); }
 
-        /* Utilidad para la tabla dinámica (asegura que las columnas se distribuyan bien) */
+        /* ── Utilidades Matriz Premium ── */
         .matrix-grid-layout {
             display: grid;
             gap: 1rem;
-            align-items: center;
+            align-items: stretch; /* Permite que las tarjetas llenen el alto */
         }
+        
+        /* Efecto Sticky para las primeras dos columnas */
+        .sticky-col-racha { position: sticky; left: 0; z-index: 10; background: #0f172a; border-right: 1px solid rgba(255,255,255,0.05); }
+        .sticky-col-nombre { position: sticky; left: 5rem; z-index: 10; background: #0f172a; }
+        
+        /* Sombra sutil al hacer scroll para indicar que hay contenido oculto debajo del sticky */
+        .sticky-shadow::after {
+            content: ''; position: absolute; top: 0; right: -10px; width: 10px; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent); pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .is-scrolled .sticky-shadow::after { opacity: 1; }
+
+        /* Hover de la fila en la matriz */
+        .matrix-row-hover:hover .sticky-col-racha, 
+        .matrix-row-hover:hover .sticky-col-nombre {
+            background-color: #1e293b; /* Coincide con el hover de la fila */
+        }
+
     </style>
 </head>
 <body class="bg-dark-bg text-slate-200 min-h-screen flex flex-col antialiased selection:bg-brand-glow selection:text-white relative overflow-x-hidden">
 
-    <!-- Glow background -->
-    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-600/20 blur-[120px] pointer-events-none z-0"></div>
+    <!-- Efectos de iluminación de fondo -->
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-600/10 blur-[120px] pointer-events-none z-0"></div>
 
-    <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <!-- Logo y Título -->
-        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <i class="ph-fill ph-trophy text-white text-xl sm:text-2xl"></i>
+    <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shadow-sm shadow-black/20">
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                <i class="ph-fill ph-trophy text-white text-3xl"></i>
             </div>
             <div class="min-w-0">
-                <h1 class="header-title font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 truncate">
-                    Metas del Equipo
+                <h1 class="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300 truncate tracking-tight">
+                    Dashboard de Metas
                 </h1>
-                <p class="text-[10px] sm:text-xs text-slate-400 font-medium tracking-wider uppercase">
-                    Métricas <span id="current-month" class="text-emerald-400 font-bold">...</span>
+                <p class="text-xs text-slate-400 font-medium tracking-widest uppercase">
+                    Métricas <span id="current-month" class="text-brand-glow font-bold">...</span>
                 </p>
             </div>
         </div>
         
-        <!-- Controles y Toggle de Vistas -->
-        <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-            <!-- Toggle Switch -->
-            <div class="flex p-1 bg-dark-bg/80 border border-dark-border rounded-lg shadow-inner">
-                <button id="btn-view-current" onclick="switchView('current')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md bg-brand-glow/20 text-brand-glow transition-all">
-                    Mes Actual
+        <div class="flex items-center justify-between xl:justify-end gap-4 w-full xl:w-auto">
+            <!-- Toggle Premium (MÁS VISUAL) -->
+            <div class="flex p-1.5 bg-slate-900/60 border border-slate-700/50 rounded-xl shadow-inner backdrop-blur-xl relative overflow-x-auto">
+                <button id="btn-view-current" onclick="switchView('current')" class="flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg bg-brand-glow text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 flex-shrink-0">
+                    <i class="ph-bold ph-chart-pie-slice text-lg"></i>
+                    <span>Mes Actual</span>
                 </button>
-                <button id="btn-view-historical" onclick="switchView('historical')" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-md text-slate-400 hover:text-white transition-all">
-                    Vista Histórica
+                <button id="btn-view-historical" onclick="switchView('historical')" class="flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-300 flex-shrink-0">
+                    <i class="ph-bold ph-clock-counter-clockwise text-lg"></i>
+                    <span>Vista Histórica</span>
                 </button>
             </div>
-
-            <!-- Botón Actualizar -->
-            <button onclick="fetchData()" class="p-2 rounded-lg bg-dark-card border border-dark-border hover:bg-slate-700 hover:text-white transition-colors group" title="Actualizar datos">
-                <i class="ph ph-arrows-clockwise text-lg sm:text-xl group-hover:rotate-180 transition-transform duration-500"></i>
+            
+            <button onclick="fetchData()" class="p-3 rounded-xl bg-dark-card border border-dark-border hover:bg-slate-700 hover:text-white hover:border-brand-glow transition-colors group flex-shrink-0" title="Sincronizar Datos">
+                <i class="ph-bold ph-arrows-clockwise text-xl group-hover:rotate-180 transition-transform duration-500"></i>
             </button>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-4 py-5 sm:py-8 relative z-10">
+    <main class="flex-1 w-full max-w-[1300px] mx-auto px-3 sm:px-4 py-6 sm:py-8 relative z-10">
         
+        <!-- ================= VISTA: MES ACTUAL ================= -->
         <div id="view-current" class="view-section view-active">
-            <!-- Stats cards -->
-            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-8">
-                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm">
-                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
-                        <i class="ph ph-users text-sm sm:text-base"></i>
-                        <span class="hidden sm:inline">Equipo Total</span>
-                        <span class="sm:hidden">Equipo</span>
+            <!-- Tarjetas de Resumen -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-black/20 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
+                    <p class="text-slate-400 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5">
+                        <i class="ph-fill ph-users text-slate-300 text-lg"></i>
+                        <span>Equipo Total</span>
                     </p>
-                    <h2 id="stat-total-team" class="text-2xl sm:text-3xl font-bold text-white">0</h2>
+                    <h2 id="stat-total-team" class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">0</h2>
                 </div>
-                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm relative overflow-hidden">
-                    <div class="absolute -right-4 -bottom-4 w-16 h-16 sm:w-20 sm:h-20 bg-emerald-500/10 rounded-full blur-xl"></div>
-                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
-                        <i class="ph ph-trend-up text-emerald-400 text-sm sm:text-base"></i>
-                        <span class="hidden sm:inline">Superaron la Meta</span>
-                        <span class="sm:hidden">Superaron</span>
+                <div class="bg-gradient-to-b from-dark-card to-[#13231f] border border-emerald-900/50 rounded-2xl p-5 sm:p-6 backdrop-blur-sm relative overflow-hidden shadow-xl shadow-emerald-900/10 transition-transform hover:-translate-y-1 duration-300">
+                    <div class="absolute -right-4 -top-4 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                    <p class="text-emerald-400/80 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5 relative z-10">
+                        <i class="ph-bold ph-trend-up text-emerald-400 text-lg"></i>
+                        <span>Superaron Meta</span>
                     </p>
-                    <h2 id="stat-achievers" class="text-2xl sm:text-3xl font-bold text-emerald-400">0</h2>
+                    <h2 id="stat-achievers" class="text-4xl sm:text-5xl font-extrabold text-emerald-400 tracking-tight drop-shadow-[0_0_10px_rgba(52,211,153,0.3)] relative z-10">0</h2>
                 </div>
-                <div class="bg-dark-card/80 border border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm">
-                    <p class="text-slate-400 text-[10px] sm:text-sm font-medium mb-1 flex items-center gap-1">
-                        <i class="ph ph-currency-dollar text-sm sm:text-base"></i>
-                        <span class="hidden sm:inline">Total Generado</span>
-                        <span class="sm:hidden">Total</span>
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 backdrop-blur-sm shadow-xl shadow-black/20 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300">
+                    <p class="text-slate-400 text-xs sm:text-sm font-medium mb-2 flex items-center gap-1.5">
+                        <i class="ph-fill ph-currency-circle-dollar text-slate-300 text-lg"></i>
+                        <span>Total Generado</span>
                     </p>
-                    <h2 id="stat-total-money" class="text-lg sm:text-3xl font-bold text-white">$0</h2>
+                    <h2 id="stat-total-money" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">$0</h2>
                 </div>
             </div>
 
-            <!-- Leaderboard Contenedor -->
-            <div class="bg-dark-card/50 border border-dark-border rounded-xl sm:rounded-2xl p-1 backdrop-blur-sm shadow-2xl">
-                <!-- Encabezados solo desktop -->
-                <div class="hidden md:flex items-center gap-4 px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-dark-border/50">
-                    <div class="w-10 text-center flex-shrink-0">Pos.</div>
-                    <div style="width:200px" class="flex-shrink-0">Nombre</div>
-                    <div class="flex-1">Progreso</div>
-                    <div class="w-28 text-right flex-shrink-0">Alcanzado</div>
+            <!-- Leaderboard -->
+            <div class="bg-dark-card/60 border border-slate-700/50 rounded-2xl p-2 sm:p-3 backdrop-blur-md shadow-2xl">
+                <div class="hidden md:flex items-center gap-4 px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-dark-border/50">
+                    <div class="w-10 text-center flex-shrink-0">Pos</div>
+                    <div style="width:200px" class="flex-shrink-0">Nombre del Asesor</div>
+                    <div class="flex-1">Progreso Hacia la Meta</div>
+                    <div class="w-32 text-right flex-shrink-0">Facturado</div>
                     <div class="w-8 flex-shrink-0"></div>
                 </div>
 
-                <div id="leaderboard-container" class="flex flex-col gap-1 p-1.5 sm:p-2">
-                    <div id="loading-state" class="py-12 flex flex-col items-center justify-center text-slate-500">
-                        <i class="ph ph-spinner-gap animate-spin text-4xl mb-3 text-brand-glow"></i>
-                        <p class="text-sm">Obteniendo datos de la nube...</p>
+                <div id="leaderboard-container" class="flex flex-col gap-2 mt-2">
+                    <div id="loading-state" class="py-20 flex flex-col items-center justify-center text-slate-500">
+                        <i class="ph-bold ph-spinner-gap animate-spin text-5xl mb-4 text-brand-glow"></i>
+                        <p class="text-base font-medium">Sincronizando datos...</p>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ================= VISTA: HISTÓRICA ================= -->
         <div id="view-historical" class="view-section view-hidden">
-            <div class="bg-dark-card/50 border border-dark-border rounded-xl sm:rounded-2xl backdrop-blur-sm shadow-2xl overflow-hidden">
-                <div class="px-5 py-4 border-b border-dark-border/50 bg-slate-900/30">
-                    <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                        <i class="ph-fill ph-calendar-check text-emerald-400"></i>
-                        Matriz de Consistencia Individual
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-1">Monitorea la cantidad y el porcentaje alcanzado mes a mes. La meta aplica para todos y se muestra en el encabezado.</p>
+            <div class="bg-dark-card/60 border border-slate-700/50 rounded-3xl backdrop-blur-md shadow-2xl overflow-hidden flex flex-col">
+                
+                <!-- Cabecera de la matriz -->
+                <div class="px-6 py-6 sm:py-8 border-b border-slate-700/50 bg-slate-900/40 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-80 h-full bg-gradient-to-l from-brand-glow/10 to-transparent pointer-events-none"></div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                        <div>
+                            <h3 class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-3">
+                                <i class="ph-fill ph-calendar-check text-brand-glow text-2xl"></i>
+                                Matriz de Consistencia Histórica
+                            </h3>
+                            <p class="text-sm text-slate-400 mt-2 font-medium max-w-3xl leading-relaxed">
+                                Evaluación del rendimiento mensual de cada integrante. La distribución se ajusta automáticamente. Desliza hacia la derecha para ver meses anteriores.
+                            </p>
+                        </div>
+
+                        <!-- 🚀 BOTÓN PREDECIR FUTURO -->
+                        <button onclick="togglePrediction()" id="btn-predict" class="flex-shrink-0 px-6 py-3.5 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 text-purple-300 font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(147,51,234,0.15)] flex items-center justify-center gap-2.5 text-sm w-full md:w-auto">
+                            <i class="ph-fill ph-magic-wand text-xl animate-pulse"></i>
+                            <span id="predict-text" class="tracking-wide">Predecir Futuro</span>
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="w-full overflow-x-auto pb-2">
-                    <!-- Contenedor con scroll forzado para no romper en móvil -->
-                    <div id="matrix-scroll-container" class="min-w-[950px]">
-                        <!-- Encabezado de la Matriz (Estilos de columnas inyectados vía JS para que se adapte) -->
-                        <div id="matrix-header" class="matrix-grid-layout px-4 py-3 bg-slate-900/50 text-xs font-semibold text-slate-400 uppercase tracking-wider border-b border-dark-border/50">
+                <!-- Contenedor con Scroll Estilizado -->
+                <div class="w-full overflow-x-auto custom-scrollbar" id="matrix-scroll-wrapper" onscroll="handleMatrixScroll()">
+                    <div id="matrix-scroll-inner" class="w-full pb-4">
+                        <!-- Header Dinámico -->
+                        <div id="matrix-header" class="matrix-grid-layout px-4 py-4 bg-slate-900/80 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50">
                         </div>
                         
-                        <!-- Filas de la Matriz -->
-                        <div id="matrix-container" class="flex flex-col text-sm">
+                        <!-- Filas de Datos -->
+                        <div id="matrix-container" class="flex flex-col text-sm pt-2">
                         </div>
                     </div>
                 </div>
@@ -273,19 +264,16 @@
     </main>
 
     <script>
-        // 1. Configuracion de Base de Datos y URLs
+        // ── CONFIGURACIÓN DE URLS ──
         const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
-        
-        // URL para la pestaña Principal (Mes Actual) - Usa la primera pestaña por defecto
         const currentDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
-        
-        // URL Específica para la pestaña Histórico - Usando la MISMA estructura pero con el GID exacto de tu imagen
         const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=2095726805`;
 
         const leaderboardContainer = document.getElementById('leaderboard-container');
         const matrixContainer = document.getElementById('matrix-container');
         const matrixHeader = document.getElementById('matrix-header');
-        const matrixScrollContainer = document.getElementById('matrix-scroll-container');
+        const matrixScrollWrapper = document.getElementById('matrix-scroll-wrapper');
+        const matrixScrollInner = document.getElementById('matrix-scroll-inner');
         const loadingState = document.getElementById('loading-state');
         const currentMonthElement = document.getElementById('current-month');
         
@@ -296,40 +284,70 @@
             style: 'currency', currency: 'USD', maximumFractionDigits: 0
         });
 
-        // Formatea el texto "junio-2026" a "Junio 2026"
+        // ── ESTADO GLOBAL Y PREDICCIÓN ──
+        let globalProcessedData = [];
+        let isPredicting = false;
+
+        function togglePrediction() {
+            if(globalProcessedData.length === 0) return;
+            
+            isPredicting = !isPredicting;
+            const btnText = document.getElementById('predict-text');
+            const btn = document.getElementById('btn-predict');
+            
+            if (isPredicting) {
+                btnText.innerText = "Ocultar Predicción";
+                btn.classList.replace('bg-purple-600/20', 'bg-purple-600/50');
+                btn.classList.add('shadow-[0_0_25px_rgba(147,51,234,0.4)]');
+            } else {
+                btnText.innerText = "Predecir Futuro";
+                btn.classList.replace('bg-purple-600/50', 'bg-purple-600/20');
+                btn.classList.remove('shadow-[0_0_25px_rgba(147,51,234,0.4)]');
+            }
+            
+            renderHistoricalMatrix(globalProcessedData);
+        }
+
+        // ── UTILIDADES ──
         function formatMonthName(str) {
             if(!str) return "";
             let replaced = str.replace('-', ' ');
             return replaced.replace(/\b\w/g, l => l.toUpperCase());
         }
 
-        // ── Lógica de Cambio de Vista (Tabs) ──
+        function handleMatrixScroll() {
+            if (matrixScrollWrapper.scrollLeft > 10) {
+                matrixScrollWrapper.classList.add('is-scrolled');
+            } else {
+                matrixScrollWrapper.classList.remove('is-scrolled');
+            }
+        }
+
+        // ── TABS MEJORADOS ──
         function switchView(viewName) {
             const currentView = document.getElementById('view-current');
             const histView = document.getElementById('view-historical');
             const btnCurrent = document.getElementById('btn-view-current');
             const btnHist = document.getElementById('btn-view-historical');
 
+            const activeClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg bg-brand-glow text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 flex-shrink-0";
+            const inactiveClass = "flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-300 flex-shrink-0";
+
             if (viewName === 'current') {
                 histView.classList.replace('view-active', 'view-hidden');
                 setTimeout(() => currentView.classList.replace('view-hidden', 'view-active'), 50);
                 
-                btnCurrent.classList.replace('text-slate-400', 'text-brand-glow');
-                btnCurrent.classList.add('bg-brand-glow/20');
-                btnHist.classList.remove('text-brand-glow', 'bg-brand-glow/20');
-                btnHist.classList.add('text-slate-400');
+                btnCurrent.className = activeClass;
+                btnHist.className = inactiveClass;
             } else {
                 currentView.classList.replace('view-active', 'view-hidden');
                 setTimeout(() => histView.classList.replace('view-hidden', 'view-active'), 50);
                 
-                btnHist.classList.replace('text-slate-400', 'text-brand-glow');
-                btnHist.classList.add('bg-brand-glow/20');
-                btnCurrent.classList.remove('text-brand-glow', 'bg-brand-glow/20');
-                btnCurrent.classList.add('text-slate-400');
+                btnHist.className = activeClass;
+                btnCurrent.className = inactiveClass;
             }
         }
 
-        // ── Lógica Acordeón Desplegable ──
         function toggleAccordion(id) {
             const content = document.getElementById(`acc-${id}`);
             const chevron = document.getElementById(`chevron-${id}`);
@@ -373,45 +391,48 @@
             return data;
         }
 
-        // --- EXTRACCIÓN DE DATOS ---
+        // ── EXTRACCIÓN A PRUEBA DE FALLOS ──
         async function fetchData() {
             setLoading(true);
             try {
-                // Fetch dual: Pestaña principal y pestaña "Historico"
-                const [currentResponse, historicalResponse] = await Promise.all([
-                    fetch(currentDataUrl),
-                    fetch(historicalDataUrl)
-                ]);
+                let currentCsvData = "";
+                let historicalCsvData = "";
 
-                if (!currentResponse.ok) throw new Error(`Error HTTP (Actual): ${currentResponse.status}`);
-                
-                const currentCsvData = await currentResponse.text();
-                let historicalRaw = [];
-                
-                // Procesar la pestaña histórica si funcionó
-                if (historicalResponse.ok) {
-                    const historicalCsvData = await historicalResponse.text();
-                    if (!historicalCsvData.trim().startsWith('<!DOCTYPE html>')) {
-                        historicalRaw = parseCSV(historicalCsvData);
-                    } else {
-                        console.warn("La hoja Histórico no parece ser un CSV válido. Revisa los permisos o el nombre de la pestaña.");
-                    }
+                // 1. Fetch de Pestaña Principal (Indispensable)
+                try {
+                    const currentResponse = await fetch(currentDataUrl);
+                    if (!currentResponse.ok) throw new Error(`HTTP ${currentResponse.status}`);
+                    currentCsvData = await currentResponse.text();
+                    if (currentCsvData.trim().startsWith('<!DOCTYPE html>')) throw new Error("Documento no publicado como CSV.");
+                } catch (err) {
+                    throw new Error("No pudimos conectar con los datos del mes actual. Revisa el enlace: " + err.message);
                 }
 
-                if (currentCsvData.trim().startsWith('<!DOCTYPE html>')) {
-                    throw new Error("La hoja principal no está publicada como CSV.");
+                // 2. Fetch de Pestaña Histórico (Opcional - Si falla no tumba la app)
+                try {
+                    const historicalResponse = await fetch(historicalDataUrl);
+                    if (historicalResponse.ok) {
+                        const textData = await historicalResponse.text();
+                        if (!textData.trim().startsWith('<!DOCTYPE html>')) {
+                            historicalCsvData = textData;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("No se pudo obtener el histórico. Se ignorará esta vista temporalmente.", err);
                 }
 
                 const currentRaw = parseCSV(currentCsvData);
+                const historicalRaw = historicalCsvData ? parseCSV(historicalCsvData) : [];
+                
                 processAndRenderData(currentRaw, historicalRaw);
 
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error General:", error);
                 leaderboardContainer.innerHTML = `
-                    <div class="py-12 flex flex-col items-center justify-center text-red-400 px-4">
-                        <i class="ph ph-warning-circle text-4xl mb-3"></i>
-                        <p class="font-medium text-center">No se pudo cargar los datos.</p>
-                        <p class="text-sm mt-2 opacity-70 max-w-md text-center">${error.message}</p>
+                    <div class="py-12 flex flex-col items-center justify-center text-rose-400 px-4 text-center">
+                        <i class="ph-fill ph-warning-octagon text-6xl mb-4 opacity-80 shadow-rose-500/20 drop-shadow-xl"></i>
+                        <p class="font-extrabold text-xl">Conexión Fallida</p>
+                        <p class="text-sm mt-2 text-slate-400 max-w-md">${error.message}</p>
                     </div>`;
             } finally {
                 setLoading(false);
@@ -421,7 +442,6 @@
         function processAndRenderData(currentData, historicalData) {
             const validCurrentData = currentData.filter(item => item.Nombre && item.Nombre.trim() !== '');
             
-            // 1. Organizar datos históricos en un diccionario por nombre
             const historyMap = {};
             const monthsSet = new Set();
             
@@ -434,16 +454,13 @@
                 
                 if (!historyMap[name]) historyMap[name] = {};
                 historyMap[name][month] = {
-                    month: month,
-                    ventas: progreso,
-                    meta: objetivo,
+                    month: month, ventas: progreso, meta: objetivo,
                     percentage: objetivo > 0 ? (progreso / objetivo) * 100 : 0,
                     isOverGoal: progreso >= objetivo
                 };
                 monthsSet.add(month);
             });
 
-            // 2. Ordenar meses cronológicamente
             const parseMonthYear = (str) => {
                 const parts = str.toLowerCase().split('-');
                 if(parts.length !== 2) return new Date(0);
@@ -454,11 +471,9 @@
             
             const sortedHistoricalMonths = Array.from(monthsSet).sort((a, b) => parseMonthYear(a) - parseMonthYear(b));
             
-            // Generar identificador del mes actual
             const currentDate = new Date();
             const currentMonthName = fullMonthNames[currentDate.getMonth()] + '-' + currentDate.getFullYear();
 
-            // 3. Crear el array final
             const processedData = validCurrentData.map((item, index) => {
                 const nombre = item.Nombre.trim();
                 const ventas = parseNumber(item.Progreso);
@@ -468,103 +483,95 @@
                 const history = [];
                 const userHistory = historyMap[nombre] || {};
                 
-                // Extraer el registro histórico ordenado
                 sortedHistoricalMonths.forEach(m => {
-                    if (userHistory[m]) {
-                        history.push(userHistory[m]);
-                    } else {
-                        // Si no estaba, rellenar con 0
-                        history.push({ month: m, ventas: 0, meta: 0, percentage: 0, isOverGoal: false });
-                    }
+                    if (userHistory[m]) history.push(userHistory[m]);
+                    else history.push({ month: m, ventas: 0, meta: 0, percentage: 0, isOverGoal: false });
                 });
 
-                // Si el mes actual NO está ya cargado en el histórico (en el Sheet), sumarlo en vivo
                 if (!sortedHistoricalMonths.includes(currentMonthName)) {
-                     history.push({
-                        month: currentMonthName, ventas: ventas, meta: meta, percentage: percentage, isOverGoal: ventas >= meta
-                    });
+                     history.push({ month: currentMonthName, ventas: ventas, meta: meta, percentage: percentage, isOverGoal: ventas >= meta });
                 }
 
-                // Calcular racha (streak)
+                // ── LÓGICA DE RACHA MEJORADA (Ignorando el mes en curso) ──
                 let streak = 0;
                 for(let i = history.length - 1; i >= 0; i--) {
-                    if(history[i].isOverGoal && history[i].ventas > 0) streak++;
-                    else break;
+                    if (history[i].month === currentMonthName) continue; // Ignoramos el mes actual
+
+                    if(history[i].isOverGoal && history[i].ventas > 0) {
+                        streak++;
+                    } else {
+                        break; // Se rompió la racha anterior
+                    }
                 }
 
                 return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak };
             });
 
-            // Ordenar ranking general
             processedData.sort((a, b) => b.percentage - a.percentage);
             
+            globalProcessedData = processedData; // Guardamos global para la predicción
             updateStats(processedData);
-            renderHistoricalMatrix(processedData);
+            renderHistoricalMatrix(globalProcessedData);
             renderCurrentMonthView(processedData);
         }
 
+        // ── RENDERIZADO: MES ACTUAL ──
         function renderCurrentMonthView(processedData) {
             leaderboardContainer.innerHTML = '';
-            if (processedData.length === 0) {
-                leaderboardContainer.innerHTML = `
-                    <div class="py-12 flex flex-col items-center text-slate-500">
-                        <i class="ph ph-empty text-4xl mb-3"></i>
-                        <p>No hay datos disponibles.</p>
-                    </div>`;
-                return;
-            }
+            if (processedData.length === 0) return;
 
             processedData.forEach((person, index) => {
                 const rank = index + 1;
                 const isOverGoal = person.ventas >= person.meta;
                 const visualPercentage = Math.min(person.percentage, 100);
 
-                let barColorClass = "bg-blue-500";
+                let barColorClass = "bg-brand-glow shadow-[0_0_10px_rgba(59,130,246,0.5)]";
                 let textColorClass = "text-slate-300";
                 let iconHtml = "";
                 let nameClass = "text-white";
 
                 if (isOverGoal) {
-                    barColorClass = "bg-gradient-to-r from-emerald-500 to-green-400";
+                    barColorClass = "bg-gradient-to-r from-emerald-400 to-green-300 shadow-[0_0_12px_rgba(52,211,153,0.6)]";
                     textColorClass = "text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]";
                     nameClass = "text-emerald-50";
                     iconHtml = `<i class="ph-fill ph-check-circle text-emerald-400" title="¡Meta Alcanzada!"></i>`;
                 } else if (person.percentage >= 80) {
-                    barColorClass = "bg-gradient-to-r from-yellow-500 to-amber-400";
-                } else if (person.percentage <= 30) {
+                    barColorClass = "bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_12px_rgba(251,191,36,0.5)]";
+                } else if (person.percentage <= 30 && person.ventas > 0) {
                     barColorClass = "bg-gradient-to-r from-rose-500 to-red-400";
                 }
 
-                let rankClass = 'bg-slate-800 text-slate-400 border-dark-border';
+                let rankClass = 'bg-slate-800/50 text-slate-400 border-slate-700/50';
                 if (rank === 1) rankClass = 'bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]';
                 else if (rank === 2) rankClass = 'bg-slate-300/20 text-slate-300 border-slate-400/50';
                 else if (rank === 3) rankClass = 'bg-orange-600/20 text-orange-400 border-orange-600/50';
 
-                const faltaMonto = person.ventas < person.meta
-                    ? `falta ${currencyFormatter.format(person.meta - person.ventas)}`
-                    : '✓ meta cumplida';
+                const faltaMonto = person.ventas < person.meta ? `Falta ${currencyFormatter.format(person.meta - person.ventas)}` : '¡Objetivo superado!';
 
+                // Tarjetas miniatura premium para el acordeón
                 const historyCardsHtml = person.history.map(h => {
                     if (h.meta === 0 && h.ventas === 0) return '';
-                    const cardColor = h.isOverGoal ? 'text-emerald-400' : 'text-slate-200';
-                    const miniBarColor = h.isOverGoal ? 'bg-emerald-400' : (h.percentage >= 80 ? 'bg-amber-400' : 'bg-brand-glow');
+                    const isWin = h.isOverGoal;
+                    const cardBg = isWin ? 'bg-emerald-900/10 border-emerald-500/20' : 'bg-slate-800/40 border-slate-700/50';
+                    const numColor = isWin ? 'text-emerald-400' : 'text-white';
+                    const pctBg = isWin ? 'bg-emerald-500/20 text-emerald-400' : (h.percentage >= 80 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-300');
+                    const barIndicator = isWin ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-brand-glow';
+
                     return `
-                        <div class="flex-shrink-0 w-[140px] bg-dark-bg border border-dark-border rounded-lg p-3 snap-center shadow-inner">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-bold text-slate-400 capitalize">${formatMonthName(h.month).split(' ')[0]}</span>
-                                <span class="text-[10px] font-bold ${cardColor}">${h.percentage.toFixed(0)}%</span>
+                        <div class="flex-shrink-0 w-[140px] rounded-xl p-3 flex flex-col justify-between ${cardBg} border backdrop-blur-sm transition-transform hover:-translate-y-1 relative overflow-hidden">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[11px] font-bold text-slate-400 capitalize">${formatMonthName(h.month).split(' ')[0]}</span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md ${pctBg}">${h.percentage.toFixed(0)}%</span>
                             </div>
-                            <div class="font-bold ${cardColor} text-sm mb-1">${currencyFormatter.format(h.ventas)}</div>
-                            <div class="text-[10px] text-slate-500 mb-2">Meta: ${currencyFormatter.format(h.meta)}</div>
-                            <div class="w-full bg-slate-800 rounded-full h-1">
-                                 <div class="${miniBarColor} h-1 rounded-full" style="width: ${Math.min(h.percentage, 100)}%"></div>
-                            </div>
+                            <div class="font-extrabold ${numColor} text-sm mb-0.5">${currencyFormatter.format(h.ventas)}</div>
+                            <div class="text-[9px] text-slate-500 font-medium">Meta: ${currencyFormatter.format(h.meta)}</div>
+                            <div class="absolute bottom-0 left-0 h-[2px] w-full bg-slate-800"><div class="h-full ${barIndicator}" style="width: ${Math.min(h.percentage, 100)}%"></div></div>
                         </div>`;
                 }).join('');
 
                 const rowHtml = `
-                <div class="leaderboard-item cursor-pointer group" onclick="toggleAccordion('${person.id}')">
-                    <div class="leaderboard-row transition-colors group-hover:bg-slate-800/50">
+                <div class="leaderboard-item cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 50}ms" onclick="toggleAccordion('${person.id}')">
+                    <div class="leaderboard-row transition-colors group-hover:bg-slate-800/30 rounded-t-xl rounded-b-xl group-hover:rounded-b-none">
                         <div class="row-rank">
                             <div class="flex items-center justify-center w-8 h-8 rounded-full ${rankClass} border font-bold text-sm flex-shrink-0">
                                 ${rank}
@@ -572,176 +579,200 @@
                         </div>
 
                         <div class="row-name min-w-0">
-                            <h3 class="text-sm sm:text-base font-semibold ${nameClass} flex items-center gap-1.5 truncate">
+                            <h3 class="text-sm sm:text-base font-bold ${nameClass} flex items-center gap-1.5 truncate tracking-tight">
                                 <span class="truncate">${person.nombre}</span>
                                 ${iconHtml}
-                                ${person.streak >= 3 ? `<i class="ph-fill ph-fire text-orange-500 text-sm" title="¡Racha de ${person.streak} meses!"></i>` : ''}
+                                ${person.streak >= 3 ? `<span class="flex items-center bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded text-[10px] border border-orange-500/30 ml-1"><i class="ph-fill ph-fire mr-0.5"></i>x${person.streak}</span>` : ''}
                             </h3>
                             <div class="row-amount-mobile text-right flex-shrink-0 ml-2">
                                 <div class="text-sm font-bold ${isOverGoal ? 'text-emerald-400' : 'text-white'} whitespace-nowrap">
                                     ${currencyFormatter.format(person.ventas)}
                                 </div>
-                                <div class="text-[10px] text-slate-500 whitespace-nowrap">${faltaMonto}</div>
                             </div>
                         </div>
 
                         <div class="row-progress">
-                            <div class="flex justify-between items-end">
-                                <span class="text-xs font-bold ${textColorClass}">
-                                    ${person.percentage.toFixed(1)}%
-                                </span>
-                                <span class="text-[10px] text-slate-500 hidden sm:inline">
-                                    Meta: ${currencyFormatter.format(person.meta)}
-                                </span>
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-xs font-bold ${textColorClass}">${person.percentage.toFixed(1)}%</span>
+                                <span class="text-[10px] font-medium text-slate-500 hidden sm:inline">Objetivo: ${currencyFormatter.format(person.meta)}</span>
                             </div>
-                            <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/50 relative">
-                                <div class="progress-bar-fill h-full rounded-full ${barColorClass} relative"
-                                     style="width: 0%;"
-                                     data-width="${visualPercentage}%">
+                            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700/50 shadow-inner">
+                                <div class="progress-bar-fill h-full rounded-full ${barColorClass} relative" style="width: 0%;" data-width="${visualPercentage}%">
                                     ${isOverGoal ? '<div class="absolute inset-0 bg-white/20 animate-pulse-slow"></div>' : ''}
                                 </div>
                             </div>
                         </div>
 
                         <div class="row-amount">
-                            <div class="font-bold ${isOverGoal ? 'text-emerald-400' : 'text-white'}">
+                            <div class="text-sm sm:text-lg font-extrabold ${isOverGoal ? 'text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.3)]' : 'text-white'}">
                                 ${currencyFormatter.format(person.ventas)}
                             </div>
-                            <div class="text-[10px] text-slate-500">${faltaMonto}</div>
+                            <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${faltaMonto}</div>
                         </div>
                         
                         <div class="ml-1 sm:ml-2 flex items-center justify-center text-slate-500 group-hover:text-brand-glow transition-colors">
-                            <i class="ph ph-caret-down text-lg sm:text-xl transition-transform duration-300" id="chevron-${person.id}"></i>
+                            <i class="ph-bold ph-caret-down text-lg sm:text-xl transition-transform duration-300" id="chevron-${person.id}"></i>
                         </div>
                     </div>
 
-                    <div id="acc-${person.id}" class="hidden border-t border-dark-border/50 bg-slate-900/60 p-4 rounded-b-xl cursor-default" onclick="event.stopPropagation()">
-                        <h4 class="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider flex items-center gap-2">
-                            <i class="ph ph-clock-counter-clockwise"></i> Histórico Reciente
+                    <div id="acc-${person.id}" class="hidden border-t border-slate-700/50 bg-slate-900/40 p-4 sm:p-5 rounded-b-xl cursor-default" onclick="event.stopPropagation()">
+                        <h4 class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="ph-bold ph-clock-counter-clockwise"></i> Tendencia de los últimos meses
                         </h4>
-                        <div class="flex gap-3 overflow-x-auto pb-2 snap-x scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
-                            ${historyCardsHtml || '<span class="text-xs text-slate-500">No hay datos históricos aún.</span>'}
+                        <div class="flex gap-4 overflow-x-auto pb-2 snap-x custom-scrollbar">
+                            ${historyCardsHtml || '<div class="w-full text-center py-4 text-xs text-slate-500 font-medium border border-dashed border-slate-700 rounded-lg">Sin historial disponible.</div>'}
                         </div>
                     </div>
                 </div>`;
-
                 leaderboardContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
 
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    document.querySelectorAll('.progress-bar-fill').forEach(bar => {
-                        bar.style.width = bar.getAttribute('data-width');
-                    });
+                    document.querySelectorAll('.progress-bar-fill').forEach(bar => { bar.style.width = bar.getAttribute('data-width'); });
                 }, 100);
             });
         }
 
+        // ── RENDERIZADO: MATRIZ HISTÓRICA (MEJOR DISTRIBUCIÓN) ──
         function renderHistoricalMatrix(data) {
             if(data.length === 0) return;
-            const historyMonths = data[0].history.map(h => h.month);
+            
+            let matrixData = JSON.parse(JSON.stringify(data));
+            
+            if (isPredicting) {
+                const currentMonthIdx = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                
+                matrixData.forEach(person => {
+                    const baseData = person.history[person.history.length - 1];
+                    let baseVentas = baseData.ventas > 0 ? baseData.ventas : (person.meta > 0 ? person.meta : 1000);
+                    
+                    for (let i = currentMonthIdx + 1; i <= 11; i++) {
+                        const multiplier = (i - currentMonthIdx) + 1;
+                        const predictedVentas = baseVentas * multiplier;
+                        const predictedPercentage = baseData.meta > 0 ? (predictedVentas / baseData.meta) * 100 : 0;
+                        
+                        person.history.push({
+                            month: `${fullMonthNames[i]}-${currentYear}`,
+                            ventas: predictedVentas,
+                            meta: baseData.meta,
+                            percentage: predictedPercentage,
+                            isOverGoal: predictedVentas >= baseData.meta,
+                            isPrediction: true 
+                        });
+                    }
+                });
+            }
+
+            const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
             
-            // Dimensión dinámica basada en la cantidad de meses en el histórico
-            const gridStyle = `grid-template-columns: 4rem 160px repeat(${colsCount}, minmax(130px, 1fr));`;
+            // Mayor distribución: Pasamos de 130px a 145px mínimo por celda
+            const gridStyle = `grid-template-columns: 5rem 180px repeat(${colsCount}, minmax(145px, 1fr));`;
             
-            const calculatedMinWidth = 240 + (colsCount * 130);
-            matrixScrollContainer.style.minWidth = `${calculatedMinWidth}px`;
+            const calculatedMinWidth = 280 + (colsCount * 145);
+            matrixScrollInner.style.minWidth = `${calculatedMinWidth}px`;
 
-            // ── Encabezados Superiores ──
             let headerHtml = `
-                <div class="text-center" title="Racha consecutiva cumpliendo">🔥 Racha</div>
-                <div>Nombre</div>
+                <div class="sticky-col-racha sticky-shadow flex items-center justify-center" title="Meses consecutivos pasados logrando meta">Racha</div>
+                <div class="sticky-col-nombre sticky-shadow flex items-center">Nombre del Asesor</div>
             `;
             
             historyMonths.forEach((month, idx) => {
-                const isCurrent = idx === historyMonths.length - 1;
-                const monthMeta = Math.max(...data.map(p => p.history[idx].meta));
-                const displayMonth = formatMonthName(month);
+                const isPredictionCol = matrixData[0].history[idx].isPrediction;
+                const isCurrent = !isPredictionCol && idx === (historyMonths.length - (isPredicting ? (11 - new Date().getMonth() + 1) : 1));
+                const monthMeta = Math.max(...matrixData.map(p => p.history[idx].meta));
                 
+                let titleColor = 'text-slate-300';
+                if (isCurrent) titleColor = 'text-brand-glow drop-shadow-[0_0_5px_rgba(59,130,246,0.4)]';
+                if (isPredictionCol) titleColor = 'text-purple-400 drop-shadow-[0_0_5px_rgba(147,51,234,0.4)]';
+
                 headerHtml += `
-                    <div class="text-center flex flex-col items-center justify-center ${isCurrent ? 'text-brand-glow' : 'text-slate-300'}">
-                        <span class="font-bold">${displayMonth}</span>
-                        ${monthMeta > 0 ? `<span class="text-[10px] text-slate-500 font-normal tracking-wide mt-0.5">Meta: ${currencyFormatter.format(monthMeta)}</span>` : ''}
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <span class="${titleColor} font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                            ${isPredictionCol ? '<i class="ph-fill ph-magic-wand text-xs"></i>' : ''}
+                            ${formatMonthName(month)}
+                        </span>
+                        ${monthMeta > 0 ? `<span class="text-[10px] text-slate-500 font-medium tracking-widest uppercase mt-1">Meta: ${currencyFormatter.format(monthMeta)}</span>` : ''}
                     </div>`;
             });
             
             matrixHeader.style = gridStyle;
             matrixHeader.innerHTML = headerHtml;
 
-            const matrixData = [...data].sort((a, b) => {
-                if(b.streak !== a.streak) return b.streak - a.streak;
-                return b.percentage - a.percentage;
-            });
-
+            matrixData.sort((a, b) => b.streak !== a.streak ? b.streak - a.streak : b.percentage - a.percentage);
             matrixContainer.innerHTML = '';
             
-            matrixData.forEach(person => {
-                let streakBadge = '';
-                if (person.streak >= 6) streakBadge = `<span class="px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 text-xs font-bold border border-orange-500/50" title="¡6 Meses Perfectos!">🏆 x${person.streak}</span>`;
-                else if (person.streak >= 3) streakBadge = `<span class="px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/30">🔥 x${person.streak}</span>`;
-                else if (person.streak > 0) streakBadge = `<span class="text-xs text-slate-500 font-bold ml-2">x${person.streak}</span>`;
-                else streakBadge = `<span class="text-xs text-slate-600 font-bold ml-2">-</span>`;
+            matrixData.forEach((person, index) => {
+                let streakBadge = `<span class="text-xs text-slate-600 font-bold">-</span>`;
+                if (person.streak >= 6) streakBadge = `<span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[11px] font-bold shadow-[0_0_8px_rgba(249,115,22,0.4)]">🏆 x${person.streak}</span>`;
+                else if (person.streak >= 3) streakBadge = `<span class="px-2.5 py-1 rounded bg-orange-500/10 text-orange-400 text-[11px] font-bold border border-orange-500/30">🔥 x${person.streak}</span>`;
+                else if (person.streak > 0) streakBadge = `<span class="text-sm text-slate-400 font-bold">x${person.streak}</span>`;
 
                 let monthsHtml = '';
-                person.history.forEach((hist, idx) => {
-                    if (hist.meta === 0 && hist.ventas === 0) {
-                        monthsHtml += `<div class="flex items-center justify-center p-1"><div class="text-[10px] text-slate-600">-</div></div>`;
+                person.history.forEach((hist) => {
+                    if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) {
+                        monthsHtml += `<div class="flex items-center justify-center p-2"><div class="w-full h-full min-h-[65px] border border-dashed border-slate-700/50 rounded-xl flex items-center justify-center text-xs text-slate-600 font-medium">Sin datos</div></div>`;
                         return;
                     }
 
-                    // Estilos dinámicos para las celdas
-                    let bgColor = 'bg-slate-800/20';
-                    let borderColor = 'border-slate-700/30';
-                    let moneyColor = 'text-slate-200';
-                    let pctBg = 'bg-slate-700/50';
-                    let pctText = 'text-slate-300';
+                    let cardClass = 'bg-slate-800/30 border-slate-700/50';
+                    let moneyColor = 'text-white';
+                    let pctBg = 'bg-slate-700/60 text-slate-300';
                     let iconHtml = '';
+                    let barIndicator = 'bg-brand-glow shadow-[0_0_8px_rgba(59,130,246,0.5)]';
                     let progressWidth = Math.min(hist.percentage, 100);
 
-                    if (hist.isOverGoal && hist.ventas > 0) {
-                        bgColor = 'bg-emerald-900/20';
-                        borderColor = 'border-emerald-500/30';
-                        moneyColor = 'text-emerald-400';
-                        pctBg = 'bg-emerald-500/20';
-                        pctText = 'text-emerald-400';
+                    if (hist.isPrediction) {
+                        cardClass = 'bg-purple-900/10 border-purple-500/30 shadow-[inset_0_0_15px_rgba(147,51,234,0.05)]';
+                        moneyColor = 'text-purple-400 drop-shadow-[0_0_5px_rgba(147,51,234,0.2)]';
+                        pctBg = 'bg-purple-500/20 text-purple-400 border border-purple-500/20';
+                        iconHtml = '<i class="ph-fill ph-magic-wand text-purple-400 mr-1.5 text-sm"></i>';
+                        barIndicator = 'bg-purple-400 shadow-[0_0_8px_rgba(147,51,234,0.8)]';
+                    }
+                    else if (hist.isOverGoal && hist.ventas > 0) {
+                        cardClass = 'bg-emerald-900/10 border-emerald-500/30 shadow-[inset_0_0_15px_rgba(52,211,153,0.05)]';
+                        moneyColor = 'text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.2)]';
+                        pctBg = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20';
                         iconHtml = '<i class="ph-fill ph-check-circle text-emerald-400 mr-1.5 text-sm"></i>';
+                        barIndicator = 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
                     } else if (hist.percentage >= 80) {
-                        bgColor = 'bg-amber-900/10';
-                        borderColor = 'border-amber-500/30';
+                        cardClass = 'bg-amber-900/10 border-amber-500/30';
                         moneyColor = 'text-amber-400';
-                        pctBg = 'bg-amber-500/20';
-                        pctText = 'text-amber-400';
+                        pctBg = 'bg-amber-500/20 text-amber-400';
+                        barIndicator = 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]';
                     } else if (hist.ventas > 0) {
-                        pctBg = 'bg-rose-500/10';
-                        pctText = 'text-rose-400';
+                        pctBg = 'bg-rose-500/10 text-rose-400';
+                        barIndicator = 'bg-rose-400';
                     }
 
                     monthsHtml += `
-                        <div class="flex items-center justify-center p-1">
-                            <div class="w-full h-full flex flex-col items-center justify-center py-2.5 px-1 rounded-lg ${bgColor} border ${borderColor} relative overflow-hidden transition-transform duration-300 hover:scale-[1.03] hover:shadow-lg cursor-default group">
-                                <div class="font-bold ${moneyColor} text-[13px] flex items-center mb-1.5">
+                        <div class="p-2 flex items-stretch">
+                            <div class="w-full flex flex-col items-center justify-center py-4 px-2 rounded-xl border ${cardClass} relative overflow-hidden transition-all duration-300 hover:scale-[1.04] hover:shadow-lg hover:border-slate-500 cursor-default group">
+                                <div class="font-extrabold ${moneyColor} text-sm sm:text-base flex items-center mb-2 tracking-tight">
                                     ${iconHtml}${hist.ventas > 0 ? currencyFormatter.format(hist.ventas) : '-'}
                                 </div>
-                                <div class="text-[10px] font-bold px-1.5 py-0.5 rounded-md ${pctBg} ${pctText}">
+                                <div class="text-[10px] font-bold px-2 py-0.5 rounded-md ${pctBg}">
                                     ${hist.percentage.toFixed(0)}%
                                 </div>
-                                <div class="absolute bottom-0 left-0 h-[3px] bg-slate-800/50 w-full opacity-70 group-hover:opacity-100 transition-opacity">
-                                    <div class="h-full ${hist.isOverGoal ? 'bg-emerald-400' : (hist.percentage >= 80 ? 'bg-amber-400' : 'bg-brand-glow')} transition-all duration-1000" style="width: ${progressWidth}%"></div>
+                                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-slate-900/50 opacity-60 group-hover:opacity-100 transition-opacity">
+                                    <div class="h-full ${barIndicator} transition-all duration-1000" style="width: ${progressWidth}%"></div>
                                 </div>
                             </div>
                         </div>`;
                 });
 
                 const rowHtml = `
-                    <div class="matrix-grid-layout px-4 py-1.5 border-b border-dark-border/50 hover:bg-slate-800/40 transition-colors group" style="${gridStyle}">
-                        <div class="text-center flex justify-center items-center h-full">${streakBadge}</div>
-                        <div class="font-semibold text-slate-200 truncate pr-2 group-hover:text-white transition-colors">${person.nombre}</div>
+                    <div class="matrix-grid-layout matrix-row-hover px-4 py-1.5 border-b border-slate-700/30 transition-colors animate-fade-in-up" style="${gridStyle}; animation-delay: ${index * 40}ms">
+                        <div class="sticky-col-racha sticky-shadow flex justify-center items-center h-full">${streakBadge}</div>
+                        <div class="sticky-col-nombre sticky-shadow font-bold text-slate-200 text-sm truncate pr-2 flex items-center h-full">${person.nombre}</div>
                         ${monthsHtml}
                     </div>
                 `;
                 matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
+            handleMatrixScroll();
         }
 
         function updateStats(data) {
@@ -761,3 +792,4 @@
     </script>
 </body>
 </html>
+
