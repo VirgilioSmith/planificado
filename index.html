@@ -604,8 +604,8 @@
                             <div class="font-bold text-white text-base mb-2">${currencyFormatter.format(h.ventas)}</div>
                             
                             <!-- Etiqueta Banderita para el Objetivo -->
-                            <div class="mt-auto inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${flagBg} text-[9px] font-bold uppercase tracking-wider w-max">
-                                <i class="ph-fill ph-flag"></i> Obj: ${currencyFormatter.format(h.meta)}
+                            <div class="mt-auto inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max">
+                                <i class="ph-fill ph-flag text-sm"></i> ${currencyFormatter.format(h.meta)}
                             </div>
                         </div>`;
                 }).join('');
@@ -697,9 +697,9 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            // Name column now adapts (max-content)
-            const gridStyle = `grid-template-columns: 5.5rem minmax(160px, max-content) repeat(${colsCount}, minmax(130px, 1fr));`; 
-            matrixScrollInner.style.minWidth = `${260 + (colsCount * 130)}px`;
+            // Name column width reduced for better aesthetics
+            const gridStyle = `grid-template-columns: 5rem minmax(110px, 150px) repeat(${colsCount}, minmax(115px, 1fr));`; 
+            matrixScrollInner.style.minWidth = `${230 + (colsCount * 115)}px`;
 
             // Quitamos los bordes verticales (border-r)
             let headerHtml = `
@@ -735,10 +735,12 @@
             matrixContainer.innerHTML = '';
             
             matrixData.forEach((person, index) => {
-                // Racha color Naranjado (fuego)
-                let streakBadge = person.streak > 0 
+                // Racha: Fuego solo para los impecables (>= 2). Si es 0, solo una raya.
+                let streakBadge = person.streak >= 2 
                     ? `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-md text-xs font-extrabold shadow-[0_0_10px_rgba(249,115,22,0.15)] flex items-center gap-1"><i class="ph-fill ph-fire"></i> ${person.streak}</span>` 
-                    : `<span class="text-slate-600 opacity-40">-</span>`;
+                    : person.streak === 1
+                    ? `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1">1</span>`
+                    : `<span class="text-slate-600/50 font-black text-lg">-</span>`;
 
                 let monthsHtml = person.history.map(hist => {
                     if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) return `<div class="matrix-cell-wrapper"><div class="matrix-cell-inner"><span class="text-[10px] text-slate-600 font-medium">N/A</span></div></div>`;
