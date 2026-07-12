@@ -93,12 +93,10 @@
         
         .sticky-col-racha { 
             position: sticky; left: 0; z-index: 10; 
-            background-color: #1e293b; 
             transition: background-color 0.3s ease;
         }
         .sticky-col-nombre { 
             position: sticky; left: 60px; z-index: 10; 
-            background-color: #1e293b;
             transition: background-color 0.3s ease;
         }
         
@@ -208,7 +206,7 @@
                 </button>
                 <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
                     <i class="ph-bold ph-squares-four text-lg"></i>
-                    <span>Histórico y Ranking</span>
+                    <span>Histórico</span>
                 </button>
             </div>
             
@@ -722,13 +720,13 @@
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
             
-            // Ajustamos el grid (sin la columna de Acumulado)
-            const gridStyle = `grid-template-columns: 60px 140px repeat(${colsCount}, minmax(115px, 1fr));`; 
-            matrixScrollInner.style.minWidth = `${200 + (colsCount * 115)}px`;
+            // Ajustamos el grid (sin la columna de Acumulado) - Fijado para evitar solapamientos visuales
+            const gridStyle = `grid-template-columns: 60px 130px repeat(${colsCount}, minmax(115px, 1fr));`; 
+            matrixScrollInner.style.minWidth = `${190 + (colsCount * 115)}px`;
 
             let headerHtml = `
-                <div class="sticky-col-racha flex items-center justify-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80">Racha</div>
-                <div class="sticky-col-nombre flex items-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80">Nombre</div>
+                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-sm" style="z-index: 20;">Racha</div>
+                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-sm" style="z-index: 20;">Nombre</div>
             `;
             
             const currentMonthName = fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
@@ -749,13 +747,13 @@
                 }
 
                 headerHtml += `
-                    <div class="flex flex-col items-center justify-center text-center py-2 px-3 ${bgHeader}">
-                        <span class="${titleColor} font-bold text-xs flex items-center gap-1 uppercase">
+                    <div class="flex flex-col items-center justify-center text-center py-2 px-3 border-b border-slate-700/50 ${bgHeader}">
+                        <span class="${titleColor} font-bold text-[11px] sm:text-xs flex items-center gap-1 uppercase">
                             ${isPredictionCol ? '<i class="ph-fill ph-magic-wand text-[10px]"></i>' : ''} 
                             ${isCurrent ? '<i class="ph-fill ph-star text-[10px]"></i>' : ''}
                             ${displayName}
                         </span>
-                        ${monthMeta > 0 ? `<div class="mt-2 text-[10px] text-slate-300 font-bold bg-[#0f172a] border border-slate-600/50 px-2.5 py-0.5 rounded-md flex items-center gap-1.5 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"><i class="ph-bold ph-target text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
+                        ${monthMeta > 0 ? `<div class="mt-1.5 text-[9px] sm:text-[10px] text-slate-300 font-bold bg-[#0f172a] border border-slate-600/50 px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md"><i class="ph-bold ph-target text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
                     </div>`;
             });
             
@@ -808,8 +806,8 @@
                 // Fila sin bordes verticales, eliminando columna Total Acumulado
                 const rowHtml = `
                     <div class="matrix-grid-layout matrix-row animate-fade-in-up group" style="${gridStyle}; animation-delay: ${index * 30}ms">
-                        <div class="sticky-col-racha flex justify-center items-center p-3 bg-[#1e293b]">${streakBadge}</div>
-                        <div class="sticky-col-nombre font-bold text-slate-200 text-sm whitespace-nowrap overflow-hidden text-ellipsis p-3 bg-[#1e293b]">${person.nombre}</div>
+                        <div class="sticky-col-racha flex justify-center items-center p-2 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50">${streakBadge}</div>
+                        <div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50">${person.nombre}</div>
                         ${monthsHtml}
                     </div>`;
                 matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
@@ -838,7 +836,7 @@
             const colsCount = historyMonths.length;
 
             // Ajustamos el grid para la matriz de ranking
-            const gridStyle = `grid-template-columns: 180px repeat(${colsCount}, minmax(100px, 1fr));`;
+            const gridStyle = `grid-template-columns: 140px repeat(${colsCount}, minmax(90px, 1fr));`;
 
             // 2. Asignar ranking por cada mes
             historyMonths.forEach(month => {
@@ -860,11 +858,11 @@
             const rankingData = [...data].sort((a, b) => b.totalAcumulado - a.totalAcumulado);
 
             // 4. Renderizar Cabecera
-            let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
-            headerHtml += `<div class="sticky-col-nombre flex items-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80" style="left: 0; z-index: 10;">Nombre</div>`;
+            let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
+            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md z-20" style="left: 0;">Nombre</div>`;
             
             historyMonths.forEach(month => {
-                headerHtml += `<div class="flex items-center justify-center py-3 px-2 text-slate-300 font-bold text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
+                headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] sm:text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
             });
             headerHtml += `</div>`;
             container.insertAdjacentHTML('beforeend', headerHtml);
@@ -874,7 +872,7 @@
                 let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up hover:bg-slate-800/50 transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
                 
                 // Nombre
-                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-sm whitespace-nowrap overflow-hidden text-ellipsis p-3 bg-[#1e293b] border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
+                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 sm:p-3 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
 
                 // Celdas de cada mes
                 historyMonths.forEach(month => {
