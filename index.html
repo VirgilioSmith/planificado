@@ -127,15 +127,20 @@
             border-radius: 12px; padding: 8px 4px; transition: all 0.3s ease;
         }
 
+        /* Colores más apagados y elegantes para la matriz */
         .matrix-cell-success .matrix-cell-inner {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
-            box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
         }
         
         .matrix-cell-current .matrix-cell-inner {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.05) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .matrix-cell-prediction .matrix-cell-inner {
+            background: rgba(6, 182, 212, 0.03);
+            border: 1px dashed rgba(6, 182, 212, 0.2);
         }
 
         /* Botón de Segmento (Toggle) Activo */
@@ -162,10 +167,10 @@
                 gap: 0.5rem;
                 padding: 1rem;
             }
-            .lb-rank { grid-column: 1; grid-row: 1 / 3; }
-            .lb-name { grid-column: 2; grid-row: 1; }
-            .lb-progress { grid-column: 2 / -1; grid-row: 2; }
+            .lb-rank { grid-column: 1; grid-row: 1; align-self: center; }
+            .lb-name { grid-column: 2; grid-row: 1; align-self: center; font-size: 1.1rem; }
             .lb-amount { grid-column: 3; grid-row: 1; text-align: right; }
+            .lb-progress { grid-column: 1 / -1; grid-row: 2; margin-top: 0.25rem; }
             .lb-chevron { display: none; }
         }
     </style>
@@ -274,7 +279,7 @@
                         <div>
                             <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
                                 <i class="ph-fill ph-squares-four text-blue-400 text-2xl drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]"></i>
-                                Matriz de Rendimiento
+                                Matriz de Consistencia Individual
                             </h3>
                             <p class="text-sm text-slate-400 mt-1 font-medium">
                                 Análisis de cumplimiento mes a mes.
@@ -582,17 +587,19 @@
                     let bgCardClass = "bg-slate-800/50 border-slate-700/50";
                     let accentTextClass = "text-slate-400";
                     let titleIcon = "";
-                    let flagBg = "bg-slate-700/50 text-slate-400"; // Banderita por defecto
+                    let flagBg = "bg-[#0f172a] text-slate-300 border border-slate-600/50 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"; // Objetivo súper resaltado
 
                     if (isCurrentMonth) {
                         bgCardClass = "bg-purple-900/20 border-purple-500/30";
                         accentTextClass = "text-purple-300";
                         titleIcon = `<i class="ph-fill ph-star text-purple-400 text-[10px] mr-1"></i>`;
-                        flagBg = "bg-purple-500/20 text-purple-300 border border-purple-500/20";
+                        flagBg = "bg-slate-800/80 text-purple-300 border border-purple-500/20"; /* Sombreado apagado */
                     } else if (isWin) {
                         bgCardClass = "bg-emerald-900/10 border-emerald-500/30";
                         accentTextClass = "text-emerald-400";
-                        flagBg = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        flagBg = "bg-slate-800/80 text-emerald-400 border border-emerald-500/20"; /* Sombreado apagado */
+                    } else {
+                        flagBg = "bg-slate-800/80 text-slate-400 border border-slate-600/30";
                     }
 
                     return `
@@ -604,7 +611,7 @@
                             <div class="font-bold text-white text-base mb-2">${currencyFormatter.format(h.ventas)}</div>
                             
                             <!-- Etiqueta Banderita para el Objetivo -->
-                            <div class="mt-auto inline-flex items-center gap-1.5 px-2 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max">
+                            <div class="mt-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max mx-auto">
                                 <i class="ph-fill ph-flag text-sm"></i> ${currencyFormatter.format(h.meta)}
                             </div>
                         </div>`;
@@ -688,7 +695,9 @@
                     for (let i = currentMonthIdx + 1; i <= 11; i++) {
                         person.history.push({
                             month: `${fullMonthNames[i]}-${currentYear}`,
-                            ventas: 0, meta: baseMeta * ((i - currentMonthIdx) + 1),
+                            ventas: 0, 
+                            /* Lógica exponencial: se multiplica por 2 cada mes progresivamente */
+                            meta: baseMeta * Math.pow(2, i - currentMonthIdx),
                             percentage: 0, isOverGoal: false, isPrediction: true 
                         });
                     }
@@ -697,11 +706,10 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            // Name column width reduced for better aesthetics
-            const gridStyle = `grid-template-columns: 5rem minmax(110px, 150px) repeat(${colsCount}, minmax(115px, 1fr));`; 
-            matrixScrollInner.style.minWidth = `${230 + (colsCount * 115)}px`;
+            // Name column width significantly reduced
+            const gridStyle = `grid-template-columns: 4rem minmax(80px, 120px) repeat(${colsCount}, minmax(115px, 1fr));`; 
+            matrixScrollInner.style.minWidth = `${180 + (colsCount * 115)}px`;
 
-            // Quitamos los bordes verticales (border-r)
             let headerHtml = `
                 <div class="sticky-col-racha flex items-center justify-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80">Racha</div>
                 <div class="sticky-col-nombre flex items-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80">Nombre</div>
@@ -714,17 +722,24 @@
                 const isCurrent = month === currentMonthName;
                 const monthMeta = Math.max(...matrixData.map(p => p.history[idx].meta));
                 
-                let titleColor = isCurrent ? 'text-purple-400' : (isPredictionCol ? 'text-purple-400' : 'text-slate-300');
-                let bgHeader = isCurrent ? 'bg-purple-900/10' : '';
+                let titleColor = isCurrent ? 'text-purple-400' : (isPredictionCol ? 'text-cyan-400' : 'text-slate-300');
+                let bgHeader = isCurrent ? 'bg-purple-900/10' : (isPredictionCol ? 'bg-cyan-900/5' : '');
+
+                // Abreviatura para proyecciones (Ej: "Sep 2026")
+                let displayName = formatMonthName(month);
+                if (isPredictionCol) {
+                    const parts = month.split('-');
+                    displayName = parts[0].substring(0, 3).charAt(0).toUpperCase() + parts[0].substring(1, 3).toLowerCase() + ' ' + parts[1];
+                }
 
                 headerHtml += `
                     <div class="flex flex-col items-center justify-center text-center py-2 px-3 ${bgHeader}">
                         <span class="${titleColor} font-bold text-xs flex items-center gap-1 uppercase">
                             ${isPredictionCol ? '<i class="ph-fill ph-magic-wand text-[10px]"></i>' : ''} 
                             ${isCurrent ? '<i class="ph-fill ph-star text-[10px]"></i>' : ''}
-                            ${formatMonthName(month)}
+                            ${displayName}
                         </span>
-                        ${monthMeta > 0 ? `<div class="mt-1 text-[9px] text-slate-500 font-medium bg-slate-800/50 px-2 py-0.5 rounded-full flex items-center gap-1"><i class="ph-fill ph-flag"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
+                        ${monthMeta > 0 ? `<div class="mt-2 text-[10px] text-slate-300 font-bold bg-slate-800 border border-slate-600/50 px-2.5 py-0.5 rounded-md flex items-center gap-1.5"><i class="ph-fill ph-flag text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
                     </div>`;
             });
             
@@ -749,14 +764,16 @@
                     
                     let cellBgClass = "";
                     if (isCurrent) cellBgClass = "matrix-cell-current";
-                    else if (hist.isOverGoal && !hist.isPrediction) cellBgClass = "matrix-cell-success";
+                    else if (hist.isPrediction) cellBgClass = "matrix-cell-prediction";
+                    else if (hist.isOverGoal) cellBgClass = "matrix-cell-success";
 
-                    let moneyColor = hist.isPrediction ? 'text-purple-300' : (hist.isOverGoal ? 'text-emerald-400' : 'text-slate-200');
-                    let pctClass = hist.isOverGoal ? 'text-emerald-400' : (hist.percentage >= 80 ? 'text-amber-400' : 'text-slate-400');
+                    let moneyColor = hist.isPrediction ? 'text-cyan-300 opacity-80' : (hist.isOverGoal ? 'text-emerald-400' : 'text-slate-200');
+                    let pctClass = hist.isPrediction ? 'text-cyan-500/50' : (hist.isOverGoal ? 'text-emerald-400' : (hist.percentage >= 80 ? 'text-amber-400' : 'text-slate-400'));
                     
                     // Colores de barra de progreso en matriz
                     let barColor = 'bg-slate-600';
-                    if (hist.isOverGoal) barColor = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]';
+                    if (hist.isPrediction) barColor = 'bg-cyan-500/30';
+                    else if (hist.isOverGoal) barColor = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]';
                     else if (isCurrent) barColor = 'bg-purple-500';
                     else if (hist.percentage > 0) barColor = 'bg-blue-500';
 
