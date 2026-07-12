@@ -616,7 +616,7 @@
                     }
 
                     return `
-                        <div class="flex-shrink-0 w-[150px] rounded-xl p-3 ${bgCardClass} border relative overflow-hidden group flex flex-col">
+                        <div class="flex-1 min-w-[120px] max-w-[160px] rounded-xl p-3 ${bgCardClass} border relative overflow-hidden group flex flex-col">
                             <div class="flex justify-between items-center mb-1.5">
                                 <span class="text-xs font-bold ${accentTextClass} capitalize flex items-center">${titleIcon}${formatMonthName(h.month).split(' ')[0]}</span>
                                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${isWin?'bg-emerald-500/20 text-emerald-400':'bg-slate-700 text-slate-300'}">${h.percentage.toFixed(0)}%</span>
@@ -677,7 +677,7 @@
                         <h4 class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
                             <i class="ph-fill ph-clock-counter-clockwise text-slate-500"></i> Historial Reciente
                         </h4>
-                        <div class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                        <div class="flex flex-wrap gap-3 pb-2">
                             ${historyCardsHtml || '<div class="text-sm text-slate-500">Sin historial.</div>'}
                         </div>
                     </div>
@@ -720,13 +720,13 @@
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
             
-            // Ajustamos el grid (sin la columna de Acumulado) - Fijado para evitar solapamientos visuales
-            const gridStyle = `grid-template-columns: 60px 130px repeat(${colsCount}, minmax(115px, 1fr));`; 
-            matrixScrollInner.style.minWidth = `${190 + (colsCount * 115)}px`;
+            // Ajustamos el grid (sin la columna de Acumulado) - Fijado para abarcar el 100% de la pantalla y evitar el scroll
+            const gridStyle = `grid-template-columns: 50px minmax(100px, 1.5fr) repeat(${colsCount}, minmax(60px, 1fr));`; 
+            matrixScrollInner.style.minWidth = '100%'; // Eliminamos el ancho duro en píxeles
 
             let headerHtml = `
-                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800 border-b border-slate-700/50" style="z-index: 20;">Racha</div>
-                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800 border-b border-slate-700/50" style="z-index: 20;">Nombre</div>
+                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800" style="z-index: 20;">Racha</div>
+                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800" style="z-index: 20;">Nombre</div>
             `;
             
             const currentMonthName = fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
@@ -835,8 +835,8 @@
             const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
             const colsCount = historyMonths.length;
 
-            // Ajustamos el grid para la matriz de ranking
-            const gridStyle = `grid-template-columns: 140px repeat(${colsCount}, minmax(90px, 1fr));`;
+            // Ajustamos el grid para la matriz de ranking para adaptarse automáticamente al ancho total
+            const gridStyle = `grid-template-columns: minmax(100px, 1.5fr) repeat(${colsCount}, minmax(40px, 1fr));`;
 
             // 2. Asignar ranking por cada mes
             historyMonths.forEach(month => {
@@ -859,7 +859,7 @@
 
             // 4. Renderizar Cabecera
             let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
-            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-800 z-20" style="left: 0;">Nombre</div>`;
+            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800 z-20" style="left: 0;">Nombre</div>`;
             
             historyMonths.forEach(month => {
                 headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] sm:text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
