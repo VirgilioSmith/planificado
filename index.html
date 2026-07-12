@@ -725,8 +725,8 @@
             matrixScrollInner.style.minWidth = `${190 + (colsCount * 115)}px`;
 
             let headerHtml = `
-                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-sm" style="z-index: 20;">Racha</div>
-                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-sm" style="z-index: 20;">Nombre</div>
+                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800 border-b border-slate-700/50" style="z-index: 20;">Racha</div>
+                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-800 border-b border-slate-700/50" style="z-index: 20;">Nombre</div>
             `;
             
             const currentMonthName = fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
@@ -806,8 +806,8 @@
                 // Fila sin bordes verticales, eliminando columna Total Acumulado
                 const rowHtml = `
                     <div class="matrix-grid-layout matrix-row animate-fade-in-up group" style="${gridStyle}; animation-delay: ${index * 30}ms">
-                        <div class="sticky-col-racha flex justify-center items-center p-2 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50">${streakBadge}</div>
-                        <div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50">${person.nombre}</div>
+                        <div class="sticky-col-racha flex justify-center items-center p-2 bg-slate-900 border-b border-slate-800/50">${streakBadge}</div>
+                        <div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 bg-slate-900 border-b border-slate-800/50">${person.nombre}</div>
                         ${monthsHtml}
                     </div>`;
                 matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
@@ -859,7 +859,7 @@
 
             // 4. Renderizar Cabecera
             let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
-            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-800/90 backdrop-blur-md z-20" style="left: 0;">Nombre</div>`;
+            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-800 z-20" style="left: 0;">Nombre</div>`;
             
             historyMonths.forEach(month => {
                 headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] sm:text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
@@ -869,10 +869,10 @@
 
             // 5. Renderizar Filas
             rankingData.forEach((person, index) => {
-                let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up hover:bg-slate-800/50 transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
+                let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
                 
                 // Nombre
-                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 sm:p-3 bg-[#1e293b]/95 backdrop-blur-sm border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
+                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 sm:p-3 bg-slate-900 border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
 
                 // Celdas de cada mes
                 historyMonths.forEach(month => {
