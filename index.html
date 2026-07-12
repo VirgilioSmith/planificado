@@ -97,7 +97,7 @@
             transition: background-color 0.3s ease;
         }
         .sticky-col-nombre { 
-            position: sticky; left: 5rem; z-index: 10; 
+            position: sticky; left: 60px; z-index: 10; 
             background-color: #1e293b;
             transition: background-color 0.3s ease;
         }
@@ -202,13 +202,13 @@
         <div class="flex items-center justify-between xl:justify-end gap-4 w-full xl:w-auto">
             <!-- Toggle Premium Estilo iOS -->
             <div class="flex p-1 bg-slate-900/80 border border-slate-700/50 rounded-xl backdrop-blur-xl relative overflow-x-auto shadow-inner">
-                <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
+                <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
                     <i class="ph-bold ph-chart-polar text-lg"></i>
                     <span>Mes Actual</span>
                 </button>
-                <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
-                    <i class="ph-bold ph-trend-up text-lg"></i>
-                    <span>Histórico</span>
+                <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-squares-four text-lg"></i>
+                    <span>Histórico y Ranking</span>
                 </button>
             </div>
             
@@ -306,6 +306,25 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ================= SUB-VISTA: RANKING MATRIZ ================= -->
+            <div class="glass-panel overflow-hidden flex flex-col mt-8">
+                <div class="px-6 py-6 border-b border-slate-700/50 bg-slate-800/40 relative">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+                        <i class="ph-fill ph-medal text-amber-400 text-2xl drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"></i>
+                        Historial de Posiciones (Ranking)
+                    </h3>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">
+                        Posición ocupada por cada asesor a lo largo de los meses en función de su facturación.
+                    </p>
+                </div>
+                
+                <div class="w-full overflow-x-auto custom-scrollbar bg-slate-900/50" id="ranking-scroll-wrapper" onscroll="document.getElementById('ranking-scroll-wrapper').classList.toggle('is-scrolled', this.scrollLeft > 5)">
+                    <div id="ranking-matrix-container" class="flex flex-col bg-slate-900 min-w-max pb-4">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -370,30 +389,22 @@
         }
 
         function switchView(viewName) {
-            const currentView = document.getElementById('view-current');
-            const histView = document.getElementById('view-historical');
-            const btnCurrent = document.getElementById('btn-view-current');
-            const btnHist = document.getElementById('btn-view-historical');
-
-            if (viewName === 'current') {
-                histView.classList.replace('view-active', 'view-hidden');
-                setTimeout(() => currentView.classList.replace('view-hidden', 'view-active'), 50);
+            const views = ['current', 'historical'];
+            
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`btn-view-${v}`);
                 
-                btnCurrent.classList.add('toggle-btn-active');
-                btnCurrent.classList.remove('text-slate-400', 'hover:text-slate-200');
-                
-                btnHist.classList.remove('toggle-btn-active');
-                btnHist.classList.add('text-slate-400', 'hover:text-slate-200');
-            } else {
-                currentView.classList.replace('view-active', 'view-hidden');
-                setTimeout(() => histView.classList.replace('view-hidden', 'view-active'), 50);
-                
-                btnHist.classList.add('toggle-btn-active');
-                btnHist.classList.remove('text-slate-400', 'hover:text-slate-200');
-                
-                btnCurrent.classList.remove('toggle-btn-active');
-                btnCurrent.classList.add('text-slate-400', 'hover:text-slate-200');
-            }
+                if (v === viewName) {
+                    el.classList.replace('view-hidden', 'view-active');
+                    btn.classList.add('toggle-btn-active');
+                    btn.classList.remove('text-slate-400', 'hover:text-slate-200');
+                } else {
+                    el.classList.replace('view-active', 'view-hidden');
+                    btn.classList.remove('toggle-btn-active');
+                    btn.classList.add('text-slate-400', 'hover:text-slate-200');
+                }
+            });
         }
 
         function toggleAccordion(id) {
@@ -547,7 +558,10 @@
                     else break; 
                 }
 
-                return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak };
+                // Lógica de Total Acumulado Histórico
+                const totalAcumulado = history.reduce((sum, h) => sum + (h.ventas || 0), 0);
+
+                return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak, totalAcumulado };
             });
 
             processedData.sort((a, b) => b.percentage - a.percentage);
@@ -556,6 +570,7 @@
             updateStats(processedData);
             renderHistoricalMatrix(globalProcessedData);
             renderCurrentMonthView(processedData);
+            calculateAndRenderRanking(globalProcessedData);
         }
 
         function renderCurrentMonthView(processedData) {
@@ -612,7 +627,7 @@
                             
                             <!-- Etiqueta Banderita para el Objetivo -->
                             <div class="mt-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max mx-auto">
-                                <i class="ph-fill ph-flag text-sm"></i> ${currencyFormatter.format(h.meta)}
+                                <i class="ph-bold ph-target text-sm"></i> ${currencyFormatter.format(h.meta)}
                             </div>
                         </div>`;
                 }).join('');
@@ -706,9 +721,10 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            // Name column width significantly reduced
-            const gridStyle = `grid-template-columns: 4rem minmax(80px, 120px) repeat(${colsCount}, minmax(115px, 1fr));`; 
-            matrixScrollInner.style.minWidth = `${180 + (colsCount * 115)}px`;
+            
+            // Ajustamos el grid (sin la columna de Acumulado)
+            const gridStyle = `grid-template-columns: 60px 140px repeat(${colsCount}, minmax(115px, 1fr));`; 
+            matrixScrollInner.style.minWidth = `${200 + (colsCount * 115)}px`;
 
             let headerHtml = `
                 <div class="sticky-col-racha flex items-center justify-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80">Racha</div>
@@ -739,14 +755,15 @@
                             ${isCurrent ? '<i class="ph-fill ph-star text-[10px]"></i>' : ''}
                             ${displayName}
                         </span>
-                        ${monthMeta > 0 ? `<div class="mt-2 text-[10px] text-slate-300 font-bold bg-slate-800 border border-slate-600/50 px-2.5 py-0.5 rounded-md flex items-center gap-1.5"><i class="ph-fill ph-flag text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
+                        ${monthMeta > 0 ? `<div class="mt-2 text-[10px] text-slate-300 font-bold bg-[#0f172a] border border-slate-600/50 px-2.5 py-0.5 rounded-md flex items-center gap-1.5 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"><i class="ph-bold ph-target text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
                     </div>`;
             });
             
             matrixHeader.style = gridStyle;
             matrixHeader.innerHTML = headerHtml;
 
-            matrixData.sort((a, b) => b.streak !== a.streak ? b.streak - a.streak : b.percentage - a.percentage);
+            // Ordenar por Total Acumulado Descendente (Lógica interna, sin mostrar el total en columnas)
+            matrixData.sort((a, b) => b.totalAcumulado - a.totalAcumulado);
             matrixContainer.innerHTML = '';
             
             matrixData.forEach((person, index) => {
@@ -788,7 +805,7 @@
                         </div>`;
                 }).join('');
 
-                // Fila sin bordes verticales
+                // Fila sin bordes verticales, eliminando columna Total Acumulado
                 const rowHtml = `
                     <div class="matrix-grid-layout matrix-row animate-fade-in-up group" style="${gridStyle}; animation-delay: ${index * 30}ms">
                         <div class="sticky-col-racha flex justify-center items-center p-3 bg-[#1e293b]">${streakBadge}</div>
@@ -808,6 +825,84 @@
 
         function setLoading(isLoading) {
             loadingState.style.display = isLoading ? 'flex' : 'none';
+        }
+
+        // Lógica de cálculo y renderizado del Salón de la Fama / Matriz de Ranking
+        function calculateAndRenderRanking(data) {
+            if(data.length === 0) return;
+            const container = document.getElementById('ranking-matrix-container');
+            container.innerHTML = '';
+
+            // 1. Extraer todos los meses históricos (sin contar las proyecciones)
+            const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
+            const colsCount = historyMonths.length;
+
+            // Ajustamos el grid para la matriz de ranking
+            const gridStyle = `grid-template-columns: 180px repeat(${colsCount}, minmax(100px, 1fr));`;
+
+            // 2. Asignar ranking por cada mes
+            historyMonths.forEach(month => {
+                let monthPerformances = data.map(p => ({
+                    person: p,
+                    h: p.history.find(x => x.month === month)
+                })).filter(item => item.h && item.h.ventas > 0);
+                
+                // Ordenar de mayor a menor ventas
+                monthPerformances.sort((a, b) => b.h.ventas - a.h.ventas);
+                
+                // Asignar el rank a ese historial específico
+                monthPerformances.forEach((mp, index) => {
+                    mp.h.rank = index + 1;
+                });
+            });
+
+            // 3. Ordenar asesores por facturación acumulada total para visualizarlos de mejor a peor
+            const rankingData = [...data].sort((a, b) => b.totalAcumulado - a.totalAcumulado);
+
+            // 4. Renderizar Cabecera
+            let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
+            headerHtml += `<div class="sticky-col-nombre flex items-center p-3 text-slate-500 text-xs font-bold uppercase tracking-widest bg-slate-800/80" style="left: 0; z-index: 10;">Nombre</div>`;
+            
+            historyMonths.forEach(month => {
+                headerHtml += `<div class="flex items-center justify-center py-3 px-2 text-slate-300 font-bold text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
+            });
+            headerHtml += `</div>`;
+            container.insertAdjacentHTML('beforeend', headerHtml);
+
+            // 5. Renderizar Filas
+            rankingData.forEach((person, index) => {
+                let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up hover:bg-slate-800/50 transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
+                
+                // Nombre
+                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-sm whitespace-nowrap overflow-hidden text-ellipsis p-3 bg-[#1e293b] border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
+
+                // Celdas de cada mes
+                historyMonths.forEach(month => {
+                    const h = person.history.find(x => x.month === month);
+                    const rank = h ? h.rank : null;
+
+                    let cellContent = `<span class="text-slate-700 font-medium">-</span>`;
+                    let bgClass = "bg-transparent";
+
+                    if (rank === 1) {
+                        cellContent = `<span class="text-amber-400 font-black text-lg flex items-center justify-center gap-1.5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"><i class="ph-fill ph-medal"></i> 1</span>`;
+                        bgClass = "bg-amber-500/10";
+                    } else if (rank === 2) {
+                        cellContent = `<span class="text-slate-300 font-black text-lg flex items-center justify-center gap-1.5"><i class="ph-fill ph-medal"></i> 2</span>`;
+                        bgClass = "bg-slate-400/10";
+                    } else if (rank === 3) {
+                        cellContent = `<span class="text-amber-700 font-black text-lg flex items-center justify-center gap-1.5"><i class="ph-fill ph-medal"></i> 3</span>`;
+                        bgClass = "bg-amber-900/20";
+                    } else if (rank > 3) {
+                        cellContent = `<span class="text-slate-400 font-bold text-sm">${rank}º</span>`;
+                    }
+
+                    rowHtml += `<div class="flex justify-center items-center p-2 border-l border-b border-slate-800/50 ${bgClass}">${cellContent}</div>`;
+                });
+
+                rowHtml += `</div>`;
+                container.insertAdjacentHTML('beforeend', rowHtml);
+            });
         }
 
         window.onload = () => {
