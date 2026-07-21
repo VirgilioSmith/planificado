@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -40,37 +40,28 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Librería para la gráfica evolutiva de Salud -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #0f172a; 
             color: #e2e8f0;
-        }
-
-        :root {
-            --brand-blue: #3b82f6; 
-            --brand-glow: #60a5fa;
-            --brand-success: #10b981; 
-            --brand-success-glow: rgba(16, 185, 129, 0.2);
-            --brand-current-month: #8b5cf6; 
         }
 
         .progress-bar-fill {
             transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.8s ease;
         }
 
-        /* ── Scrollbars Ultra Elegantes ── */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        /* Scrollbars elegantes */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 10px; transition: background 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
 
-        /* ── Efectos Premium ── */
+        /* Efectos Premium Glassmorphism */
         .glass-panel {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.5) 100%);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -79,35 +70,28 @@
         }
 
         .glass-header {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* ── Transiciones de Vistas ── */
-        .view-section { transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .view-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; transform: scale(0.97) translateY(5px); }
+        /* Transiciones entre Vistas */
+        .view-section { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .view-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; transform: scale(0.98) translateY(8px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; visibility: visible; transform: scale(1) translateY(0); }
 
-        /* ── Matriz Continua Estilo SaaS ── */
-        .matrix-grid-layout { display: grid; align-items: stretch; }
+        /* Unificación fluida de tablas y matrices sin divisiones toscas */
+        .matrix-grid-layout { display: grid; align-items: stretch; width: 100%; }
         
-        .sticky-col-racha { 
-            position: sticky; left: 0; z-index: 10; 
-            transition: background-color 0.3s ease;
-        }
-        .sticky-col-nombre { 
-            position: sticky; left: 60px; z-index: 10; 
-            transition: background-color 0.3s ease;
+        .sticky-col-racha, .sticky-col-nombre {
+            background-color: #0f172a;
+            position: sticky;
+            z-index: 10;
         }
         
-        .sticky-col-nombre::after {
-            content: ''; position: absolute; top: 0; right: -20px; width: 20px; height: 100%;
-            background: linear-gradient(to right, rgba(15,23,42,0.8), transparent); 
-            pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
-        }
-        .is-scrolled .sticky-col-nombre::after { opacity: 1; }
+        .sticky-col-racha { left: 0; }
+        .sticky-col-nombre { left: 50px; }
 
         .matrix-row { transition: background-color 0.2s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
         .matrix-row:hover,
@@ -116,74 +100,67 @@
             background-color: rgba(51, 65, 85, 0.4) !important; 
         }
 
-        .matrix-cell-wrapper { padding: 4px 8px; }
+        .matrix-cell-wrapper { padding: 4px 6px; }
         .matrix-cell-inner {
             width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 12px; padding: 8px 4px; transition: all 0.3s ease;
+            border-radius: 12px; padding: 6px 4px; transition: all 0.3s ease;
         }
-
-        .matrix-cell-success .matrix-cell-inner {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.15);
-        }
-        
-        .matrix-cell-current .matrix-cell-inner {
-            background: rgba(139, 92, 246, 0.08);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-        }
-
-        .matrix-cell-prediction .matrix-cell-inner {
-            background: rgba(6, 182, 212, 0.03);
-            border: 1px dashed rgba(6, 182, 212, 0.2);
-        }
+        .matrix-cell-success .matrix-cell-inner { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); }
+        .matrix-cell-current .matrix-cell-inner { background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.15); }
+        .matrix-cell-prediction .matrix-cell-inner { background: rgba(6, 182, 212, 0.03); border: 1px dashed rgba(6, 182, 212, 0.2); }
 
         .toggle-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .toggle-btn-active { 
-            background: rgba(59, 130, 246, 0.15); 
-            color: #60a5fa; 
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2); 
-            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.15); color: #60a5fa; 
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.3);
         }
 
         .leaderboard-row-container {
             display: grid;
-            grid-template-columns: 3rem minmax(150px, auto) 2fr 1fr 2rem; 
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1rem 1.5rem;
+            grid-template-columns: 3rem minmax(140px, 200px) 2fr 1fr 2rem; 
+            align-items: center; gap: 1.25rem; padding: 1rem 1.25rem;
         }
         @media (max-width: 768px) {
             .leaderboard-row-container {
-                grid-template-columns: 2.5rem 1fr auto;
-                grid-template-rows: auto auto;
-                gap: 0.5rem;
-                padding: 1rem;
+                grid-template-columns: 2.5rem 1fr auto; grid-template-rows: auto auto; gap: 0.5rem; padding: 1rem;
             }
             .lb-rank { grid-column: 1; grid-row: 1; align-self: center; }
-            .lb-name { grid-column: 2; grid-row: 1; align-self: center; font-size: 1.1rem; }
+            .lb-name { grid-column: 2; grid-row: 1; align-self: center; font-size: 1.05rem; }
             .lb-amount { grid-column: 3; grid-row: 1; text-align: right; }
             .lb-progress { grid-column: 1 / -1; grid-row: 2; margin-top: 0.25rem; }
             .lb-chevron { display: none; }
+        }
+
+        /* Círculos de porcentaje de salud */
+        .health-circle-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-glow selection:text-white relative overflow-x-hidden">
 
-    <!-- Luces Orbitales de Fondo (Ambiente Premium) -->
+    <!-- Luces Ambientales -->
     <div class="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-600/5 blur-[120px] pointer-events-none z-0"></div>
     <div class="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/5 blur-[120px] pointer-events-none z-0"></div>
 
-    <!-- HEADER -->
     <header class="glass-header sticky top-0 z-50 w-full px-4 sm:px-8 py-4 flex flex-col xl:flex-row xl:items-center justify-between gap-5 shadow-md">
         <div class="flex items-center gap-4 min-w-0">
-            <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-white/10 relative overflow-hidden">
+            <div class="w-12 h-12 flex-shrink-0 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)] border border-white/10 relative overflow-hidden">
                 <div class="absolute inset-0 bg-white/10 animate-pulse-slow"></div>
                 <i class="ph-fill ph-trophy text-white text-2xl relative z-10 drop-shadow-md"></i>
             </div>
             <div class="min-w-0">
-                <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                    Dashboard de Metas
-                </h1>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Dashboard de Metas</h1>
                 <p class="text-xs text-blue-400 font-semibold tracking-widest uppercase mt-0.5 flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]"></span>
                     Métricas de <span id="current-month">...</span>
@@ -191,156 +168,145 @@
             </div>
         </div>
         
-        <!-- Toggle Premium Estilo iOS Integrando Salud -->
-        <div class="flex items-center justify-between xl:justify-end gap-4 w-full xl:w-auto">
-            <div class="flex p-1 bg-slate-900/80 border border-slate-700/50 rounded-xl backdrop-blur-xl relative overflow-x-auto shadow-inner">
-                <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
-                    <i class="ph-bold ph-chart-polar text-lg"></i>
-                    <span>Mes Actual</span>
+        <!-- Controles de Vista -->
+        <div class="flex items-center justify-between xl:justify-end gap-3 w-full xl:w-auto">
+            <div class="flex p-1 bg-slate-900/90 border border-slate-700/60 rounded-xl backdrop-blur-xl relative overflow-x-auto shadow-inner custom-scrollbar">
+                <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-chart-polar text-lg"></i><span>Mes Actual</span>
                 </button>
-                <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
-                    <i class="ph-bold ph-squares-four text-lg"></i>
-                    <span>Histórico</span>
+                <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-squares-four text-lg"></i><span>Histórico</span>
                 </button>
-                <button id="btn-view-salud" onclick="switchView('salud')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
-                    <i class="ph-bold ph-heartbeat text-lg text-rose-400"></i>
-                    <span>Salud</span>
+                <button id="btn-view-salud" onclick="switchView('salud')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-heartbeat text-lg text-rose-400"></i><span>Salud</span>
+                </button>
+                <button id="btn-view-correlacion" onclick="switchView('correlacion')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-arrows-merge text-lg text-emerald-400"></i><span>Correlación</span>
                 </button>
             </div>
             
-            <button onclick="fetchData()" class="p-3 rounded-xl bg-slate-800/40 border border-slate-700 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 group flex-shrink-0" title="Sincronizar Datos">
+            <button onclick="fetchData()" class="p-3 rounded-xl bg-slate-800/60 border border-slate-700 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 transition-all duration-300 group flex-shrink-0" title="Sincronizar Datos">
                 <i class="ph-bold ph-arrows-clockwise text-xl text-slate-300 group-hover:text-brand-glow group-hover:rotate-180 transition-all duration-500"></i>
             </button>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-8 relative z-10">
+    <main class="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-8 relative z-10">
         
-        <!-- ================= VISTA: MES ACTUAL ================= -->
+        <!-- VISTA 1: MES ACTUAL -->
         <div id="view-current" class="view-section view-active">
-            <!-- Tarjetas de Resumen (KPIs) -->
+            <!-- Tarjetas KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mb-8">
                 <div class="glass-panel p-6 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300 relative overflow-hidden group">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all"></div>
-                    <p class="text-slate-400 text-sm font-semibold mb-2 flex items-center gap-2 uppercase tracking-wider">
+                    <p class="text-slate-400 text-xs font-bold mb-2 flex items-center gap-2 uppercase tracking-wider">
                         <i class="ph-fill ph-users-three text-slate-300 text-lg"></i> Equipo Activo
                     </p>
-                    <h2 id="stat-total-team" class="text-4xl font-extrabold text-white tracking-tighter">0</h2>
+                    <h2 id="stat-total-team" class="text-4xl font-extrabold text-white tracking-tight">0</h2>
                 </div>
-                
                 <div class="glass-panel p-6 relative overflow-hidden transition-transform hover:-translate-y-1 duration-300 border-t-emerald-500/20 group">
                     <div class="absolute -right-10 -top-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
-                    <p class="text-emerald-400 text-sm font-semibold mb-2 flex items-center gap-2 uppercase tracking-wider relative z-10">
+                    <p class="text-emerald-400 text-xs font-bold mb-2 flex items-center gap-2 uppercase tracking-wider relative z-10">
                         <i class="ph-bold ph-star text-emerald-400 text-lg"></i> Superaron Meta
                     </p>
-                    <h2 id="stat-achievers" class="text-4xl font-extrabold text-emerald-400 tracking-tighter drop-shadow-[0_0_10px_rgba(52,211,153,0.3)] relative z-10">0</h2>
+                    <h2 id="stat-achievers" class="text-4xl font-extrabold text-emerald-400 tracking-tight drop-shadow-[0_0_10px_rgba(52,211,153,0.3)] relative z-10">0</h2>
                 </div>
-                
                 <div class="glass-panel p-6 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300 relative overflow-hidden group">
                     <div class="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-all"></div>
-                    <p class="text-slate-400 text-sm font-semibold mb-2 flex items-center gap-2 uppercase tracking-wider">
+                    <p class="text-slate-400 text-xs font-bold mb-2 flex items-center gap-2 uppercase tracking-wider">
                         <i class="ph-fill ph-vault text-slate-300 text-lg"></i> Volumen Total
                     </p>
-                    <h2 id="stat-total-money" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tighter">$0</h2>
+                    <h2 id="stat-total-money" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">$0</h2>
                 </div>
             </div>
 
-            <!-- Leaderboard List -->
+            <!-- Lista Leaderboard -->
             <div class="glass-panel p-6">
-                <!-- Encabezados de tabla según imagen -->
-                <div class="hidden md:grid grid-cols-[3rem_minmax(150px,auto)_2fr_1fr_2rem] gap-6 px-6 pb-4 mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50">
-                    <div class="text-center">POS</div>
-                    <div>NOMBRE</div>
-                    <div>PROGRESO HACIA LA META</div>
-                    <div class="text-right">FACTURADO</div>
-                    <div></div>
+                <div class="hidden md:grid grid-cols-[3rem_minmax(140px,200px)_2fr_1fr_2rem] gap-5 px-5 pb-4 mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50">
+                    <div class="text-center">POS</div><div>NOMBRE</div><div>PROGRESO HACIA LA META</div><div class="text-right">FACTURADO</div><div></div>
                 </div>
-
                 <div id="leaderboard-container" class="flex flex-col gap-4">
-                    <div id="loading-state" class="py-24 flex flex-col items-center justify-center text-slate-500">
-                        <i class="ph-duotone ph-circle-notch animate-spin text-6xl mb-5 text-brand-glow drop-shadow-[0_0_10px_rgba(59,130,246,0.4)]"></i>
-                        <p class="text-sm font-semibold tracking-widest uppercase">Cargando...</p>
+                    <div id="loading-state" class="py-20 flex flex-col items-center justify-center text-slate-500">
+                        <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-brand-glow drop-shadow-[0_0_10px_rgba(59,130,246,0.4)]"></i>
+                        <p class="text-xs font-semibold tracking-widest uppercase">Cargando métricas...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= VISTA: HISTÓRICA CONTINUA (MATRIX) ================= -->
+        <!-- VISTA 2: HISTÓRICA CONTINUA (MATRIX) -->
         <div id="view-historical" class="view-section view-hidden">
-            <div class="glass-panel overflow-hidden flex flex-col">
-                
-                <!-- Cabecera de la matriz -->
-                <div class="px-6 py-6 border-b border-slate-700/50 bg-slate-800/40 relative overflow-hidden">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div class="glass-panel overflow-hidden flex flex-col mb-8">
+                <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
                         <div>
-                            <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+                            <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                                 <i class="ph-fill ph-squares-four text-blue-400 text-2xl drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]"></i>
                                 Matriz de Consistencia Individual
                             </h3>
-                            <p class="text-sm text-slate-400 mt-1 font-medium">
-                                Análisis de cumplimiento mes a mes.
-                            </p>
+                            <p class="text-xs text-slate-400 mt-0.5 font-medium">Análisis continuo de cumplimiento mes a mes.</p>
                         </div>
-
-                        <button onclick="togglePrediction()" id="btn-predict" class="relative group flex-shrink-0 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-blue-500/30 hover:border-blue-400 text-blue-300 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full md:w-auto overflow-hidden shadow-lg">
-                            <i class="ph-fill ph-magic-wand text-lg group-hover:rotate-12 transition-transform duration-300"></i>
+                        <button onclick="togglePrediction()" id="btn-predict" class="relative group flex-shrink-0 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-blue-500/30 hover:border-blue-400 text-blue-300 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-xs w-full md:w-auto overflow-hidden shadow-md">
+                            <i class="ph-fill ph-magic-wand text-base group-hover:rotate-12 transition-transform duration-300"></i>
                             <span id="predict-text" class="tracking-wide relative z-10">Proyectar</span>
                         </button>
                     </div>
                 </div>
                 
-                <!-- Contenedor con Scroll -->
-                <div class="w-full overflow-x-auto custom-scrollbar bg-slate-900/50" id="matrix-scroll-wrapper" onscroll="handleMatrixScroll()">
-                    <div id="matrix-scroll-inner" class="w-full min-h-[400px]">
-                        <!-- Header Dinámico de Columnas -->
-                        <div id="matrix-header" class="matrix-grid-layout bg-slate-800/80 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md">
-                        </div>
-                        
-                        <!-- Filas de Datos -->
-                        <div id="matrix-container" class="flex flex-col bg-slate-900">
-                        </div>
+                <div class="w-full overflow-x-auto custom-scrollbar bg-slate-900" id="matrix-scroll-wrapper">
+                    <div id="matrix-scroll-inner" class="w-full min-w-max">
+                        <div id="matrix-header" class="matrix-grid-layout bg-slate-800/90 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md"></div>
+                        <div id="matrix-container" class="flex flex-col bg-slate-900"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ================= SUB-VISTA: RANKING MATRIZ ================= -->
-            <div class="glass-panel overflow-hidden flex flex-col mt-8">
-                <div class="px-6 py-6 border-b border-slate-700/50 bg-slate-800/40 relative">
-                    <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+            <!-- SUB-VISTA: RANKING MATRIZ -->
+            <div class="glass-panel overflow-hidden flex flex-col">
+                <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative">
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                         <i class="ph-fill ph-medal text-amber-400 text-2xl drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"></i>
                         Historial de Posiciones (Ranking)
                     </h3>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">
-                        Posición ocupada por cada asesor a lo largo de los meses en función de su facturación.
-                    </p>
                 </div>
-                
-                <div class="w-full overflow-x-auto custom-scrollbar bg-slate-900/50" id="ranking-scroll-wrapper" onscroll="document.getElementById('ranking-scroll-wrapper').classList.toggle('is-scrolled', this.scrollLeft > 5)">
-                    <div id="ranking-matrix-container" class="flex flex-col bg-slate-900 min-w-max pb-4">
-                        <!-- Inyectado por JS -->
-                    </div>
+                <div class="w-full overflow-x-auto custom-scrollbar bg-slate-900" id="ranking-scroll-wrapper">
+                    <div id="ranking-matrix-container" class="flex flex-col bg-slate-900 min-w-max pb-2"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= VISTA: SALUD Y FITNESS ================= -->
+        <!-- VISTA 3: SALUD Y FITNESS CON CÍRCULOS DE PORCENTAJE -->
         <div id="view-salud" class="view-section view-hidden">
-            <!-- Header de la sección de salud -->
-            <div class="glass-panel px-6 py-6 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
-                <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+            <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
+                <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                     <i class="ph-fill ph-heartbeat text-rose-400 text-2xl drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]"></i>
-                    Progreso de Salud y Pérdida de Peso
+                    Objetivos y Evolución de Salud
                 </h3>
-                <p class="text-sm text-slate-400 mt-1 font-medium">
-                    Seguimiento mensual de peso corporal contra los objetivos establecidos. (En LIBRAS)
-                </p>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Progreso mensual de peso, objetivo final y porcentajes alcanzados.</p>
             </div>
 
-            <!-- Contenedor dinámico de gráficas por usuario -->
             <div id="salud-container" class="grid grid-cols-1 gap-6">
-                <div class="py-12 flex flex-col items-center justify-center text-slate-500">
-                    <i class="ph-duotone ph-circle-notch animate-spin text-6xl mb-5 text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]"></i>
-                    <p class="text-sm font-semibold tracking-widest uppercase">Calculando Metas de Salud...</p>
+                <div class="py-16 flex flex-col items-center justify-center text-slate-500">
+                    <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]"></i>
+                    <p class="text-xs font-semibold tracking-widest uppercase">Calculando datos de salud...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: CORRELACIÓN (ESTILO LEADERBOARD / MATCH FINANZAS Y SALUD) -->
+        <div id="view-correlacion" class="view-section view-hidden">
+            <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
+                <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
+                    <i class="ph-fill ph-arrows-merge text-emerald-400 text-2xl drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"></i>
+                    Correlación de Rendimiento (Finanzas vs. Salud)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Vista comparativa por integrante: cumplimiento de metas de facturación junto a objetivos de salud.</p>
+            </div>
+            
+            <div id="correlacion-container" class="flex flex-col gap-6">
+                <div class="py-16 flex flex-col items-center justify-center text-slate-500">
+                    <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]"></i>
+                    <p class="text-xs font-semibold tracking-widest uppercase">Generando correlación dual...</p>
                 </div>
             </div>
         </div>
@@ -348,38 +314,38 @@
     </main>
 
     <script>
-        // ── CONFIGURACIÓN DE URLS ──
+        // CONFIGURACIÓN DE URLS DE GOOGLE SHEETS
         const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
         const currentDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
         const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=2095726805`;
-        // URL NUEVA DE SALUD AÑADIDA SIN TOCAR LO DEMÁS
         const healthDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=1682435962`;
 
         const leaderboardContainer = document.getElementById('leaderboard-container');
         const matrixContainer = document.getElementById('matrix-container');
         const matrixHeader = document.getElementById('matrix-header');
-        const matrixScrollWrapper = document.getElementById('matrix-scroll-wrapper');
-        const matrixScrollInner = document.getElementById('matrix-scroll-inner');
-        const loadingState = document.getElementById('loading-state');
         const currentMonthElement = document.getElementById('current-month');
         
         const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
         const fullMonthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
-        const currencyFormatter = new Intl.NumberFormat('en-US', {
-            style: 'currency', currency: 'USD', maximumFractionDigits: 0
-        });
+        const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
-        // Almacenar gráficos para poder destruirlos al refrescar
-        let chartInstances = {};
-
-        // ── ESTADO GLOBAL Y PREDICCIÓN ──
+        let chartInstances = {}; 
         let globalProcessedData = [];
+        let healthGlobalUsersMap = {}; 
         let isPredicting = false;
+
+        function setLoading(isLoading) {
+            const syncIcon = document.querySelector('button[onclick="fetchData()"] i');
+            if (isLoading) {
+                if (syncIcon) syncIcon.classList.add('animate-spin');
+            } else {
+                if (syncIcon) syncIcon.classList.remove('animate-spin');
+            }
+        }
 
         function togglePrediction() {
             if(globalProcessedData.length === 0) return;
-            
             isPredicting = !isPredicting;
             const btnText = document.getElementById('predict-text');
             const btn = document.getElementById('btn-predict');
@@ -387,13 +353,12 @@
             if (isPredicting) {
                 btnText.innerText = "Restaurar";
                 btn.classList.add('animate-glow-pulse', 'border-purple-500', 'bg-indigo-900', 'text-purple-300');
-                btn.classList.remove('border-indigo-500/30', 'bg-slate-800', 'text-indigo-300');
+                btn.classList.remove('border-blue-500/30', 'bg-slate-800', 'text-blue-300');
             } else {
                 btnText.innerText = "Proyectar";
                 btn.classList.remove('animate-glow-pulse', 'border-purple-500', 'bg-indigo-900', 'text-purple-300');
-                btn.classList.add('border-indigo-500/30', 'bg-slate-800', 'text-indigo-300');
+                btn.classList.add('border-blue-500/30', 'bg-slate-800', 'text-blue-300');
             }
-            
             renderHistoricalMatrix(globalProcessedData);
         }
 
@@ -403,25 +368,16 @@
             return replaced.replace(/\b\w/g, l => l.toUpperCase());
         }
 
-        // Parseador de meses para ordenar el historial cronológicamente (Ej. "julio 2026")
         function parseSpanishDate(str) {
+            if (!str) return new Date();
             const parts = str.toLowerCase().trim().split(/\s+/);
             const m = fullMonthNames.indexOf(parts[0]);
             const y = parseInt(parts[1]) || new Date().getFullYear();
             return new Date(y, m > -1 ? m : 0, 1);
         }
 
-        function handleMatrixScroll() {
-            if (matrixScrollWrapper.scrollLeft > 5) {
-                matrixScrollWrapper.classList.add('is-scrolled');
-            } else {
-                matrixScrollWrapper.classList.remove('is-scrolled');
-            }
-        }
-
         function switchView(viewName) {
-            // Añadida la vista "salud" a las opciones
-            const views = ['current', 'historical', 'salud'];
+            const views = ['current', 'historical', 'salud', 'correlacion'];
             
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
@@ -442,16 +398,15 @@
         function toggleAccordion(id) {
             const content = document.getElementById(`acc-${id}`);
             const chevron = document.getElementById(`chevron-${id}`);
+            if (!content) return;
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
                 requestAnimationFrame(() => content.classList.add('animate-fade-in-up'));
-                chevron.classList.add('rotate-180', 'text-brand-glow');
-                chevron.classList.remove('text-slate-500');
+                if (chevron) chevron.classList.add('rotate-180', 'text-brand-glow');
             } else {
                 content.classList.add('hidden');
                 content.classList.remove('animate-fade-in-up');
-                chevron.classList.remove('rotate-180', 'text-brand-glow');
-                chevron.classList.add('text-slate-500');
+                if (chevron) chevron.classList.remove('rotate-180', 'text-brand-glow');
             }
         }
 
@@ -491,53 +446,34 @@
                 let historicalCsvData = "";
                 let healthCsvData = "";
 
-                // 1. Fetch Current Metas
                 try {
                     const currentResponse = await fetch(currentDataUrl);
                     if (!currentResponse.ok) throw new Error(`HTTP ${currentResponse.status}`);
                     currentCsvData = await currentResponse.text();
-                    if (currentCsvData.trim().startsWith('<!DOCTYPE html>')) throw new Error("Documento no publicado como CSV.");
-                } catch (err) {
-                    throw new Error("No pudimos conectar con los datos del mes actual. Revisa el enlace: " + err.message);
-                }
+                    if (currentCsvData.trim().startsWith('<!DOCTYPE html>')) throw new Error("Spreadsheet no publicado.");
+                } catch (err) { throw new Error("Error consultando datos del mes actual."); }
 
-                // 2. Fetch Historical Metas
                 try {
                     const historicalResponse = await fetch(historicalDataUrl);
-                    if (historicalResponse.ok) {
-                        const textData = await historicalResponse.text();
-                        if (!textData.trim().startsWith('<!DOCTYPE html>')) historicalCsvData = textData;
-                    }
-                } catch (err) {
-                    console.warn("No se pudo obtener el histórico.", err);
-                }
+                    if (historicalResponse.ok) historicalCsvData = await historicalResponse.text();
+                } catch (err) { console.warn("Sin histórico", err); }
 
-                // 3. Fetch Salud Data (NUEVO)
                 try {
                     const healthResponse = await fetch(healthDataUrl);
-                    if (healthResponse.ok) {
-                        const textData = await healthResponse.text();
-                        if (!textData.trim().startsWith('<!DOCTYPE html>')) healthCsvData = textData;
-                    }
-                } catch(err) {
-                    console.warn("No se pudo obtener los datos de Salud.", err);
-                }
+                    if (healthResponse.ok) healthCsvData = await healthResponse.text();
+                } catch(err) { console.warn("Sin salud", err); }
 
                 const currentRaw = parseCSV(currentCsvData);
-                const historicalRaw = historicalCsvData ? parseCSV(historicalCsvData) : [];
-                const healthRaw = healthCsvData ? parseCSV(healthCsvData) : [];
+                const historicalRaw = historicalCsvData && !historicalCsvData.startsWith('<!DOCTYPE') ? parseCSV(historicalCsvData) : [];
+                const healthRaw = healthCsvData && !healthCsvData.startsWith('<!DOCTYPE') ? parseCSV(healthCsvData) : [];
                 
                 processAndRenderData(currentRaw, historicalRaw);
-                processAndRenderHealthData(healthRaw); // NUEVO PROCESO
+                processAndRenderHealthData(healthRaw); 
+                processAndRenderCorrelation();
 
             } catch (error) {
-                console.error("Error General:", error);
-                leaderboardContainer.innerHTML = `
-                    <div class="py-12 flex flex-col items-center justify-center text-rose-400 px-4 text-center glass-panel mx-4">
-                        <i class="ph-duotone ph-warning-circle text-6xl mb-4 opacity-90"></i>
-                        <p class="font-bold text-xl tracking-tight text-white">Conexión Fallida</p>
-                        <p class="text-sm mt-2 text-slate-400 max-w-md">${error.message}</p>
-                    </div>`;
+                console.error(error);
+                leaderboardContainer.innerHTML = `<div class="py-12 flex flex-col items-center justify-center text-rose-400 text-center"><i class="ph-duotone ph-warning-circle text-5xl mb-3"></i><p class="font-bold">Error de sincronización</p></div>`;
             } finally {
                 setLoading(false);
             }
@@ -545,7 +481,6 @@
 
         function processAndRenderData(currentData, historicalData) {
             const validCurrentData = currentData.filter(item => item.Nombre && item.Nombre.trim() !== '');
-            
             const historyMap = {};
             const monthsSet = new Set();
             
@@ -569,12 +504,10 @@
                 const parts = str.toLowerCase().split('-');
                 if(parts.length !== 2) return new Date(0);
                 const m = fullMonthNames.indexOf(parts[0]);
-                const y = parseInt(parts[1]);
-                return new Date(y, m, 1);
+                return new Date(parseInt(parts[1]), m, 1);
             };
             
             const sortedHistoricalMonths = Array.from(monthsSet).sort((a, b) => parseMonthYear(a) - parseMonthYear(b));
-            
             const currentDate = new Date();
             const currentMonthName = fullMonthNames[currentDate.getMonth()] + '-' + currentDate.getFullYear();
 
@@ -604,13 +537,12 @@
                 }
 
                 const totalAcumulado = history.reduce((sum, h) => sum + (h.ventas || 0), 0);
-
                 return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak, totalAcumulado };
             });
 
             processedData.sort((a, b) => b.percentage - a.percentage);
-            
             globalProcessedData = processedData;
+            
             updateStats(processedData);
             renderHistoricalMatrix(globalProcessedData);
             renderCurrentMonthView(processedData);
@@ -619,8 +551,6 @@
 
         function renderCurrentMonthView(processedData) {
             leaderboardContainer.innerHTML = '';
-            if (processedData.length === 0) return;
-
             processedData.forEach((person, index) => {
                 const rank = index + 1;
                 const visualPercentage = Math.min(person.percentage, 100);
@@ -628,89 +558,78 @@
                 const faltaMonto = falta > 0 ? `FALTA ${currencyFormatter.format(falta)}` : '¡META SUPERADA!';
 
                 let barColorClass = "bg-[#3b82f6]"; 
-                let barBgClass = "bg-[#1e293b]"; 
-                let rankClass = "bg-[#1e293b] text-slate-400 border-slate-700";
+                let barBgClass = "bg-slate-800"; 
+                let rankClass = "bg-slate-800/80 text-slate-400 border-slate-700";
 
-                if (rank === 1) rankClass = "bg-[#1e293b] text-amber-500 border-amber-500/50";
-                if (rank === 2) rankClass = "bg-[#1e293b] text-slate-300 border-slate-400/50";
-                
+                if (rank === 1) rankClass = "bg-amber-500/10 text-amber-400 border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.2)]";
+                if (rank === 2) rankClass = "bg-slate-300/10 text-slate-300 border-slate-400/40";
+                if (rank === 3) rankClass = "bg-amber-800/10 text-amber-600 border-amber-700/40";
+
                 const historyCardsHtml = person.history.map(h => {
                     if (h.meta === 0 && h.ventas === 0) return '';
                     const isWin = h.isOverGoal;
                     const isCurrentMonth = h.month === fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
                     
-                    let bgCardClass = "bg-slate-800/50 border-slate-700/50";
+                    let bgCardClass = "bg-slate-800/40 border-slate-700/40";
                     let accentTextClass = "text-slate-400";
-                    let titleIcon = "";
-                    let flagBg = "bg-[#0f172a] text-slate-300 border border-slate-600/50 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"; 
+                    let flagBg = "bg-slate-900/80 text-slate-300 border border-slate-700"; 
 
                     if (isCurrentMonth) {
                         bgCardClass = "bg-purple-900/20 border-purple-500/30";
                         accentTextClass = "text-purple-300";
-                        titleIcon = `<i class="ph-fill ph-star text-purple-400 text-[10px] mr-1"></i>`;
                         flagBg = "bg-slate-800/80 text-purple-300 border border-purple-500/20"; 
                     } else if (isWin) {
                         bgCardClass = "bg-emerald-900/10 border-emerald-500/30";
                         accentTextClass = "text-emerald-400";
                         flagBg = "bg-slate-800/80 text-emerald-400 border border-emerald-500/20"; 
-                    } else {
-                        flagBg = "bg-slate-800/80 text-slate-400 border border-slate-600/30";
                     }
 
                     return `
-                        <div class="flex-1 min-w-[120px] max-w-[160px] rounded-xl p-3 ${bgCardClass} border relative overflow-hidden group flex flex-col">
-                            <div class="flex justify-between items-center mb-1.5">
-                                <span class="text-xs font-bold ${accentTextClass} capitalize flex items-center">${titleIcon}${formatMonthName(h.month).split(' ')[0]}</span>
-                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${isWin?'bg-emerald-500/20 text-emerald-400':'bg-slate-700 text-slate-300'}">${h.percentage.toFixed(0)}%</span>
+                        <div class="rounded-xl p-3 ${bgCardClass} border relative overflow-hidden flex flex-col justify-between">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold ${accentTextClass} capitalize">${formatMonthName(h.month).split(' ')[0]}</span>
+                                <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded ${isWin?'bg-emerald-500/20 text-emerald-400':'bg-slate-700 text-slate-300'}">${h.percentage.toFixed(0)}%</span>
                             </div>
-                            <div class="font-bold text-white text-base mb-2">${currencyFormatter.format(h.ventas)}</div>
-                            <div class="mt-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max mx-auto">
-                                <i class="ph-bold ph-target text-sm"></i> ${currencyFormatter.format(h.meta)}
+                            <div class="font-extrabold text-white text-sm my-1 tracking-tight">${currencyFormatter.format(h.ventas)}</div>
+                            <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded ${flagBg} text-[10px] font-bold tracking-wider w-max">
+                                <i class="ph-bold ph-target text-xs"></i> ${currencyFormatter.format(h.meta)}
                             </div>
                         </div>`;
                 }).join('');
 
                 const rowHtml = `
-                <div class="bg-brand-dark border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 80}ms" onclick="toggleAccordion('${person.id}')">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 60}ms" onclick="toggleAccordion('${person.id}')">
                     <div class="leaderboard-row-container">
-                        <div class="lb-rank flex justify-center">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full ${rankClass} border font-bold text-sm shadow-inner">${rank}</div>
-                        </div>
-                        <div class="lb-name font-bold text-white text-lg tracking-tight">${person.nombre}</div>
+                        <div class="lb-rank flex justify-center"><div class="flex items-center justify-center w-9 h-9 rounded-full ${rankClass} border font-extrabold text-xs">${rank}</div></div>
+                        <div class="lb-name font-bold text-white text-base tracking-tight">${person.nombre}</div>
                         <div class="lb-progress flex flex-col justify-center">
-                            <div class="flex justify-between items-center mb-1.5 px-1">
-                                <span class="text-sm font-bold text-white">${person.percentage.toFixed(1)}%</span>
-                                <span class="text-xs text-slate-500 flex items-center gap-1"><i class="ph-bold ph-target"></i> ${currencyFormatter.format(person.meta)}</span>
+                            <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                <span class="text-xs font-extrabold text-white">${person.percentage.toFixed(1)}%</span>
+                                <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1"><i class="ph-bold ph-target"></i> Meta: ${currencyFormatter.format(person.meta)}</span>
                             </div>
                             <div class="w-full ${barBgClass} rounded-full h-2 overflow-hidden">
                                 <div class="progress-bar-fill h-full rounded-full ${barColorClass}" style="width: 0%;" data-width="${visualPercentage}%"></div>
                             </div>
                         </div>
-                        <div class="lb-amount flex flex-col items-end md:items-end justify-center">
-                            <div class="text-xl font-bold text-white tracking-tight">${currencyFormatter.format(person.ventas)}</div>
-                            <div class="text-[10px] text-slate-500 uppercase tracking-wide mt-1">${faltaMonto}</div>
+                        <div class="lb-amount flex flex-col items-end justify-center">
+                            <div class="text-lg font-extrabold text-white tracking-tight">${currencyFormatter.format(person.ventas)}</div>
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-0.5">${faltaMonto}</div>
                         </div>
-                        <div class="lb-chevron flex items-center justify-center text-slate-500">
-                            <i class="ph-bold ph-caret-down text-lg transition-transform duration-300" id="chevron-${person.id}"></i>
-                        </div>
+                        <div class="lb-chevron flex items-center justify-center text-slate-500"><i class="ph-bold ph-caret-down text-base transition-transform duration-300" id="chevron-${person.id}"></i></div>
                     </div>
-                    <div id="acc-${person.id}" class="hidden border-t border-slate-800 bg-slate-900/50 p-4 rounded-b-2xl cursor-default" onclick="event.stopPropagation()">
-                        <h4 class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                    <div id="acc-${person.id}" class="hidden border-t border-slate-800/80 bg-slate-950/40 p-4 rounded-b-2xl cursor-default" onclick="event.stopPropagation()">
+                        <h4 class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-1.5">
                             <i class="ph-fill ph-clock-counter-clockwise text-slate-500"></i> Historial Reciente
                         </h4>
-                        <div class="flex flex-wrap gap-3 pb-2">
-                            ${historyCardsHtml || '<div class="text-sm text-slate-500">Sin historial.</div>'}
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+                            ${historyCardsHtml || '<div class="text-xs text-slate-500 col-span-full">Sin datos previos.</div>'}
                         </div>
                     </div>
                 </div>`;
                 leaderboardContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
 
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    document.querySelectorAll('.progress-bar-fill').forEach(bar => { bar.style.width = bar.getAttribute('data-width'); });
-                }, 50);
-            });
+            setTimeout(() => { document.querySelectorAll('.progress-bar-fill').forEach(bar => { bar.style.width = bar.getAttribute('data-width'); }); }, 50);
         }
 
         function renderHistoricalMatrix(data) {
@@ -728,8 +647,7 @@
                     for (let i = currentMonthIdx + 1; i <= 11; i++) {
                         person.history.push({
                             month: `${fullMonthNames[i]}-${currentYear}`,
-                            ventas: 0, 
-                            meta: baseMeta * Math.pow(2, i - currentMonthIdx),
+                            ventas: 0, meta: baseMeta * Math.pow(2, i - currentMonthIdx),
                             percentage: 0, isOverGoal: false, isPrediction: true 
                         });
                     }
@@ -738,12 +656,11 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: 50px minmax(100px, 1.5fr) repeat(${colsCount}, minmax(60px, 1fr));`; 
-            matrixScrollInner.style.minWidth = '100%'; 
+            const gridStyle = `grid-template-columns: 50px minmax(110px, 160px) repeat(${colsCount}, minmax(80px, 1fr));`; 
 
             let headerHtml = `
-                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800" style="z-index: 20;">Racha</div>
-                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800" style="z-index: 20;">Nombre</div>
+                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Racha</div>
+                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Nombre</div>
             `;
             
             const currentMonthName = fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
@@ -757,19 +674,13 @@
                 let bgHeader = isCurrent ? 'bg-purple-900/10' : (isPredictionCol ? 'bg-cyan-900/5' : '');
 
                 let displayName = formatMonthName(month);
-                if (isPredictionCol) {
-                    const parts = month.split('-');
-                    displayName = parts[0].substring(0, 3).charAt(0).toUpperCase() + parts[0].substring(1, 3).toLowerCase() + ' ' + parts[1];
-                }
 
                 headerHtml += `
-                    <div class="flex flex-col items-center justify-center text-center py-2 px-3 border-b border-slate-700/50 ${bgHeader}">
-                        <span class="${titleColor} font-bold text-[11px] sm:text-xs flex items-center gap-1 uppercase">
-                            ${isPredictionCol ? '<i class="ph-fill ph-magic-wand text-[10px]"></i>' : ''} 
-                            ${isCurrent ? '<i class="ph-fill ph-star text-[10px]"></i>' : ''}
+                    <div class="flex flex-col items-center justify-center text-center py-2 px-2 border-b border-slate-700/50 border-l border-slate-800/50 ${bgHeader}">
+                        <span class="${titleColor} font-bold text-[11px] flex items-center gap-1 uppercase">
                             ${displayName}
                         </span>
-                        ${monthMeta > 0 ? `<div class="mt-1.5 text-[9px] sm:text-[10px] text-slate-300 font-bold bg-[#0f172a] border border-slate-600/50 px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md"><i class="ph-bold ph-target text-slate-500"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
+                        ${monthMeta > 0 ? `<div class="mt-1 text-[9px] text-slate-400 font-bold bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded"><i class="ph-bold ph-target"></i> ${currencyFormatter.format(monthMeta)}</div>` : ''}
                     </div>`;
             });
             
@@ -781,49 +692,40 @@
             
             matrixData.forEach((person, index) => {
                 let streakBadge = person.streak >= 2 
-                    ? `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-md text-xs font-extrabold shadow-[0_0_10px_rgba(249,115,22,0.15)] flex items-center gap-1"><i class="ph-fill ph-fire"></i> ${person.streak}</span>` 
+                    ? `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded text-[11px] font-extrabold flex items-center gap-1"><i class="ph-fill ph-fire"></i> ${person.streak}</span>` 
                     : person.streak === 1
-                    ? `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1">1</span>`
-                    : `<span class="text-slate-600/50 font-black text-lg">-</span>`;
+                    ? `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded text-[11px] font-bold">1</span>`
+                    : `<span class="text-slate-600 font-bold text-xs">-</span>`;
 
                 let monthsHtml = person.history.map(hist => {
-                    if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) return `<div class="matrix-cell-wrapper"><div class="matrix-cell-inner"><span class="text-[10px] text-slate-600 font-medium">N/A</span></div></div>`;
+                    if (hist.meta === 0 && hist.ventas === 0 && !hist.isPrediction) return `<div class="matrix-cell-wrapper border-l border-slate-800/50"><div class="matrix-cell-inner"><span class="text-[10px] text-slate-600">N/A</span></div></div>`;
 
                     const isCurrent = hist.month === currentMonthName;
-                    
-                    let cellBgClass = "";
-                    if (isCurrent) cellBgClass = "matrix-cell-current";
-                    else if (hist.isPrediction) cellBgClass = "matrix-cell-prediction";
-                    else if (hist.isOverGoal) cellBgClass = "matrix-cell-success";
+                    let cellBgClass = "border-l border-slate-800/50";
+                    if (isCurrent) cellBgClass += " matrix-cell-current";
+                    else if (hist.isPrediction) cellBgClass += " matrix-cell-prediction";
+                    else if (hist.isOverGoal) cellBgClass += " matrix-cell-success";
 
                     let moneyColor = hist.isPrediction ? 'text-cyan-300 opacity-80' : (hist.isOverGoal ? 'text-emerald-400' : 'text-slate-200');
-                    let pctClass = hist.isPrediction ? 'text-cyan-500/50' : (hist.isOverGoal ? 'text-emerald-400' : (hist.percentage >= 80 ? 'text-amber-400' : 'text-slate-400'));
-                    
-                    let barColor = 'bg-slate-600';
-                    if (hist.isPrediction) barColor = 'bg-cyan-500/30';
-                    else if (hist.isOverGoal) barColor = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]';
-                    else if (isCurrent) barColor = 'bg-purple-500';
-                    else if (hist.percentage > 0) barColor = 'bg-blue-500';
+                    let pctClass = hist.isPrediction ? 'text-cyan-500/50' : (hist.isOverGoal ? 'text-emerald-400' : 'text-slate-400');
 
                     return `
                         <div class="matrix-cell-wrapper ${cellBgClass}">
-                            <div class="matrix-cell-inner group-hover:scale-105 transition-transform">
-                                <div class="font-bold ${moneyColor} text-[13px] mb-0.5">${hist.ventas > 0 || hist.isPrediction ? currencyFormatter.format(hist.ventas) : '$0'}</div>
-                                <div class="text-[10px] font-medium ${pctClass}">${hist.percentage.toFixed(0)}%</div>
-                                <div class="w-2/3 mt-2 h-[3px] bg-slate-800/80 rounded-full overflow-hidden"><div class="h-full rounded-full ${barColor}" style="width: ${Math.min(hist.percentage, 100)}%"></div></div>
+                            <div class="matrix-cell-inner">
+                                <div class="font-extrabold tracking-tight ${moneyColor} text-xs mb-0.5">${hist.ventas > 0 || hist.isPrediction ? currencyFormatter.format(hist.ventas) : '$0'}</div>
+                                <div class="text-[10px] font-bold ${pctClass}">${hist.percentage.toFixed(0)}%</div>
                             </div>
                         </div>`;
                 }).join('');
 
                 const rowHtml = `
-                    <div class="matrix-grid-layout matrix-row animate-fade-in-up group" style="${gridStyle}; animation-delay: ${index * 30}ms">
-                        <div class="sticky-col-racha flex justify-center items-center p-2 bg-slate-900 border-b border-slate-800/50">${streakBadge}</div>
-                        <div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 bg-slate-900 border-b border-slate-800/50">${person.nombre}</div>
+                    <div class="matrix-grid-layout matrix-row group" style="${gridStyle}">
+                        <div class="sticky-col-racha flex justify-center items-center p-2 border-b border-slate-800/50">${streakBadge}</div>
+                        <div class="sticky-col-nombre font-bold text-slate-200 text-xs truncate p-2 border-b border-slate-800/50 flex items-center">${person.nombre}</div>
                         ${monthsHtml}
                     </div>`;
                 matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
-            handleMatrixScroll();
         }
 
         function calculateAndRenderRanking(data) {
@@ -833,59 +735,46 @@
 
             const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: minmax(100px, 1.5fr) repeat(${colsCount}, minmax(40px, 1fr));`;
+            const gridStyle = `grid-template-columns: minmax(110px, 160px) repeat(${colsCount}, minmax(70px, 1fr));`;
 
             historyMonths.forEach(month => {
-                let monthPerformances = data.map(p => ({
-                    person: p,
-                    h: p.history.find(x => x.month === month)
-                })).filter(item => item.h && item.h.ventas > 0);
-                
+                let monthPerformances = data.map(p => ({ person: p, h: p.history.find(x => x.month === month) })).filter(item => item.h && item.h.ventas > 0);
                 monthPerformances.sort((a, b) => b.h.ventas - a.h.ventas);
-                
-                monthPerformances.forEach((mp, index) => {
-                    mp.h.rank = index + 1;
-                });
+                monthPerformances.forEach((mp, index) => { mp.h.rank = index + 1; });
             });
 
             const rankingData = [...data].sort((a, b) => b.totalAcumulado - a.totalAcumulado);
 
-            let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
-            headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800 z-20" style="left: 0;">Nombre</div>`;
+            let headerHtml = `<div class="matrix-grid-layout bg-slate-800/90 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
+            headerHtml += `<div class="sticky-col-nombre flex items-center p-2.5 font-bold uppercase tracking-widest border-b border-slate-700 z-20" style="left: 0;">Nombre</div>`;
             
             historyMonths.forEach(month => {
-                headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] sm:text-xs uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
+                headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
             });
             headerHtml += `</div>`;
             container.insertAdjacentHTML('beforeend', headerHtml);
 
             rankingData.forEach((person, index) => {
-                let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
-                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 sm:p-3 bg-slate-900 border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
+                let rowHtml = `<div class="matrix-grid-layout matrix-row transition-colors" style="${gridStyle}">`;
+                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-xs truncate p-2.5 border-b border-slate-800/50 flex items-center" style="left: 0; z-index: 5;">${person.nombre}</div>`;
 
                 historyMonths.forEach(month => {
                     const h = person.history.find(x => x.month === month);
                     const rank = h ? h.rank : null;
-
                     let cellContent = `<span class="text-slate-700 font-medium">-</span>`;
                     let bgClass = "bg-transparent";
 
                     if (rank === 1) {
-                        cellContent = `<span class="text-amber-400 font-black text-lg flex items-center justify-center gap-1.5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"><i class="ph-fill ph-medal"></i> 1</span>`;
-                        bgClass = "bg-amber-500/10";
+                        cellContent = `<span class="text-amber-400 font-extrabold text-sm flex items-center justify-center gap-1"><i class="ph-fill ph-medal"></i> 1º</span>`; bgClass = "bg-amber-500/10";
                     } else if (rank === 2) {
-                        cellContent = `<span class="text-slate-300 font-black text-lg flex items-center justify-center gap-1.5"><i class="ph-fill ph-medal"></i> 2</span>`;
-                        bgClass = "bg-slate-400/10";
+                        cellContent = `<span class="text-slate-300 font-extrabold text-sm flex items-center justify-center gap-1"><i class="ph-fill ph-medal"></i> 2º</span>`; bgClass = "bg-slate-400/10";
                     } else if (rank === 3) {
-                        cellContent = `<span class="text-amber-700 font-black text-lg flex items-center justify-center gap-1.5"><i class="ph-fill ph-medal"></i> 3</span>`;
-                        bgClass = "bg-amber-900/20";
+                        cellContent = `<span class="text-amber-600 font-extrabold text-sm flex items-center justify-center gap-1"><i class="ph-fill ph-medal"></i> 3º</span>`; bgClass = "bg-amber-900/20";
                     } else if (rank > 3) {
-                        cellContent = `<span class="text-slate-400 font-bold text-sm">${rank}º</span>`;
+                        cellContent = `<span class="text-slate-400 font-bold text-xs">${rank}º</span>`;
                     }
-
                     rowHtml += `<div class="flex justify-center items-center p-2 border-l border-b border-slate-800/50 ${bgClass}">${cellContent}</div>`;
                 });
-
                 rowHtml += `</div>`;
                 container.insertAdjacentHTML('beforeend', rowHtml);
             });
@@ -897,161 +786,163 @@
             document.getElementById('stat-total-money').innerText = currencyFormatter.format(data.reduce((s, p) => s + p.ventas, 0));
         }
 
-        function setLoading(isLoading) {
-            loadingState.style.display = isLoading ? 'flex' : 'none';
-        }
-
-        // ==========================================
-        // NUEVA LÓGICA DE SALUD (AÑADIDA LIMPIAMENTE)
-        // ==========================================
         function processAndRenderHealthData(data) {
             const container = document.getElementById('salud-container');
             container.innerHTML = '';
             
-            // Si el sheet está vacío o falla
             if(!data || data.length === 0) {
-                 container.innerHTML = `
-                    <div class="py-12 flex flex-col items-center justify-center text-slate-500">
-                        <i class="ph-duotone ph-warning text-6xl mb-4"></i>
-                        <p class="text-sm">No se encontraron registros de salud en el historial.</p>
-                    </div>`;
+                 container.innerHTML = `<div class="py-12 flex flex-col items-center justify-center text-slate-500"><i class="ph-duotone ph-warning text-5xl mb-3"></i><p>Sin datos de salud disponibles.</p></div>`;
                  return;
             }
 
-            // Agrupar los datos por cada usuario
             const usersMap = {};
             data.forEach(row => {
                 const name = row.Nombre ? row.Nombre.trim() : null;
                 if(!name) return;
                 
                 if(!usersMap[name]) usersMap[name] = [];
-                
                 const progreso = parseNumber(row.Progreso);
                 const objetivo = parseNumber(row.Objetivo);
                 const mesRaw = row.Mes ? row.Mes.trim() : null;
                 
-                if(mesRaw && (progreso > 0 || objetivo > 0)) {
+                if(mesRaw) {
                     usersMap[name].push({
                         mes: mesRaw,
                         progreso: progreso > 0 ? progreso : null,
-                        objetivo: objetivo > 0 ? objetivo : null
+                        objetivo: objetivo > 0 ? objetivo : null,
+                        dateObj: parseSpanishDate(mesRaw)
                     });
                 }
             });
 
-            // Recorrer usuario por usuario y renderizar
+            healthGlobalUsersMap = usersMap; 
+            const today = new Date();
+
             Object.keys(usersMap).forEach((name, index) => {
                 let history = usersMap[name];
-                
-                // Ordenar historia cronológicamente (Ej: "julio 2026")
-                history.sort((a,b) => parseSpanishDate(a.mes) - parseSpanishDate(b.mes));
+                history.sort((a,b) => a.dateObj - b.dateObj); 
 
-                // Sacar pesos válidos para calcular las pérdidas
                 const validProgress = history.filter(h => h.progreso !== null);
+                let currentWeight = validProgress.length > 0 ? validProgress[validProgress.length - 1].progreso : '--';
                 
-                let startWeight = validProgress.length > 0 ? validProgress[0].progreso : 0;
-                let currentWeight = validProgress.length > 0 ? validProgress[validProgress.length - 1].progreso : 0;
-                let previousWeight = validProgress.length > 1 ? validProgress[validProgress.length - 2].progreso : startWeight;
+                const currentMonthNameStr = fullMonthNames[today.getMonth()] + ' ' + today.getFullYear();
+                const currentMonthData = history.find(h => h.mes.toLowerCase() === currentMonthNameStr) || history[history.length - 1] || {};
+                let currentTarget = currentMonthData.objetivo ? currentMonthData.objetivo : '--';
 
-                // En salud, perder peso = número positivo hacia la meta. Si el resultado es positivo, se perdió peso.
-                let lossTotal = startWeight > 0 ? (startWeight - currentWeight) : 0;
-                let lossMonth = previousWeight > 0 ? (previousWeight - currentWeight) : 0;
-
-                // Datos del mes más reciente
                 const lastEntry = history[history.length - 1];
-                let currentTarget = lastEntry && lastEntry.objetivo ? lastEntry.objetivo : 0;
+                let finalTarget = lastEntry && lastEntry.objetivo ? lastEntry.objetivo : '--';
+                let finalDateStr = lastEntry ? formatMonthName(lastEntry.mes) : 'No definida';
+                
+                let monthsLeft = 0;
+                if(lastEntry) {
+                    const monthsDiff = (lastEntry.dateObj.getFullYear() - today.getFullYear()) * 12 + (lastEntry.dateObj.getMonth() - today.getMonth());
+                    monthsLeft = Math.max(0, monthsDiff);
+                }
 
-                // Colores dinámicos de pérdida/ganancia
-                const formatLoss = (val) => {
-                    if (val > 0) return { sign: '-', num: val.toFixed(1), color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' }; // Perdió peso (Bien)
-                    if (val < 0) return { sign: '+', num: Math.abs(val).toFixed(1), color: 'text-rose-400', bg: 'bg-rose-500/10 border-rose-500/20' }; // Subió peso (Mal)
-                    return { sign: '', num: '0.0', color: 'text-slate-400', bg: 'bg-slate-700/30 border-slate-600/50' }; // Se mantuvo
-                };
+                // Generar Círculos de Porcentaje para cada mes abajo de la gráfica
+                const initialWeight = history[0] && history[0].progreso ? history[0].progreso : null;
 
-                const monthDisplay = formatLoss(lossMonth);
-                const totalDisplay = formatLoss(lossTotal);
+                const circleBadgesHtml = history.map(h => {
+                    const mName = formatMonthName(h.mes).split(' ')[0];
+                    if (!h.progreso || !h.objetivo || !initialWeight) {
+                        return `
+                        <div class="flex flex-col items-center gap-1 min-w-[55px]">
+                            <div class="health-circle-badge bg-slate-800/40 text-slate-600 border-slate-700/40">
+                                --
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">${mName}</span>
+                        </div>`;
+                    }
 
-                // Tarjeta de Usuario
+                    // % alcanzado de peso perdido vs objetivo
+                    const totalWeightToLose = initialWeight - h.objetivo;
+                    const weightLost = initialWeight - h.progreso;
+                    let pct = totalWeightToLose > 0 ? (weightLost / totalWeightToLose) * 100 : 100;
+                    if(pct < 0) pct = 0;
+
+                    let circleBg = "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-emerald-500/10";
+                    if (pct < 50) circleBg = "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/10";
+                    else if (pct < 100) circleBg = "bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-amber-500/10";
+
+                    return `
+                    <div class="flex flex-col items-center gap-1.5 min-w-[60px]">
+                        <div class="health-circle-badge ${circleBg}">
+                            <span>${pct.toFixed(0)}%</span>
+                        </div>
+                        <span class="text-[10px] font-extrabold text-slate-300 uppercase tracking-tight">${mName}</span>
+                    </div>`;
+                }).join('');
+
                 const cardHtml = `
-                    <div class="glass-panel p-1 sm:p-6 relative overflow-hidden group mb-4">
-                        <div class="flex flex-col lg:flex-row gap-6 p-4">
+                    <div class="glass-panel p-4 sm:p-6 relative overflow-hidden group mb-4">
+                        <div class="flex flex-col xl:flex-row gap-6">
                             
-                            <!-- Sección de Información (KPIs de Salud) -->
-                            <div class="lg:w-1/3 flex flex-col justify-between">
+                            <div class="xl:w-[35%] flex flex-col justify-between">
                                 <div>
-                                    <h4 class="text-2xl font-bold text-white mb-5 flex items-center gap-2">
-                                        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                                            <i class="ph-fill ph-user text-slate-400 text-xl"></i>
+                                    <h4 class="text-2xl font-extrabold text-white mb-5 flex items-center gap-3 border-b border-slate-700/50 pb-4">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner">
+                                            <i class="ph-fill ph-user text-slate-300 text-xl"></i>
                                         </div>
                                         ${name}
                                     </h4>
                                     
-                                    <div class="grid grid-cols-2 gap-3 mb-5">
-                                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner">
-                                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Peso Actual</p>
-                                            <p class="text-xl sm:text-2xl font-black text-white tracking-tight">${currentWeight ? currentWeight.toFixed(1) : '--'} <span class="text-sm font-normal text-slate-500">lbs</span></p>
+                                    <div class="grid grid-cols-2 gap-3 mb-4">
+                                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 shadow-inner">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-fill ph-scales"></i> Peso Actual</p>
+                                            <p class="text-2xl font-extrabold text-white tracking-tight">${currentWeight} <span class="text-xs font-normal text-slate-400">lbs</span></p>
                                         </div>
-                                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner">
-                                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                                                <i class="ph-bold ph-target"></i> Objetivo
-                                            </p>
-                                            <p class="text-xl sm:text-2xl font-black text-cyan-400 tracking-tight">${currentTarget ? currentTarget : '--'} <span class="text-sm font-normal text-cyan-500/50">lbs</span></p>
+                                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 shadow-inner">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-bold ph-target text-cyan-400"></i> Meta del Mes</p>
+                                            <p class="text-2xl font-extrabold text-cyan-400 tracking-tight">${currentTarget} <span class="text-xs font-normal text-cyan-500/50">lbs</span></p>
                                         </div>
                                     </div>
-                                    
-                                    <div class="space-y-3">
-                                        <!-- Pérdida del mes -->
-                                        <div class="flex justify-between items-center border p-3 rounded-lg ${monthDisplay.bg}">
-                                            <span class="text-[11px] font-bold ${monthDisplay.color} uppercase tracking-wider">Cambio del Mes</span>
-                                            <span class="text-lg font-black ${monthDisplay.color}">
-                                                ${monthDisplay.sign}${monthDisplay.num} <span class="text-xs opacity-50">lbs</span>
-                                            </span>
-                                        </div>
-                                        <!-- Pérdida Acumulada -->
-                                        <div class="flex justify-between items-center border p-3 rounded-lg ${totalDisplay.bg}">
-                                            <span class="text-[11px] font-bold ${totalDisplay.color} uppercase tracking-wider">Cambio Acumulado</span>
-                                            <span class="text-lg font-black ${totalDisplay.color}">
-                                                ${totalDisplay.sign}${totalDisplay.num} <span class="text-xs opacity-50">lbs</span>
-                                            </span>
-                                        </div>
+                                </div>
+                                
+                                <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner relative overflow-hidden">
+                                    <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-bold ph-flag-checkered"></i> Objetivo Final</p>
+                                    <p class="text-3xl font-extrabold text-indigo-400 tracking-tight mb-2 drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]">${finalTarget} <span class="text-sm font-normal text-indigo-300/60">lbs</span></p>
+                                    <div class="flex items-center justify-between text-xs font-bold">
+                                        <span class="text-slate-300 bg-slate-900/70 px-2 py-0.5 rounded border border-slate-700">Para: <span class="text-white">${finalDateStr}</span></span>
+                                        <span class="text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">Faltan: ${monthsLeft} m</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Sección de Gráfica Evolutiva (Chart.js) -->
-                            <div class="lg:w-2/3 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-700/50 relative min-h-[300px] flex items-center justify-center shadow-inner">
-                                <canvas id="health-chart-${index}"></canvas>
-                            </div>
+                            <div class="xl:w-[65%] bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-700/50 flex flex-col justify-between shadow-inner">
+                                <div>
+                                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="ph-fill ph-trend-down text-rose-400"></i> Evolución de Peso Corporal</h5>
+                                    <div class="relative w-full h-[220px]">
+                                        <canvas id="health-chart-${index}"></canvas>
+                                    </div>
+                                </div>
 
+                                <!-- Círculos visuales de Porcentaje por Mes -->
+                                <div class="mt-4 pt-3 border-t border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5"><i class="ph-bold ph-percent text-emerald-400"></i> Porcentaje Alcanzado por Mes</p>
+                                    <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-1">
+                                        ${circleBadgesHtml}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
-                
                 container.insertAdjacentHTML('beforeend', cardHtml);
-
-                // Renderizar la gráfica para este usuario
-                renderHealthChart(`health-chart-${index}`, history, name);
+                renderHealthChart(`health-chart-${index}`, history);
             });
         }
 
-        // Renderizado gráfico premium con Chart.js
-        function renderHealthChart(canvasId, history, name) {
+        function renderHealthChart(canvasId, history) {
             const ctx = document.getElementById(canvasId).getContext('2d');
-            
-            // Limpiar gráfica antigua si existe para evitar superposiciones al recargar
-            if (chartInstances[canvasId]) {
-                chartInstances[canvasId].destroy();
-            }
+            if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
 
-            // Preparar arreglos de datos
             const labels = history.map(h => formatMonthName(h.mes));
             const progressData = history.map(h => h.progreso);
             const targetData = history.map(h => h.objetivo);
 
-            // Determinar min y max del eje Y para un gráfico que visualmente asuste menos
             const allNumbers = [...progressData, ...targetData].filter(n => n > 0);
-            const minScale = allNumbers.length > 0 ? Math.floor(Math.min(...allNumbers) - 10) : 0;
-            const maxScale = allNumbers.length > 0 ? Math.ceil(Math.max(...allNumbers) + 10) : 100;
+            const minScale = allNumbers.length > 0 ? Math.floor(Math.min(...allNumbers) - 8) : 0;
+            const maxScale = allNumbers.length > 0 ? Math.ceil(Math.max(...allNumbers) + 8) : 100;
 
             chartInstances[canvasId] = new Chart(ctx, {
                 type: 'line',
@@ -1059,47 +950,25 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Peso Real (Progreso)',
-                            data: progressData,
-                            borderColor: '#3b82f6', // Azul Premium
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#0f172a',
-                            pointBorderColor: '#3b82f6',
-                            pointHoverBackgroundColor: '#60a5fa',
-                            pointBorderWidth: 2,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            fill: true,
-                            tension: 0.4 // Curva suavizada
+                            label: 'Peso Real', data: progressData,
+                            borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3, pointBackgroundColor: '#0f172a', pointBorderColor: '#3b82f6',
+                            pointHoverBackgroundColor: '#60a5fa', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.35
                         },
                         {
-                            label: 'Objetivo de Peso',
-                            data: targetData,
-                            borderColor: '#10b981', // Verde Esmeralda
-                            borderDash: [5, 5],
-                            borderWidth: 2,
-                            pointRadius: 0, 
-                            fill: false,
-                            tension: 0.4
+                            label: 'Objetivo', data: targetData,
+                            borderColor: '#10b981', borderDash: [4, 4],
+                            borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981', pointBorderColor: '#0f172a', fill: false, tension: 0.35
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: '600' }, usePointStyle: true, boxWidth: 8 }
-                        },
+                        legend: { position: 'top', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10, weight: '700' }, usePointStyle: true, boxWidth: 6 } },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleColor: '#e2e8f0',
-                            bodyColor: '#e2e8f0',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 10,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#e2e8f0', bodyColor: '#e2e8f0', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 10,
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
@@ -1111,18 +980,107 @@
                         }
                     },
                     scales: {
-                        y: {
-                            min: minScale,
-                            max: maxScale,
-                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
-                            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 }, stepSize: 5 }
-                        },
-                        x: {
-                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
-                            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } }
-                        }
+                        y: { min: minScale, max: maxScale, grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } } },
+                        x: { grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } } }
                     }
                 }
+            });
+        }
+
+        function processAndRenderCorrelation() {
+            const container = document.getElementById('correlacion-container');
+            container.innerHTML = '';
+            
+            if (globalProcessedData.length === 0) {
+                container.innerHTML = `<div class="py-12 flex flex-col items-center justify-center text-slate-500"><i class="ph-duotone ph-warning text-5xl mb-3"></i><p>Faltan datos para la correlación.</p></div>`;
+                return;
+            }
+
+            globalProcessedData.forEach((person, index) => {
+                const healthHistory = healthGlobalUsersMap[person.nombre] || [];
+                
+                // Finanzas Actuales
+                const salesProg = person.ventas;
+                const salesMeta = person.meta;
+                const salesPct = person.percentage;
+                const salesFalta = Math.max(0, salesMeta - salesProg);
+
+                // Salud Global
+                const validHealth = healthHistory.filter(h => h.progreso !== null);
+                const initialWeight = healthHistory[0] && healthHistory[0].progreso ? healthHistory[0].progreso : null;
+                const currentWeight = validHealth.length > 0 ? validHealth[validHealth.length - 1].progreso : null;
+                
+                // Objetivo final de salud (la última fecha registrada)
+                const finalTarget = healthHistory.length > 0 && healthHistory[healthHistory.length - 1].objetivo ? healthHistory[healthHistory.length - 1].objetivo : null;
+
+                let healthPct = 0;
+                let missingHealthPct = 0;
+                let weightStatusText = '--';
+
+                if (initialWeight && currentWeight && finalTarget) {
+                    const totalToLose = initialWeight - finalTarget;
+                    if (totalToLose > 0) {
+                        const lost = initialWeight - currentWeight;
+                        healthPct = Math.min(100, Math.max(0, (lost / totalToLose) * 100));
+                        missingHealthPct = 100 - healthPct;
+                        weightStatusText = currentWeight <= finalTarget ? '¡META ALCANZADA!' : `Faltan ${(currentWeight - finalTarget).toFixed(1)} lbs`;
+                    } else {
+                        healthPct = 100;
+                        weightStatusText = '¡META ALCANZADA!';
+                    }
+                } else {
+                    weightStatusText = 'Sin datos suficientes';
+                }
+
+                const cardHtml = `
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 p-4 lg:p-5 mb-4 animate-fade-in-up shadow-sm" style="animation-delay: ${index * 60}ms">
+                    <div class="flex flex-col lg:flex-row gap-5 lg:gap-8 items-center w-full">
+
+                        <!-- Columna 1: Rank y Nombre -->
+                        <div class="flex items-center gap-4 w-full lg:w-[25%] lg:flex-shrink-0">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-extrabold text-sm shadow-inner flex-shrink-0">${index + 1}</div>
+                            <div class="font-bold text-white text-lg tracking-tight truncate">${person.nombre}</div>
+                        </div>
+
+                        <!-- Columna 2: Progreso Finanzas -->
+                        <div class="w-full lg:w-[35%] flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-700/50 pt-4 lg:pt-0 lg:pl-6">
+                            <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-currency-dollar text-sm"></i> Meta Finanzas</span>
+                                <span class="text-xs font-extrabold text-white">${salesPct.toFixed(1)}%</span>
+                            </div>
+                            <div class="flex justify-between items-end mb-2 px-0.5">
+                                <div class="text-xl font-extrabold text-white tracking-tight leading-none">${currencyFormatter.format(salesProg)}</div>
+                                <div class="text-[10px] text-slate-400 font-medium">Meta: ${currencyFormatter.format(salesMeta)}</div>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(salesPct, 100)}%"></div>
+                            </div>
+                            <div class="text-[10px] font-bold text-slate-500 mt-1.5 text-right uppercase tracking-wide">
+                                ${salesFalta > 0 ? `Falta ${currencyFormatter.format(salesFalta)}` : '¡Meta Superada!'}
+                            </div>
+                        </div>
+
+                        <!-- Columna 3: Progreso Salud -->
+                        <div class="w-full lg:w-[40%] flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-700/50 pt-4 lg:pt-0 lg:pl-6">
+                             <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-heartbeat text-sm text-rose-400"></i> Progreso Salud (Global)</span>
+                                <span class="text-xs font-extrabold text-white">${healthPct.toFixed(1)}%</span>
+                            </div>
+                            <div class="flex justify-between items-end mb-2 px-0.5">
+                                <div class="text-xl font-extrabold text-white tracking-tight leading-none">${currentWeight !== null ? currentWeight + ' lbs' : '--'}</div>
+                                <div class="text-[10px] text-slate-400 font-medium">Obj. Final: ${finalTarget !== null ? finalTarget + ' lbs' : '--'}</div>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: ${healthPct}%"></div>
+                            </div>
+                             <div class="text-[10px] font-bold text-slate-500 mt-1.5 text-right uppercase tracking-wide">
+                                ${missingHealthPct > 0 ? `Falta ${missingHealthPct.toFixed(1)}% para la meta` : weightStatusText}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>`;
+                container.insertAdjacentHTML('beforeend', cardHtml);
             });
         }
 
