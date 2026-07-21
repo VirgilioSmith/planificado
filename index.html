@@ -116,8 +116,16 @@
             grid-template-columns: 3rem minmax(140px, 200px) 2fr 1fr 2rem; 
             align-items: center; gap: 1.25rem; padding: 1rem 1.25rem;
         }
+
+        /* GRID EXCLUSIVO PARA CORRELACIÓN (Para que el Status tenga espacio y respire) */
+        .correlation-row-container {
+            display: grid;
+            grid-template-columns: 3rem minmax(140px, 200px) 2fr 1.5fr 6rem; 
+            align-items: center; gap: 1.5rem; padding: 1rem 1.25rem;
+        }
+
         @media (max-width: 768px) {
-            .leaderboard-row-container {
+            .leaderboard-row-container, .correlation-row-container {
                 grid-template-columns: 2.5rem 1fr auto; grid-template-rows: auto auto; gap: 0.5rem; padding: 1rem;
             }
             .lb-rank { grid-column: 1; grid-row: 1; align-self: center; }
@@ -125,12 +133,12 @@
             .lb-amount { grid-column: 3; grid-row: 1; text-align: right; }
             .lb-progress { grid-column: 1 / -1; grid-row: 2; margin-top: 0.25rem; }
             .lb-chevron { display: none; }
+            .lb-status { display: none; } /* En móvil se oculta el status por espacio */
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-glow selection:text-white relative overflow-x-hidden">
 
-    <!-- Luces Ambientales -->
     <div class="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-600/5 blur-[120px] pointer-events-none z-0"></div>
     <div class="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/5 blur-[120px] pointer-events-none z-0"></div>
 
@@ -149,7 +157,6 @@
             </div>
         </div>
         
-        <!-- Controles de Vista -->
         <div class="flex items-center justify-between xl:justify-end gap-3 w-full xl:w-auto">
             <div class="flex p-1 bg-slate-900/90 border border-slate-700/60 rounded-xl backdrop-blur-xl relative overflow-x-auto shadow-inner custom-scrollbar">
                 <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-bold rounded-lg flex-shrink-0 border border-transparent">
@@ -175,7 +182,6 @@
     <main class="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-8 relative z-10">
         
         <div id="view-current" class="view-section view-active">
-            <!-- Tarjetas KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mb-8">
                 <div class="glass-panel p-6 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300 relative overflow-hidden group">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all"></div>
@@ -200,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- Lista Leaderboard -->
             <div class="glass-panel p-6">
                 <div class="hidden md:grid grid-cols-[3rem_minmax(140px,200px)_2fr_1fr_2rem] gap-5 px-5 pb-4 mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50">
                     <div class="text-center">POS</div><div>NOMBRE</div><div>PROGRESO HACIA LA META</div><div class="text-right">FACTURADO</div><div></div>
@@ -240,7 +245,6 @@
                 </div>
             </div>
 
-            <!-- SUB-VISTA: RANKING MATRIZ -->
             <div class="glass-panel overflow-hidden flex flex-col">
                 <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative">
                     <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
@@ -264,10 +268,7 @@
             </div>
 
             <div id="salud-container" class="grid grid-cols-1 gap-6">
-                <div class="py-16 flex flex-col items-center justify-center text-slate-500">
-                    <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]"></i>
-                    <p class="text-xs font-semibold tracking-widest uppercase">Calculando datos de salud...</p>
-                </div>
+                <!-- Data will be injected here -->
             </div>
         </div>
 
@@ -275,20 +276,16 @@
             <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
                 <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                     <i class="ph-fill ph-arrows-merge text-emerald-400 text-2xl drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"></i>
-                    Correlación Mensual (Finanzas vs. Salud)
+                    Correlación Mensual de Salud y Finanzas
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5 font-medium">Vista comparativa del mes actual: cumplimiento de meta financiera junto a la meta de peso mensual.</p>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Vista comparativa del mes actual enfocada en las metas de dinero y salud.</p>
             </div>
             
-            <!-- Cabecera estilo Leaderboard para Correlación -->
-            <div class="hidden md:grid grid-cols-[3rem_minmax(140px,200px)_2fr_1fr_2rem] gap-5 px-5 pb-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50 mx-4">
-                <div class="text-center">POS</div><div>NOMBRE</div><div>BARRAS DE PROGRESO (MES ACTUAL)</div><div class="text-right">MÉTRICAS</div><div>ESTADO</div>
+            <div class="hidden md:grid correlation-row-container px-5 pb-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50 mx-4">
+                <div class="text-center">POS</div><div>NOMBRE</div><div>BARRAS DE PROGRESO (MES ACTUAL)</div><div class="text-right">MÉTRICAS</div><div class="text-center">ESTADO</div>
             </div>
             <div id="correlacion-container" class="flex flex-col gap-4">
-                <div class="py-16 flex flex-col items-center justify-center text-slate-500">
-                    <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]"></i>
-                    <p class="text-xs font-semibold tracking-widest uppercase">Generando correlación dual...</p>
-                </div>
+                <!-- Data will be injected here -->
             </div>
         </div>
 
@@ -802,47 +799,49 @@
                 history.sort((a,b) => a.dateObj - b.dateObj); 
 
                 const validProgress = history.filter(h => h.progreso !== null);
+                
+                // --- KPI: Peso Actual ---
                 let currentWeight = validProgress.length > 0 ? validProgress[validProgress.length - 1].progreso : '--';
                 
+                // --- KPI: Meta del Mes Actual ---
                 const today = new Date();
                 const currentMonthNameStr = fullMonthNames[today.getMonth()] + ' ' + today.getFullYear();
                 const currentMonthData = history.find(h => h.mes.toLowerCase() === currentMonthNameStr) || history[history.length - 1] || {};
-                let currentTarget = currentMonthData.objetivo ? currentMonthData.objetivo : '--';
+                let currentMonthTarget = currentMonthData.objetivo ? currentMonthData.objetivo : '--';
 
-                // Generar tarjetas de porcentaje mensual (Fórmula: Objetivo / Peso Actual * 100)
+                // --- KPI: Meta Objetivo Final ---
+                const finalRecord = history[history.length - 1] || {};
+                let finalTarget = finalRecord.objetivo ? finalRecord.objetivo : '--';
+
+                // Cálculo del % alcanzado (Meta Mes Actual / Peso Actual)
+                let pctMesHtml = '';
+                if (currentMonthTarget !== '--' && currentWeight !== '--') {
+                    const pctLogro = ((currentMonthTarget / currentWeight) * 100).toFixed(1);
+                    pctMesHtml = `<div class="mt-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[11px] font-bold inline-flex items-center gap-1.5"><i class="ph-fill ph-check-circle"></i> Logro alcanzado: ${pctLogro}%</div>`;
+                }
+
+                // Generar tarjetas de cumplimiento mensual SIN el nombre del mes
                 const monthCardsHtml = history.map(h => {
-                    const mName = formatMonthName(h.mes);
-                    if (!h.progreso || !h.objetivo) {
-                         return `
-                            <div class="bg-slate-800/30 p-3 rounded-xl border border-slate-700/50 min-w-[140px] flex-shrink-0 opacity-60">
-                                <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">${mName}</div>
-                                <div class="text-sm font-bold text-slate-600 mt-2">Sin datos</div>
-                            </div>`;
-                    }
+                    if (!h.progreso || !h.objetivo) return '';
                     
-                    // Cálculo de porcentaje: (Objetivo / Progreso) * 100
-                    let pct = (h.objetivo / h.progreso) * 100;
-                    if(pct > 100) pct = 100; // Cap a 100% si ya se pasó
-                    
-                    const faltan = Math.max(0, h.progreso - h.objetivo);
+                    let pct = ((h.objetivo / h.progreso) * 100);
                     const isSuccess = h.progreso <= h.objetivo;
+                    const faltan = Math.max(0, h.progreso - h.objetivo);
 
                     return `
-                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 min-w-[150px] flex-shrink-0 relative overflow-hidden transition-all hover:bg-slate-700/80">
-                        ${isSuccess ? '<div class="absolute top-0 right-0 w-10 h-10 bg-emerald-500/20 rounded-bl-full"></div>' : ''}
-                        <div class="text-[11px] font-bold text-slate-300 mb-2 uppercase tracking-wide flex justify-between">
-                            ${mName}
-                            ${isSuccess ? '<i class="ph-fill ph-check-circle text-emerald-400"></i>' : ''}
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="text-2xl font-extrabold ${isSuccess ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 'text-white'} tracking-tight mb-0.5">
+                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 min-w-[130px] flex-shrink-0 relative overflow-hidden transition-all hover:bg-slate-700/80">
+                        ${isSuccess ? '<div class="absolute top-0 right-0 w-8 h-8 bg-emerald-500/20 rounded-bl-full"></div>' : ''}
+                        
+                        <div class="flex flex-col mb-1">
+                            <div class="text-3xl font-extrabold ${isSuccess ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 'text-white'} tracking-tight">
                                 ${pct.toFixed(1)}%
                             </div>
-                            <div class="text-[10px] text-slate-400 font-medium">Meta: ${h.objetivo} lbs</div>
+                            <div class="text-[11px] text-slate-400 font-medium tracking-wide">Meta: ${h.objetivo} lbs</div>
                         </div>
+                        
                         <div class="mt-2 pt-2 border-t border-slate-700/50">
                             <div class="text-[11px] font-bold ${isSuccess ? 'text-emerald-400' : 'text-rose-400'}">
-                                ${isSuccess ? '¡Meta Lograda!' : `Faltan ${faltan.toFixed(1)} lbs`}
+                                ${isSuccess ? '<i class="ph-bold ph-check"></i> Logrado' : `Faltan ${faltan.toFixed(1)} lbs`}
                             </div>
                         </div>
                     </div>`;
@@ -861,15 +860,24 @@
                                         ${name}
                                     </h4>
                                     
+                                    <!-- 1. Peso Actual -->
                                     <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner mb-4 relative overflow-hidden">
                                         <div class="absolute right-[-10px] bottom-[-10px] w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
-                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-fill ph-scales text-blue-400"></i> Peso Actual Registrado</p>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-fill ph-scales text-blue-400"></i> Peso Actual</p>
                                         <p class="text-4xl font-extrabold text-white tracking-tight">${currentWeight} <span class="text-sm font-normal text-slate-400">lbs</span></p>
                                     </div>
                                     
-                                    <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner">
+                                    <!-- 2. Meta del Mes Actual -->
+                                    <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner mb-4">
                                         <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-bold ph-target text-indigo-400"></i> Meta del Mes Actual</p>
-                                        <p class="text-3xl font-extrabold text-indigo-400 tracking-tight">${currentTarget} <span class="text-sm font-normal text-indigo-300/60">lbs</span></p>
+                                        <p class="text-3xl font-extrabold text-indigo-400 tracking-tight">${currentMonthTarget} <span class="text-sm font-normal text-indigo-300/60">lbs</span></p>
+                                        ${pctMesHtml}
+                                    </div>
+
+                                    <!-- 3. Meta Objetivo Final -->
+                                    <div class="bg-emerald-900/10 p-4 rounded-xl border border-emerald-500/20 shadow-inner">
+                                        <p class="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-bold ph-flag text-emerald-500"></i> Meta Objetivo Final</p>
+                                        <p class="text-2xl font-extrabold text-emerald-400/90 tracking-tight">${finalTarget} <span class="text-sm font-normal text-emerald-500/50">lbs</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -882,9 +890,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Tarjetas de Historial Mensual -->
                                 <div class="mt-5 pt-4 border-t border-slate-800/80">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank text-blue-400"></i> Historial de Cumplimiento Mensual</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank text-blue-400"></i> Cumplimiento Mensual</p>
                                     <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-2">
                                         ${monthCardsHtml}
                                     </div>
@@ -968,14 +975,13 @@
             globalProcessedData.forEach((person, index) => {
                 const healthHistory = healthGlobalUsersMap[person.nombre] || [];
                 
-                // --- DATOS FINANZAS (Mes Actual) ---
+                // --- DATOS FINANZAS ---
                 const salesProg = person.ventas;
                 const salesMeta = person.meta;
                 const salesPct = person.percentage;
                 const salesFalta = Math.max(0, salesMeta - salesProg);
 
-                // --- DATOS SALUD (Mes Actual) ---
-                // Buscamos específicamente el objetivo y progreso del mes actual para ser realistas
+                // --- DATOS SALUD ---
                 const currentMonthHealth = healthHistory.find(h => h.mes.toLowerCase() === currentMonthNameStr) || healthHistory[healthHistory.length - 1] || {};
                 
                 const healthMeta = currentMonthHealth.objetivo || 0;
@@ -993,23 +999,21 @@
                                  (index === 1 ? "bg-slate-300/10 text-slate-300 border-slate-400/40" : 
                                  (index === 2 ? "bg-amber-800/10 text-amber-600 border-amber-700/40" : "bg-slate-800 border-slate-700 text-slate-400"));
 
-                // Generación de la fila Leaderboard idéntica a la pantalla principal
+                // UTILIZAMOS correlation-row-container (GRID DEDICADO)
                 const rowHtml = `
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 cursor-default animate-fade-in-up" style="animation-delay: ${index * 60}ms">
-                    <div class="leaderboard-row-container py-5">
+                    <div class="correlation-row-container">
                         
-                        <!-- Columna: Rank -->
+                        <!-- Rank -->
                         <div class="lb-rank flex justify-center">
                             <div class="flex items-center justify-center w-9 h-9 rounded-full ${rankClass} border font-extrabold text-xs shadow-inner">${index + 1}</div>
                         </div>
                         
-                        <!-- Columna: Nombre -->
+                        <!-- Nombre -->
                         <div class="lb-name font-bold text-white text-lg tracking-tight">${person.nombre}</div>
                         
-                        <!-- Columna: Barras de Progreso Apiladas -->
+                        <!-- Barras de Progreso -->
                         <div class="lb-progress flex flex-col justify-center gap-4">
-                            
-                            <!-- Barra de Finanzas -->
                             <div>
                                 <div class="flex justify-between items-center mb-1.5 px-0.5">
                                     <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1"><i class="ph-fill ph-currency-dollar text-xs"></i> Meta de Ingresos</span>
@@ -1019,8 +1023,6 @@
                                     <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(salesPct, 100)}%"></div>
                                 </div>
                             </div>
-                            
-                            <!-- Barra de Salud (Calculada sobre meta mensual) -->
                             <div>
                                 <div class="flex justify-between items-center mb-1.5 px-0.5">
                                     <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1"><i class="ph-fill ph-heartbeat text-rose-400 text-xs"></i> Meta de Salud Mensual</span>
@@ -1030,32 +1032,26 @@
                                     <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(healthPct, 100)}%"></div>
                                 </div>
                             </div>
-                            
                         </div>
                         
-                        <!-- Columna: Montos y Objetivos -->
+                        <!-- Montos -->
                         <div class="lb-amount flex flex-col justify-center gap-4 text-right">
-                            
-                            <!-- Montos Finanzas -->
                             <div class="flex flex-col">
                                 <div class="text-base sm:text-lg font-extrabold text-white tracking-tight leading-none">${currencyFormatter.format(salesProg)}</div>
                                 <div class="text-[10px] font-semibold text-slate-400 mt-1">Meta: ${currencyFormatter.format(salesMeta)}</div>
                             </div>
-                            
-                            <!-- Montos Salud -->
                             <div class="flex flex-col">
                                 <div class="text-base sm:text-lg font-extrabold text-white tracking-tight leading-none">${healthProgreso > 0 ? healthProgreso + ' lbs' : '--'}</div>
                                 <div class="text-[10px] font-semibold text-slate-400 mt-1">Meta: ${healthMeta > 0 ? healthMeta + ' lbs' : '--'}</div>
                             </div>
-                            
                         </div>
 
-                        <!-- Columna: Status Texto Corto -->
-                        <div class="lb-chevron hidden md:flex flex-col items-center justify-center gap-6 text-[9px] font-extrabold uppercase tracking-widest">
-                            <div class="${salesFalta > 0 ? 'text-blue-500/60' : 'text-emerald-400/80 px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20'}">
+                        <!-- Estado (Con su propio espacio) -->
+                        <div class="lb-status hidden md:flex flex-col justify-center items-center gap-6 text-[9px] font-extrabold uppercase tracking-widest text-center">
+                            <div class="${salesFalta > 0 ? 'text-blue-500/60 w-full' : 'text-emerald-400 w-full py-1 bg-emerald-500/10 rounded border border-emerald-500/20'}">
                                 ${salesFalta > 0 ? 'En curso' : 'Logrado'}
                             </div>
-                            <div class="${healthFalta > 0 || healthProgreso === 0 ? 'text-emerald-500/60' : 'text-emerald-400/80 px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20'}">
+                            <div class="${healthFalta > 0 || healthProgreso === 0 ? 'text-emerald-500/60 w-full' : 'text-emerald-400 w-full py-1 bg-emerald-500/10 rounded border border-emerald-500/20'}">
                                 ${healthFalta > 0 || healthProgreso === 0 ? 'En curso' : 'Logrado'}
                             </div>
                         </div>
