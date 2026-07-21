@@ -15,20 +15,20 @@
                     },
                     colors: {
                         brand: {
-                            glow: '#3b82f6', /* Ajustado a un azul más similar a la imagen */
-                            dark: '#0f172a', /* Ajustado al fondo de la imagen */
+                            glow: '#3b82f6', 
+                            dark: '#0f172a', 
                             surface: 'rgba(30, 41, 59, 0.6)',
-                            card: '#1e293b' /* Color de tarjeta similar a la imagen */
+                            card: '#1e293b' 
                         }
                     },
                     animation: {
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards', /* Ligeramente más suave */
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards', 
                         'glow-pulse': 'glowPulse 3s infinite alternate',
                     },
                     keyframes: {
                         fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(15px)' }, /* Movimiento más sutil */
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
                         glowPulse: {
@@ -42,20 +42,22 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Librería para la gráfica evolutiva de Salud -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; /* Fondo base adaptado a la imagen */
+            background-color: #0f172a; 
             color: #e2e8f0;
         }
 
         :root {
-            --brand-blue: #3b82f6; /* El azul principal */
+            --brand-blue: #3b82f6; 
             --brand-glow: #60a5fa;
-            --brand-success: #10b981; /* Verde esmeralda para éxito */
+            --brand-success: #10b981; 
             --brand-success-glow: rgba(16, 185, 129, 0.2);
-            --brand-current-month: #8b5cf6; /* Morado distintivo para mes actual */
+            --brand-current-month: #8b5cf6; 
         }
 
         .progress-bar-fill {
@@ -72,8 +74,8 @@
         .glass-panel {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.5) 100%);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); /* Sombra más suave */
-            border-radius: 20px; /* Bordes de la imagen */
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); 
+            border-radius: 20px; 
         }
 
         .glass-header {
@@ -100,7 +102,6 @@
             transition: background-color 0.3s ease;
         }
         
-        /* Sombra de profundidad al deslizar la matriz */
         .sticky-col-nombre::after {
             content: ''; position: absolute; top: 0; right: -20px; width: 20px; height: 100%;
             background: linear-gradient(to right, rgba(15,23,42,0.8), transparent); 
@@ -108,7 +109,6 @@
         }
         .is-scrolled .sticky-col-nombre::after { opacity: 1; }
 
-        /* Efecto hover unificado en filas de la matriz sin bordes rígidos */
         .matrix-row { transition: background-color 0.2s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
         .matrix-row:hover,
         .matrix-row:hover .sticky-col-racha, 
@@ -116,16 +116,12 @@
             background-color: rgba(51, 65, 85, 0.4) !important; 
         }
 
-        /* Celdas estilo píldora flotante (sin bordes cuadrados) */
-        .matrix-cell-wrapper {
-            padding: 4px 8px;
-        }
+        .matrix-cell-wrapper { padding: 4px 8px; }
         .matrix-cell-inner {
             width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
             border-radius: 12px; padding: 8px 4px; transition: all 0.3s ease;
         }
 
-        /* Colores más apagados y elegantes para la matriz */
         .matrix-cell-success .matrix-cell-inner {
             background: rgba(16, 185, 129, 0.08);
             border: 1px solid rgba(16, 185, 129, 0.15);
@@ -141,19 +137,17 @@
             border: 1px dashed rgba(6, 182, 212, 0.2);
         }
 
-        /* Botón de Segmento (Toggle) Activo */
         .toggle-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .toggle-btn-active { 
-            background: rgba(59, 130, 246, 0.15); /* Azul translúcido */
-            color: #60a5fa; /* Azul vibrante */
+            background: rgba(59, 130, 246, 0.15); 
+            color: #60a5fa; 
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2); 
             border-color: rgba(59, 130, 246, 0.3);
         }
 
-        /* ── Ajustes del Leaderboard según imagen ── */
         .leaderboard-row-container {
             display: grid;
-            grid-template-columns: 3rem minmax(150px, auto) 2fr 1fr 2rem; /* Columna de nombre adaptable */
+            grid-template-columns: 3rem minmax(150px, auto) 2fr 1fr 2rem; 
             align-items: center;
             gap: 1.5rem;
             padding: 1rem 1.5rem;
@@ -197,8 +191,8 @@
             </div>
         </div>
         
+        <!-- Toggle Premium Estilo iOS Integrando Salud -->
         <div class="flex items-center justify-between xl:justify-end gap-4 w-full xl:w-auto">
-            <!-- Toggle Premium Estilo iOS -->
             <div class="flex p-1 bg-slate-900/80 border border-slate-700/50 rounded-xl backdrop-blur-xl relative overflow-x-auto shadow-inner">
                 <button id="btn-view-current" onclick="switchView('current')" class="toggle-btn toggle-btn-active flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
                     <i class="ph-bold ph-chart-polar text-lg"></i>
@@ -207,6 +201,10 @@
                 <button id="btn-view-historical" onclick="switchView('historical')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
                     <i class="ph-bold ph-squares-four text-lg"></i>
                     <span>Histórico</span>
+                </button>
+                <button id="btn-view-salud" onclick="switchView('salud')" class="toggle-btn text-slate-400 hover:text-slate-200 flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg flex-shrink-0 border border-transparent">
+                    <i class="ph-bold ph-heartbeat text-lg text-rose-400"></i>
+                    <span>Salud</span>
                 </button>
             </div>
             
@@ -325,6 +323,28 @@
             </div>
         </div>
 
+        <!-- ================= VISTA: SALUD Y FITNESS ================= -->
+        <div id="view-salud" class="view-section view-hidden">
+            <!-- Header de la sección de salud -->
+            <div class="glass-panel px-6 py-6 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+                    <i class="ph-fill ph-heartbeat text-rose-400 text-2xl drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]"></i>
+                    Progreso de Salud y Pérdida de Peso
+                </h3>
+                <p class="text-sm text-slate-400 mt-1 font-medium">
+                    Seguimiento mensual de peso corporal contra los objetivos establecidos. (En LIBRAS)
+                </p>
+            </div>
+
+            <!-- Contenedor dinámico de gráficas por usuario -->
+            <div id="salud-container" class="grid grid-cols-1 gap-6">
+                <div class="py-12 flex flex-col items-center justify-center text-slate-500">
+                    <i class="ph-duotone ph-circle-notch animate-spin text-6xl mb-5 text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]"></i>
+                    <p class="text-sm font-semibold tracking-widest uppercase">Calculando Metas de Salud...</p>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -332,6 +352,8 @@
         const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
         const currentDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
         const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=2095726805`;
+        // URL NUEVA DE SALUD AÑADIDA SIN TOCAR LO DEMÁS
+        const healthDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=1682435962`;
 
         const leaderboardContainer = document.getElementById('leaderboard-container');
         const matrixContainer = document.getElementById('matrix-container');
@@ -347,6 +369,9 @@
         const currencyFormatter = new Intl.NumberFormat('en-US', {
             style: 'currency', currency: 'USD', maximumFractionDigits: 0
         });
+
+        // Almacenar gráficos para poder destruirlos al refrescar
+        let chartInstances = {};
 
         // ── ESTADO GLOBAL Y PREDICCIÓN ──
         let globalProcessedData = [];
@@ -378,6 +403,14 @@
             return replaced.replace(/\b\w/g, l => l.toUpperCase());
         }
 
+        // Parseador de meses para ordenar el historial cronológicamente (Ej. "julio 2026")
+        function parseSpanishDate(str) {
+            const parts = str.toLowerCase().trim().split(/\s+/);
+            const m = fullMonthNames.indexOf(parts[0]);
+            const y = parseInt(parts[1]) || new Date().getFullYear();
+            return new Date(y, m > -1 ? m : 0, 1);
+        }
+
         function handleMatrixScroll() {
             if (matrixScrollWrapper.scrollLeft > 5) {
                 matrixScrollWrapper.classList.add('is-scrolled');
@@ -387,7 +420,8 @@
         }
 
         function switchView(viewName) {
-            const views = ['current', 'historical'];
+            // Añadida la vista "salud" a las opciones
+            const views = ['current', 'historical', 'salud'];
             
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
@@ -455,7 +489,9 @@
             try {
                 let currentCsvData = "";
                 let historicalCsvData = "";
+                let healthCsvData = "";
 
+                // 1. Fetch Current Metas
                 try {
                     const currentResponse = await fetch(currentDataUrl);
                     if (!currentResponse.ok) throw new Error(`HTTP ${currentResponse.status}`);
@@ -465,22 +501,34 @@
                     throw new Error("No pudimos conectar con los datos del mes actual. Revisa el enlace: " + err.message);
                 }
 
+                // 2. Fetch Historical Metas
                 try {
                     const historicalResponse = await fetch(historicalDataUrl);
                     if (historicalResponse.ok) {
                         const textData = await historicalResponse.text();
-                        if (!textData.trim().startsWith('<!DOCTYPE html>')) {
-                            historicalCsvData = textData;
-                        }
+                        if (!textData.trim().startsWith('<!DOCTYPE html>')) historicalCsvData = textData;
                     }
                 } catch (err) {
-                    console.warn("No se pudo obtener el histórico. Se ignorará esta vista temporalmente.", err);
+                    console.warn("No se pudo obtener el histórico.", err);
+                }
+
+                // 3. Fetch Salud Data (NUEVO)
+                try {
+                    const healthResponse = await fetch(healthDataUrl);
+                    if (healthResponse.ok) {
+                        const textData = await healthResponse.text();
+                        if (!textData.trim().startsWith('<!DOCTYPE html>')) healthCsvData = textData;
+                    }
+                } catch(err) {
+                    console.warn("No se pudo obtener los datos de Salud.", err);
                 }
 
                 const currentRaw = parseCSV(currentCsvData);
                 const historicalRaw = historicalCsvData ? parseCSV(historicalCsvData) : [];
+                const healthRaw = healthCsvData ? parseCSV(healthCsvData) : [];
                 
                 processAndRenderData(currentRaw, historicalRaw);
+                processAndRenderHealthData(healthRaw); // NUEVO PROCESO
 
             } catch (error) {
                 console.error("Error General:", error);
@@ -548,7 +596,6 @@
                      history.push({ month: currentMonthName, ventas: ventas, meta: meta, percentage: percentage, isOverGoal: ventas >= meta });
                 }
 
-                // Lógica de racha
                 let streak = 0;
                 for(let i = history.length - 1; i >= 0; i--) {
                     if (history[i].month === currentMonthName) continue; 
@@ -556,7 +603,6 @@
                     else break; 
                 }
 
-                // Lógica de Total Acumulado Histórico
                 const totalAcumulado = history.reduce((sum, h) => sum + (h.ventas || 0), 0);
 
                 return { id: `user-${index}`, nombre, ventas, meta, percentage, history, streak, totalAcumulado };
@@ -578,20 +624,16 @@
             processedData.forEach((person, index) => {
                 const rank = index + 1;
                 const visualPercentage = Math.min(person.percentage, 100);
-                
-                // Calcular cuánto falta para la meta
                 const falta = Math.max(0, person.meta - person.ventas);
                 const faltaMonto = falta > 0 ? `FALTA ${currencyFormatter.format(falta)}` : '¡META SUPERADA!';
 
-                // Colores basados en la imagen (Azul por defecto)
-                let barColorClass = "bg-[#3b82f6]"; // Azul de la barra
-                let barBgClass = "bg-[#1e293b]"; // Fondo oscuro de la barra
+                let barColorClass = "bg-[#3b82f6]"; 
+                let barBgClass = "bg-[#1e293b]"; 
                 let rankClass = "bg-[#1e293b] text-slate-400 border-slate-700";
 
-                // Ranking colors (1, 2, 3)
                 if (rank === 1) rankClass = "bg-[#1e293b] text-amber-500 border-amber-500/50";
                 if (rank === 2) rankClass = "bg-[#1e293b] text-slate-300 border-slate-400/50";
-                // Acordeón simplificado con Objetivos (Banderitas en vez de línea)
+                
                 const historyCardsHtml = person.history.map(h => {
                     if (h.meta === 0 && h.ventas === 0) return '';
                     const isWin = h.isOverGoal;
@@ -600,17 +642,17 @@
                     let bgCardClass = "bg-slate-800/50 border-slate-700/50";
                     let accentTextClass = "text-slate-400";
                     let titleIcon = "";
-                    let flagBg = "bg-[#0f172a] text-slate-300 border border-slate-600/50 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"; // Objetivo súper resaltado
+                    let flagBg = "bg-[#0f172a] text-slate-300 border border-slate-600/50 shadow-[0_3px_8px_rgba(0,0,0,0.5)]"; 
 
                     if (isCurrentMonth) {
                         bgCardClass = "bg-purple-900/20 border-purple-500/30";
                         accentTextClass = "text-purple-300";
                         titleIcon = `<i class="ph-fill ph-star text-purple-400 text-[10px] mr-1"></i>`;
-                        flagBg = "bg-slate-800/80 text-purple-300 border border-purple-500/20"; /* Sombreado apagado */
+                        flagBg = "bg-slate-800/80 text-purple-300 border border-purple-500/20"; 
                     } else if (isWin) {
                         bgCardClass = "bg-emerald-900/10 border-emerald-500/30";
                         accentTextClass = "text-emerald-400";
-                        flagBg = "bg-slate-800/80 text-emerald-400 border border-emerald-500/20"; /* Sombreado apagado */
+                        flagBg = "bg-slate-800/80 text-emerald-400 border border-emerald-500/20"; 
                     } else {
                         flagBg = "bg-slate-800/80 text-slate-400 border border-slate-600/30";
                     }
@@ -622,32 +664,19 @@
                                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${isWin?'bg-emerald-500/20 text-emerald-400':'bg-slate-700 text-slate-300'}">${h.percentage.toFixed(0)}%</span>
                             </div>
                             <div class="font-bold text-white text-base mb-2">${currencyFormatter.format(h.ventas)}</div>
-                            
-                            <!-- Etiqueta Banderita para el Objetivo -->
                             <div class="mt-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ${flagBg} text-[10px] font-bold tracking-wider w-max mx-auto">
                                 <i class="ph-bold ph-target text-sm"></i> ${currencyFormatter.format(h.meta)}
                             </div>
                         </div>`;
                 }).join('');
 
-                // Estructura idéntica a la imagen
                 const rowHtml = `
                 <div class="bg-brand-dark border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/50 cursor-pointer group animate-fade-in-up" style="animation-delay: ${index * 80}ms" onclick="toggleAccordion('${person.id}')">
-                    
                     <div class="leaderboard-row-container">
-                        <!-- POS -->
                         <div class="lb-rank flex justify-center">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full ${rankClass} border font-bold text-sm shadow-inner">
-                                ${rank}
-                            </div>
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full ${rankClass} border font-bold text-sm shadow-inner">${rank}</div>
                         </div>
-
-                        <!-- NOMBRE -->
-                        <div class="lb-name font-bold text-white text-lg tracking-tight">
-                            ${person.nombre}
-                        </div>
-
-                        <!-- PROGRESO -->
+                        <div class="lb-name font-bold text-white text-lg tracking-tight">${person.nombre}</div>
                         <div class="lb-progress flex flex-col justify-center">
                             <div class="flex justify-between items-center mb-1.5 px-1">
                                 <span class="text-sm font-bold text-white">${person.percentage.toFixed(1)}%</span>
@@ -657,22 +686,14 @@
                                 <div class="progress-bar-fill h-full rounded-full ${barColorClass}" style="width: 0%;" data-width="${visualPercentage}%"></div>
                             </div>
                         </div>
-
-                        <!-- FACTURADO -->
                         <div class="lb-amount flex flex-col items-end md:items-end justify-center">
-                            <div class="text-xl font-bold text-white tracking-tight">
-                                ${currencyFormatter.format(person.ventas)}
-                            </div>
+                            <div class="text-xl font-bold text-white tracking-tight">${currencyFormatter.format(person.ventas)}</div>
                             <div class="text-[10px] text-slate-500 uppercase tracking-wide mt-1">${faltaMonto}</div>
                         </div>
-                        
-                        <!-- CHEVRON -->
                         <div class="lb-chevron flex items-center justify-center text-slate-500">
                             <i class="ph-bold ph-caret-down text-lg transition-transform duration-300" id="chevron-${person.id}"></i>
                         </div>
                     </div>
-
-                    <!-- Acordeón Histórico -->
                     <div id="acc-${person.id}" class="hidden border-t border-slate-800 bg-slate-900/50 p-4 rounded-b-2xl cursor-default" onclick="event.stopPropagation()">
                         <h4 class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest flex items-center gap-2">
                             <i class="ph-fill ph-clock-counter-clockwise text-slate-500"></i> Historial Reciente
@@ -685,7 +706,6 @@
                 leaderboardContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
 
-            // Activar animación de barras
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     document.querySelectorAll('.progress-bar-fill').forEach(bar => { bar.style.width = bar.getAttribute('data-width'); });
@@ -709,7 +729,6 @@
                         person.history.push({
                             month: `${fullMonthNames[i]}-${currentYear}`,
                             ventas: 0, 
-                            /* Lógica exponencial: se multiplica por 2 cada mes progresivamente */
                             meta: baseMeta * Math.pow(2, i - currentMonthIdx),
                             percentage: 0, isOverGoal: false, isPrediction: true 
                         });
@@ -719,10 +738,8 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            
-            // Ajustamos el grid (sin la columna de Acumulado) - Fijado para abarcar el 100% de la pantalla y evitar el scroll
             const gridStyle = `grid-template-columns: 50px minmax(100px, 1.5fr) repeat(${colsCount}, minmax(60px, 1fr));`; 
-            matrixScrollInner.style.minWidth = '100%'; // Eliminamos el ancho duro en píxeles
+            matrixScrollInner.style.minWidth = '100%'; 
 
             let headerHtml = `
                 <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800" style="z-index: 20;">Racha</div>
@@ -739,7 +756,6 @@
                 let titleColor = isCurrent ? 'text-purple-400' : (isPredictionCol ? 'text-cyan-400' : 'text-slate-300');
                 let bgHeader = isCurrent ? 'bg-purple-900/10' : (isPredictionCol ? 'bg-cyan-900/5' : '');
 
-                // Abreviatura para proyecciones (Ej: "Sep 2026")
                 let displayName = formatMonthName(month);
                 if (isPredictionCol) {
                     const parts = month.split('-');
@@ -760,12 +776,10 @@
             matrixHeader.style = gridStyle;
             matrixHeader.innerHTML = headerHtml;
 
-            // Ordenar por Total Acumulado Descendente (Lógica interna, sin mostrar el total en columnas)
             matrixData.sort((a, b) => b.totalAcumulado - a.totalAcumulado);
             matrixContainer.innerHTML = '';
             
             matrixData.forEach((person, index) => {
-                // Racha: Fuego solo para los impecables (>= 2). Si es 0, solo una raya.
                 let streakBadge = person.streak >= 2 
                     ? `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-md text-xs font-extrabold shadow-[0_0_10px_rgba(249,115,22,0.15)] flex items-center gap-1"><i class="ph-fill ph-fire"></i> ${person.streak}</span>` 
                     : person.streak === 1
@@ -785,14 +799,12 @@
                     let moneyColor = hist.isPrediction ? 'text-cyan-300 opacity-80' : (hist.isOverGoal ? 'text-emerald-400' : 'text-slate-200');
                     let pctClass = hist.isPrediction ? 'text-cyan-500/50' : (hist.isOverGoal ? 'text-emerald-400' : (hist.percentage >= 80 ? 'text-amber-400' : 'text-slate-400'));
                     
-                    // Colores de barra de progreso en matriz
                     let barColor = 'bg-slate-600';
                     if (hist.isPrediction) barColor = 'bg-cyan-500/30';
                     else if (hist.isOverGoal) barColor = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]';
                     else if (isCurrent) barColor = 'bg-purple-500';
                     else if (hist.percentage > 0) barColor = 'bg-blue-500';
 
-                    // Celdas sin borde lateral, flotantes
                     return `
                         <div class="matrix-cell-wrapper ${cellBgClass}">
                             <div class="matrix-cell-inner group-hover:scale-105 transition-transform">
@@ -803,7 +815,6 @@
                         </div>`;
                 }).join('');
 
-                // Fila sin bordes verticales, eliminando columna Total Acumulado
                 const rowHtml = `
                     <div class="matrix-grid-layout matrix-row animate-fade-in-up group" style="${gridStyle}; animation-delay: ${index * 30}ms">
                         <div class="sticky-col-racha flex justify-center items-center p-2 bg-slate-900 border-b border-slate-800/50">${streakBadge}</div>
@@ -815,49 +826,30 @@
             handleMatrixScroll();
         }
 
-        function updateStats(data) {
-            document.getElementById('stat-total-team').innerText = data.length;
-            document.getElementById('stat-achievers').innerText = data.filter(p => p.ventas >= p.meta).length;
-            document.getElementById('stat-total-money').innerText = currencyFormatter.format(data.reduce((s, p) => s + p.ventas, 0));
-        }
-
-        function setLoading(isLoading) {
-            loadingState.style.display = isLoading ? 'flex' : 'none';
-        }
-
-        // Lógica de cálculo y renderizado del Salón de la Fama / Matriz de Ranking
         function calculateAndRenderRanking(data) {
             if(data.length === 0) return;
             const container = document.getElementById('ranking-matrix-container');
             container.innerHTML = '';
 
-            // 1. Extraer todos los meses históricos (sin contar las proyecciones)
             const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
             const colsCount = historyMonths.length;
-
-            // Ajustamos el grid para la matriz de ranking para adaptarse automáticamente al ancho total
             const gridStyle = `grid-template-columns: minmax(100px, 1.5fr) repeat(${colsCount}, minmax(40px, 1fr));`;
 
-            // 2. Asignar ranking por cada mes
             historyMonths.forEach(month => {
                 let monthPerformances = data.map(p => ({
                     person: p,
                     h: p.history.find(x => x.month === month)
                 })).filter(item => item.h && item.h.ventas > 0);
                 
-                // Ordenar de mayor a menor ventas
                 monthPerformances.sort((a, b) => b.h.ventas - a.h.ventas);
                 
-                // Asignar el rank a ese historial específico
                 monthPerformances.forEach((mp, index) => {
                     mp.h.rank = index + 1;
                 });
             });
 
-            // 3. Ordenar asesores por facturación acumulada total para visualizarlos de mejor a peor
             const rankingData = [...data].sort((a, b) => b.totalAcumulado - a.totalAcumulado);
 
-            // 4. Renderizar Cabecera
             let headerHtml = `<div class="matrix-grid-layout bg-slate-800/80 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
             headerHtml += `<div class="sticky-col-nombre flex items-center p-2 sm:p-3 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-slate-900 border-b border-slate-800 z-20" style="left: 0;">Nombre</div>`;
             
@@ -867,14 +859,10 @@
             headerHtml += `</div>`;
             container.insertAdjacentHTML('beforeend', headerHtml);
 
-            // 5. Renderizar Filas
             rankingData.forEach((person, index) => {
                 let rowHtml = `<div class="matrix-grid-layout matrix-row animate-fade-in-up transition-colors" style="${gridStyle}; animation-delay: ${index * 30}ms">`;
-                
-                // Nombre
                 rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-[11px] sm:text-sm whitespace-nowrap overflow-hidden text-ellipsis p-2 sm:p-3 bg-slate-900 border-b border-slate-800/50" style="left: 0; z-index: 5;">${person.nombre}</div>`;
 
-                // Celdas de cada mes
                 historyMonths.forEach(month => {
                     const h = person.history.find(x => x.month === month);
                     const rank = h ? h.rank : null;
@@ -900,6 +888,241 @@
 
                 rowHtml += `</div>`;
                 container.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
+        function updateStats(data) {
+            document.getElementById('stat-total-team').innerText = data.length;
+            document.getElementById('stat-achievers').innerText = data.filter(p => p.ventas >= p.meta).length;
+            document.getElementById('stat-total-money').innerText = currencyFormatter.format(data.reduce((s, p) => s + p.ventas, 0));
+        }
+
+        function setLoading(isLoading) {
+            loadingState.style.display = isLoading ? 'flex' : 'none';
+        }
+
+        // ==========================================
+        // NUEVA LÓGICA DE SALUD (AÑADIDA LIMPIAMENTE)
+        // ==========================================
+        function processAndRenderHealthData(data) {
+            const container = document.getElementById('salud-container');
+            container.innerHTML = '';
+            
+            // Si el sheet está vacío o falla
+            if(!data || data.length === 0) {
+                 container.innerHTML = `
+                    <div class="py-12 flex flex-col items-center justify-center text-slate-500">
+                        <i class="ph-duotone ph-warning text-6xl mb-4"></i>
+                        <p class="text-sm">No se encontraron registros de salud en el historial.</p>
+                    </div>`;
+                 return;
+            }
+
+            // Agrupar los datos por cada usuario
+            const usersMap = {};
+            data.forEach(row => {
+                const name = row.Nombre ? row.Nombre.trim() : null;
+                if(!name) return;
+                
+                if(!usersMap[name]) usersMap[name] = [];
+                
+                const progreso = parseNumber(row.Progreso);
+                const objetivo = parseNumber(row.Objetivo);
+                const mesRaw = row.Mes ? row.Mes.trim() : null;
+                
+                if(mesRaw && (progreso > 0 || objetivo > 0)) {
+                    usersMap[name].push({
+                        mes: mesRaw,
+                        progreso: progreso > 0 ? progreso : null,
+                        objetivo: objetivo > 0 ? objetivo : null
+                    });
+                }
+            });
+
+            // Recorrer usuario por usuario y renderizar
+            Object.keys(usersMap).forEach((name, index) => {
+                let history = usersMap[name];
+                
+                // Ordenar historia cronológicamente (Ej: "julio 2026")
+                history.sort((a,b) => parseSpanishDate(a.mes) - parseSpanishDate(b.mes));
+
+                // Sacar pesos válidos para calcular las pérdidas
+                const validProgress = history.filter(h => h.progreso !== null);
+                
+                let startWeight = validProgress.length > 0 ? validProgress[0].progreso : 0;
+                let currentWeight = validProgress.length > 0 ? validProgress[validProgress.length - 1].progreso : 0;
+                let previousWeight = validProgress.length > 1 ? validProgress[validProgress.length - 2].progreso : startWeight;
+
+                // En salud, perder peso = número positivo hacia la meta. Si el resultado es positivo, se perdió peso.
+                let lossTotal = startWeight > 0 ? (startWeight - currentWeight) : 0;
+                let lossMonth = previousWeight > 0 ? (previousWeight - currentWeight) : 0;
+
+                // Datos del mes más reciente
+                const lastEntry = history[history.length - 1];
+                let currentTarget = lastEntry && lastEntry.objetivo ? lastEntry.objetivo : 0;
+
+                // Colores dinámicos de pérdida/ganancia
+                const formatLoss = (val) => {
+                    if (val > 0) return { sign: '-', num: val.toFixed(1), color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' }; // Perdió peso (Bien)
+                    if (val < 0) return { sign: '+', num: Math.abs(val).toFixed(1), color: 'text-rose-400', bg: 'bg-rose-500/10 border-rose-500/20' }; // Subió peso (Mal)
+                    return { sign: '', num: '0.0', color: 'text-slate-400', bg: 'bg-slate-700/30 border-slate-600/50' }; // Se mantuvo
+                };
+
+                const monthDisplay = formatLoss(lossMonth);
+                const totalDisplay = formatLoss(lossTotal);
+
+                // Tarjeta de Usuario
+                const cardHtml = `
+                    <div class="glass-panel p-1 sm:p-6 relative overflow-hidden group mb-4">
+                        <div class="flex flex-col lg:flex-row gap-6 p-4">
+                            
+                            <!-- Sección de Información (KPIs de Salud) -->
+                            <div class="lg:w-1/3 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-white mb-5 flex items-center gap-2">
+                                        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                                            <i class="ph-fill ph-user text-slate-400 text-xl"></i>
+                                        </div>
+                                        ${name}
+                                    </h4>
+                                    
+                                    <div class="grid grid-cols-2 gap-3 mb-5">
+                                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner">
+                                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Peso Actual</p>
+                                            <p class="text-xl sm:text-2xl font-black text-white tracking-tight">${currentWeight ? currentWeight.toFixed(1) : '--'} <span class="text-sm font-normal text-slate-500">lbs</span></p>
+                                        </div>
+                                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner">
+                                            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                                                <i class="ph-bold ph-target"></i> Objetivo
+                                            </p>
+                                            <p class="text-xl sm:text-2xl font-black text-cyan-400 tracking-tight">${currentTarget ? currentTarget : '--'} <span class="text-sm font-normal text-cyan-500/50">lbs</span></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-3">
+                                        <!-- Pérdida del mes -->
+                                        <div class="flex justify-between items-center border p-3 rounded-lg ${monthDisplay.bg}">
+                                            <span class="text-[11px] font-bold ${monthDisplay.color} uppercase tracking-wider">Cambio del Mes</span>
+                                            <span class="text-lg font-black ${monthDisplay.color}">
+                                                ${monthDisplay.sign}${monthDisplay.num} <span class="text-xs opacity-50">lbs</span>
+                                            </span>
+                                        </div>
+                                        <!-- Pérdida Acumulada -->
+                                        <div class="flex justify-between items-center border p-3 rounded-lg ${totalDisplay.bg}">
+                                            <span class="text-[11px] font-bold ${totalDisplay.color} uppercase tracking-wider">Cambio Acumulado</span>
+                                            <span class="text-lg font-black ${totalDisplay.color}">
+                                                ${totalDisplay.sign}${totalDisplay.num} <span class="text-xs opacity-50">lbs</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección de Gráfica Evolutiva (Chart.js) -->
+                            <div class="lg:w-2/3 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-700/50 relative min-h-[300px] flex items-center justify-center shadow-inner">
+                                <canvas id="health-chart-${index}"></canvas>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', cardHtml);
+
+                // Renderizar la gráfica para este usuario
+                renderHealthChart(`health-chart-${index}`, history, name);
+            });
+        }
+
+        // Renderizado gráfico premium con Chart.js
+        function renderHealthChart(canvasId, history, name) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Limpiar gráfica antigua si existe para evitar superposiciones al recargar
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+            // Preparar arreglos de datos
+            const labels = history.map(h => formatMonthName(h.mes));
+            const progressData = history.map(h => h.progreso);
+            const targetData = history.map(h => h.objetivo);
+
+            // Determinar min y max del eje Y para un gráfico que visualmente asuste menos
+            const allNumbers = [...progressData, ...targetData].filter(n => n > 0);
+            const minScale = allNumbers.length > 0 ? Math.floor(Math.min(...allNumbers) - 10) : 0;
+            const maxScale = allNumbers.length > 0 ? Math.ceil(Math.max(...allNumbers) + 10) : 100;
+
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Peso Real (Progreso)',
+                            data: progressData,
+                            borderColor: '#3b82f6', // Azul Premium
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#0f172a',
+                            pointBorderColor: '#3b82f6',
+                            pointHoverBackgroundColor: '#60a5fa',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            fill: true,
+                            tension: 0.4 // Curva suavizada
+                        },
+                        {
+                            label: 'Objetivo de Peso',
+                            data: targetData,
+                            borderColor: '#10b981', // Verde Esmeralda
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0, 
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: '600' }, usePointStyle: true, boxWidth: 8 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += context.parsed.y + ' lbs';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: minScale,
+                            max: maxScale,
+                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 }, stepSize: 5 }
+                        },
+                        x: {
+                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
             });
         }
 
