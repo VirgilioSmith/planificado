@@ -81,11 +81,11 @@
         .view-hidden { opacity: 0; pointer-events: none; position: absolute; visibility: hidden; transform: scale(0.98) translateY(8px); }
         .view-active { opacity: 1; pointer-events: auto; position: relative; visibility: visible; transform: scale(1) translateY(0); }
 
-        /* Unificación fluida de tablas y matrices sin divisiones toscas */
+        /* Unificación fluida de tablas y matrices */
         .matrix-grid-layout { display: grid; align-items: stretch; width: 100%; }
         
         .sticky-col-racha, .sticky-col-nombre {
-            background-color: #0f172a;
+            background-color: inherit;
             position: sticky;
             z-index: 10;
         }
@@ -93,12 +93,8 @@
         .sticky-col-racha { left: 0; }
         .sticky-col-nombre { left: 50px; }
 
-        .matrix-row { transition: background-color 0.2s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
-        .matrix-row:hover,
-        .matrix-row:hover .sticky-col-racha, 
-        .matrix-row:hover .sticky-col-nombre {
-            background-color: rgba(51, 65, 85, 0.4) !important; 
-        }
+        .matrix-row { transition: background-color 0.2s ease; border-bottom: 1px solid rgba(255, 255, 255, 0.03); background-color: transparent;}
+        .matrix-row:hover { background-color: rgba(51, 65, 85, 0.4) !important; }
 
         .matrix-cell-wrapper { padding: 4px 6px; }
         .matrix-cell-inner {
@@ -129,21 +125,6 @@
             .lb-amount { grid-column: 3; grid-row: 1; text-align: right; }
             .lb-progress { grid-column: 1 / -1; grid-row: 2; margin-top: 0.25rem; }
             .lb-chevron { display: none; }
-        }
-
-        /* Círculos de porcentaje de salud */
-        .health-circle-badge {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,255,255,0.1);
         }
     </style>
 </head>
@@ -193,7 +174,6 @@
 
     <main class="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-8 relative z-10">
         
-        <!-- VISTA 1: MES ACTUAL -->
         <div id="view-current" class="view-section view-active">
             <!-- Tarjetas KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mb-8">
@@ -234,7 +214,6 @@
             </div>
         </div>
 
-        <!-- VISTA 2: HISTÓRICA CONTINUA (MATRIX) -->
         <div id="view-historical" class="view-section view-hidden">
             <div class="glass-panel overflow-hidden flex flex-col mb-8">
                 <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative overflow-hidden">
@@ -275,14 +254,13 @@
             </div>
         </div>
 
-        <!-- VISTA 3: SALUD Y FITNESS CON CÍRCULOS DE PORCENTAJE -->
         <div id="view-salud" class="view-section view-hidden">
             <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
                 <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                     <i class="ph-fill ph-heartbeat text-rose-400 text-2xl drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]"></i>
                     Objetivos y Evolución de Salud
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5 font-medium">Progreso mensual de peso, objetivo final y porcentajes alcanzados.</p>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Progreso mensual de peso, objetivo del mes y porcentaje de cumplimiento.</p>
             </div>
 
             <div id="salud-container" class="grid grid-cols-1 gap-6">
@@ -293,17 +271,20 @@
             </div>
         </div>
 
-        <!-- VISTA 4: CORRELACIÓN (ESTILO LEADERBOARD / MATCH FINANZAS Y SALUD) -->
         <div id="view-correlacion" class="view-section view-hidden">
             <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
                 <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
                     <i class="ph-fill ph-arrows-merge text-emerald-400 text-2xl drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"></i>
-                    Correlación de Rendimiento (Finanzas vs. Salud)
+                    Correlación Mensual (Finanzas vs. Salud)
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5 font-medium">Vista comparativa por integrante: cumplimiento de metas de facturación junto a objetivos de salud.</p>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">Vista comparativa del mes actual: cumplimiento de meta financiera junto a la meta de peso mensual.</p>
             </div>
             
-            <div id="correlacion-container" class="flex flex-col gap-6">
+            <!-- Cabecera estilo Leaderboard para Correlación -->
+            <div class="hidden md:grid grid-cols-[3rem_minmax(140px,200px)_2fr_1fr_2rem] gap-5 px-5 pb-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/50 mx-4">
+                <div class="text-center">POS</div><div>NOMBRE</div><div>BARRAS DE PROGRESO (MES ACTUAL)</div><div class="text-right">MÉTRICAS</div><div>ESTADO</div>
+            </div>
+            <div id="correlacion-container" class="flex flex-col gap-4">
                 <div class="py-16 flex flex-col items-center justify-center text-slate-500">
                     <i class="ph-duotone ph-circle-notch animate-spin text-5xl mb-4 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]"></i>
                     <p class="text-xs font-semibold tracking-widest uppercase">Generando correlación dual...</p>
@@ -314,7 +295,6 @@
     </main>
 
     <script>
-        // CONFIGURACIÓN DE URLS DE GOOGLE SHEETS
         const sheetId = '1URae8fWw5QuOLo7FdsQr2KP-OqY69GT6Xu9CFHsowXY'; 
         const currentDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
         const historicalDataUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=2095726805`;
@@ -656,11 +636,11 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: 50px minmax(110px, 160px) repeat(${colsCount}, minmax(80px, 1fr));`; 
+            const gridStyle = `grid-template-columns: 50px minmax(110px, 160px) repeat(${colsCount}, minmax(1fr, 1fr));`; 
 
             let headerHtml = `
-                <div class="sticky-col-racha flex items-center justify-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Racha</div>
-                <div class="sticky-col-nombre flex items-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Nombre</div>
+                <div class="sticky-col-racha bg-slate-800/90 flex items-center justify-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Racha</div>
+                <div class="sticky-col-nombre bg-slate-800/90 flex items-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Nombre</div>
             `;
             
             const currentMonthName = fullMonthNames[new Date().getMonth()] + '-' + new Date().getFullYear();
@@ -720,8 +700,8 @@
 
                 const rowHtml = `
                     <div class="matrix-grid-layout matrix-row group" style="${gridStyle}">
-                        <div class="sticky-col-racha flex justify-center items-center p-2 border-b border-slate-800/50">${streakBadge}</div>
-                        <div class="sticky-col-nombre font-bold text-slate-200 text-xs truncate p-2 border-b border-slate-800/50 flex items-center">${person.nombre}</div>
+                        <div class="sticky-col-racha flex justify-center items-center p-2 border-b border-slate-800/50 backdrop-blur-md bg-[#0f172a]/95">${streakBadge}</div>
+                        <div class="sticky-col-nombre font-bold text-slate-200 text-xs truncate p-2 border-b border-slate-800/50 flex items-center backdrop-blur-md bg-[#0f172a]/95">${person.nombre}</div>
                         ${monthsHtml}
                     </div>`;
                 matrixContainer.insertAdjacentHTML('beforeend', rowHtml);
@@ -735,7 +715,7 @@
 
             const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: minmax(110px, 160px) repeat(${colsCount}, minmax(70px, 1fr));`;
+            const gridStyle = `grid-template-columns: minmax(110px, 160px) repeat(${colsCount}, minmax(1fr, 1fr));`;
 
             historyMonths.forEach(month => {
                 let monthPerformances = data.map(p => ({ person: p, h: p.history.find(x => x.month === month) })).filter(item => item.h && item.h.ventas > 0);
@@ -746,7 +726,7 @@
             const rankingData = [...data].sort((a, b) => b.totalAcumulado - a.totalAcumulado);
 
             let headerHtml = `<div class="matrix-grid-layout bg-slate-800/90 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 shadow-md" style="${gridStyle}">`;
-            headerHtml += `<div class="sticky-col-nombre flex items-center p-2.5 font-bold uppercase tracking-widest border-b border-slate-700 z-20" style="left: 0;">Nombre</div>`;
+            headerHtml += `<div class="sticky-col-nombre bg-slate-800/90 flex items-center p-2.5 font-bold uppercase tracking-widest border-b border-slate-700 z-20" style="left: 0;">Nombre</div>`;
             
             historyMonths.forEach(month => {
                 headerHtml += `<div class="flex items-center justify-center py-2 px-2 text-slate-300 font-bold text-[10px] uppercase text-center border-l border-slate-700/50">${formatMonthName(month).split(' ')[0]}</div>`;
@@ -756,7 +736,7 @@
 
             rankingData.forEach((person, index) => {
                 let rowHtml = `<div class="matrix-grid-layout matrix-row transition-colors" style="${gridStyle}">`;
-                rowHtml += `<div class="sticky-col-nombre font-bold text-slate-200 text-xs truncate p-2.5 border-b border-slate-800/50 flex items-center" style="left: 0; z-index: 5;">${person.nombre}</div>`;
+                rowHtml += `<div class="sticky-col-nombre backdrop-blur-md bg-[#0f172a]/95 font-bold text-slate-200 text-xs truncate p-2.5 border-b border-slate-800/50 flex items-center" style="left: 0; z-index: 5;">${person.nombre}</div>`;
 
                 historyMonths.forEach(month => {
                     const h = person.history.find(x => x.month === month);
@@ -816,7 +796,6 @@
             });
 
             healthGlobalUsersMap = usersMap; 
-            const today = new Date();
 
             Object.keys(usersMap).forEach((name, index) => {
                 let history = usersMap[name];
@@ -825,51 +804,47 @@
                 const validProgress = history.filter(h => h.progreso !== null);
                 let currentWeight = validProgress.length > 0 ? validProgress[validProgress.length - 1].progreso : '--';
                 
+                const today = new Date();
                 const currentMonthNameStr = fullMonthNames[today.getMonth()] + ' ' + today.getFullYear();
                 const currentMonthData = history.find(h => h.mes.toLowerCase() === currentMonthNameStr) || history[history.length - 1] || {};
                 let currentTarget = currentMonthData.objetivo ? currentMonthData.objetivo : '--';
 
-                const lastEntry = history[history.length - 1];
-                let finalTarget = lastEntry && lastEntry.objetivo ? lastEntry.objetivo : '--';
-                let finalDateStr = lastEntry ? formatMonthName(lastEntry.mes) : 'No definida';
-                
-                let monthsLeft = 0;
-                if(lastEntry) {
-                    const monthsDiff = (lastEntry.dateObj.getFullYear() - today.getFullYear()) * 12 + (lastEntry.dateObj.getMonth() - today.getMonth());
-                    monthsLeft = Math.max(0, monthsDiff);
-                }
-
-                // Generar Círculos de Porcentaje para cada mes abajo de la gráfica
-                const initialWeight = history[0] && history[0].progreso ? history[0].progreso : null;
-
-                const circleBadgesHtml = history.map(h => {
-                    const mName = formatMonthName(h.mes).split(' ')[0];
-                    if (!h.progreso || !h.objetivo || !initialWeight) {
-                        return `
-                        <div class="flex flex-col items-center gap-1 min-w-[55px]">
-                            <div class="health-circle-badge bg-slate-800/40 text-slate-600 border-slate-700/40">
-                                --
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase">${mName}</span>
-                        </div>`;
+                // Generar tarjetas de porcentaje mensual (Fórmula: Objetivo / Peso Actual * 100)
+                const monthCardsHtml = history.map(h => {
+                    const mName = formatMonthName(h.mes);
+                    if (!h.progreso || !h.objetivo) {
+                         return `
+                            <div class="bg-slate-800/30 p-3 rounded-xl border border-slate-700/50 min-w-[140px] flex-shrink-0 opacity-60">
+                                <div class="text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">${mName}</div>
+                                <div class="text-sm font-bold text-slate-600 mt-2">Sin datos</div>
+                            </div>`;
                     }
-
-                    // % alcanzado de peso perdido vs objetivo
-                    const totalWeightToLose = initialWeight - h.objetivo;
-                    const weightLost = initialWeight - h.progreso;
-                    let pct = totalWeightToLose > 0 ? (weightLost / totalWeightToLose) * 100 : 100;
-                    if(pct < 0) pct = 0;
-
-                    let circleBg = "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-emerald-500/10";
-                    if (pct < 50) circleBg = "bg-rose-500/20 text-rose-400 border-rose-500/40 shadow-rose-500/10";
-                    else if (pct < 100) circleBg = "bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-amber-500/10";
+                    
+                    // Cálculo de porcentaje: (Objetivo / Progreso) * 100
+                    let pct = (h.objetivo / h.progreso) * 100;
+                    if(pct > 100) pct = 100; // Cap a 100% si ya se pasó
+                    
+                    const faltan = Math.max(0, h.progreso - h.objetivo);
+                    const isSuccess = h.progreso <= h.objetivo;
 
                     return `
-                    <div class="flex flex-col items-center gap-1.5 min-w-[60px]">
-                        <div class="health-circle-badge ${circleBg}">
-                            <span>${pct.toFixed(0)}%</span>
+                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 min-w-[150px] flex-shrink-0 relative overflow-hidden transition-all hover:bg-slate-700/80">
+                        ${isSuccess ? '<div class="absolute top-0 right-0 w-10 h-10 bg-emerald-500/20 rounded-bl-full"></div>' : ''}
+                        <div class="text-[11px] font-bold text-slate-300 mb-2 uppercase tracking-wide flex justify-between">
+                            ${mName}
+                            ${isSuccess ? '<i class="ph-fill ph-check-circle text-emerald-400"></i>' : ''}
                         </div>
-                        <span class="text-[10px] font-extrabold text-slate-300 uppercase tracking-tight">${mName}</span>
+                        <div class="flex flex-col">
+                            <div class="text-2xl font-extrabold ${isSuccess ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 'text-white'} tracking-tight mb-0.5">
+                                ${pct.toFixed(1)}%
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-medium">Meta: ${h.objetivo} lbs</div>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-700/50">
+                            <div class="text-[11px] font-bold ${isSuccess ? 'text-emerald-400' : 'text-rose-400'}">
+                                ${isSuccess ? '¡Meta Lograda!' : `Faltan ${faltan.toFixed(1)} lbs`}
+                            </div>
+                        </div>
                     </div>`;
                 }).join('');
 
@@ -877,7 +852,7 @@
                     <div class="glass-panel p-4 sm:p-6 relative overflow-hidden group mb-4">
                         <div class="flex flex-col xl:flex-row gap-6">
                             
-                            <div class="xl:w-[35%] flex flex-col justify-between">
+                            <div class="xl:w-[30%] flex flex-col justify-between">
                                 <div>
                                     <h4 class="text-2xl font-extrabold text-white mb-5 flex items-center gap-3 border-b border-slate-700/50 pb-4">
                                         <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner">
@@ -886,41 +861,32 @@
                                         ${name}
                                     </h4>
                                     
-                                    <div class="grid grid-cols-2 gap-3 mb-4">
-                                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 shadow-inner">
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-fill ph-scales"></i> Peso Actual</p>
-                                            <p class="text-2xl font-extrabold text-white tracking-tight">${currentWeight} <span class="text-xs font-normal text-slate-400">lbs</span></p>
-                                        </div>
-                                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 shadow-inner">
-                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-bold ph-target text-cyan-400"></i> Meta del Mes</p>
-                                            <p class="text-2xl font-extrabold text-cyan-400 tracking-tight">${currentTarget} <span class="text-xs font-normal text-cyan-500/50">lbs</span></p>
-                                        </div>
+                                    <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 shadow-inner mb-4 relative overflow-hidden">
+                                        <div class="absolute right-[-10px] bottom-[-10px] w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-fill ph-scales text-blue-400"></i> Peso Actual Registrado</p>
+                                        <p class="text-4xl font-extrabold text-white tracking-tight">${currentWeight} <span class="text-sm font-normal text-slate-400">lbs</span></p>
                                     </div>
-                                </div>
-                                
-                                <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner relative overflow-hidden">
-                                    <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-1 flex items-center gap-1"><i class="ph-bold ph-flag-checkered"></i> Objetivo Final</p>
-                                    <p class="text-3xl font-extrabold text-indigo-400 tracking-tight mb-2 drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]">${finalTarget} <span class="text-sm font-normal text-indigo-300/60">lbs</span></p>
-                                    <div class="flex items-center justify-between text-xs font-bold">
-                                        <span class="text-slate-300 bg-slate-900/70 px-2 py-0.5 rounded border border-slate-700">Para: <span class="text-white">${finalDateStr}</span></span>
-                                        <span class="text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">Faltan: ${monthsLeft} m</span>
+                                    
+                                    <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner">
+                                        <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-bold ph-target text-indigo-400"></i> Meta del Mes Actual</p>
+                                        <p class="text-3xl font-extrabold text-indigo-400 tracking-tight">${currentTarget} <span class="text-sm font-normal text-indigo-300/60">lbs</span></p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="xl:w-[65%] bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-700/50 flex flex-col justify-between shadow-inner">
+                            <div class="xl:w-[70%] bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-700/50 flex flex-col justify-between shadow-inner">
                                 <div>
-                                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="ph-fill ph-trend-down text-rose-400"></i> Evolución de Peso Corporal</h5>
-                                    <div class="relative w-full h-[220px]">
+                                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="ph-fill ph-trend-down text-rose-400"></i> Evolución de Peso vs Objetivos</h5>
+                                    <div class="relative w-full h-[200px]">
                                         <canvas id="health-chart-${index}"></canvas>
                                     </div>
                                 </div>
 
-                                <!-- Círculos visuales de Porcentaje por Mes -->
-                                <div class="mt-4 pt-3 border-t border-slate-800/80">
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5"><i class="ph-bold ph-percent text-emerald-400"></i> Porcentaje Alcanzado por Mes</p>
-                                    <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-1">
-                                        ${circleBadgesHtml}
+                                <!-- Tarjetas de Historial Mensual -->
+                                <div class="mt-5 pt-4 border-t border-slate-800/80">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank text-blue-400"></i> Historial de Cumplimiento Mensual</p>
+                                    <div class="flex items-center gap-3 overflow-x-auto custom-scrollbar pb-2">
+                                        ${monthCardsHtml}
                                     </div>
                                 </div>
                             </div>
@@ -936,7 +902,7 @@
             const ctx = document.getElementById(canvasId).getContext('2d');
             if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
 
-            const labels = history.map(h => formatMonthName(h.mes));
+            const labels = history.map(h => formatMonthName(h.mes).split(' ')[0]);
             const progressData = history.map(h => h.progreso);
             const targetData = history.map(h => h.objetivo);
 
@@ -956,7 +922,7 @@
                             pointHoverBackgroundColor: '#60a5fa', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.35
                         },
                         {
-                            label: 'Objetivo', data: targetData,
+                            label: 'Meta del Mes', data: targetData,
                             borderColor: '#10b981', borderDash: [4, 4],
                             borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981', pointBorderColor: '#0f172a', fill: false, tension: 0.35
                         }
@@ -996,91 +962,107 @@
                 return;
             }
 
+            const today = new Date();
+            const currentMonthNameStr = fullMonthNames[today.getMonth()] + ' ' + today.getFullYear();
+
             globalProcessedData.forEach((person, index) => {
                 const healthHistory = healthGlobalUsersMap[person.nombre] || [];
                 
-                // Finanzas Actuales
+                // --- DATOS FINANZAS (Mes Actual) ---
                 const salesProg = person.ventas;
                 const salesMeta = person.meta;
                 const salesPct = person.percentage;
                 const salesFalta = Math.max(0, salesMeta - salesProg);
 
-                // Salud Global
-                const validHealth = healthHistory.filter(h => h.progreso !== null);
-                const initialWeight = healthHistory[0] && healthHistory[0].progreso ? healthHistory[0].progreso : null;
-                const currentWeight = validHealth.length > 0 ? validHealth[validHealth.length - 1].progreso : null;
+                // --- DATOS SALUD (Mes Actual) ---
+                // Buscamos específicamente el objetivo y progreso del mes actual para ser realistas
+                const currentMonthHealth = healthHistory.find(h => h.mes.toLowerCase() === currentMonthNameStr) || healthHistory[healthHistory.length - 1] || {};
                 
-                // Objetivo final de salud (la última fecha registrada)
-                const finalTarget = healthHistory.length > 0 && healthHistory[healthHistory.length - 1].objetivo ? healthHistory[healthHistory.length - 1].objetivo : null;
-
+                const healthMeta = currentMonthHealth.objetivo || 0;
+                const healthProgreso = currentMonthHealth.progreso || 0;
+                
                 let healthPct = 0;
-                let missingHealthPct = 0;
-                let weightStatusText = '--';
-
-                if (initialWeight && currentWeight && finalTarget) {
-                    const totalToLose = initialWeight - finalTarget;
-                    if (totalToLose > 0) {
-                        const lost = initialWeight - currentWeight;
-                        healthPct = Math.min(100, Math.max(0, (lost / totalToLose) * 100));
-                        missingHealthPct = 100 - healthPct;
-                        weightStatusText = currentWeight <= finalTarget ? '¡META ALCANZADA!' : `Faltan ${(currentWeight - finalTarget).toFixed(1)} lbs`;
-                    } else {
-                        healthPct = 100;
-                        weightStatusText = '¡META ALCANZADA!';
-                    }
-                } else {
-                    weightStatusText = 'Sin datos suficientes';
+                let healthFalta = 0;
+                
+                if (healthMeta > 0 && healthProgreso > 0) {
+                    healthPct = (healthMeta / healthProgreso) * 100;
+                    healthFalta = Math.max(0, healthProgreso - healthMeta);
                 }
 
-                const cardHtml = `
-                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 p-4 lg:p-5 mb-4 animate-fade-in-up shadow-sm" style="animation-delay: ${index * 60}ms">
-                    <div class="flex flex-col lg:flex-row gap-5 lg:gap-8 items-center w-full">
+                const rankClass = index === 0 ? "bg-amber-500/10 text-amber-400 border-amber-500/40" : 
+                                 (index === 1 ? "bg-slate-300/10 text-slate-300 border-slate-400/40" : 
+                                 (index === 2 ? "bg-amber-800/10 text-amber-600 border-amber-700/40" : "bg-slate-800 border-slate-700 text-slate-400"));
 
-                        <!-- Columna 1: Rank y Nombre -->
-                        <div class="flex items-center gap-4 w-full lg:w-[25%] lg:flex-shrink-0">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-extrabold text-sm shadow-inner flex-shrink-0">${index + 1}</div>
-                            <div class="font-bold text-white text-lg tracking-tight truncate">${person.nombre}</div>
+                // Generación de la fila Leaderboard idéntica a la pantalla principal
+                const rowHtml = `
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 cursor-default animate-fade-in-up" style="animation-delay: ${index * 60}ms">
+                    <div class="leaderboard-row-container py-5">
+                        
+                        <!-- Columna: Rank -->
+                        <div class="lb-rank flex justify-center">
+                            <div class="flex items-center justify-center w-9 h-9 rounded-full ${rankClass} border font-extrabold text-xs shadow-inner">${index + 1}</div>
+                        </div>
+                        
+                        <!-- Columna: Nombre -->
+                        <div class="lb-name font-bold text-white text-lg tracking-tight">${person.nombre}</div>
+                        
+                        <!-- Columna: Barras de Progreso Apiladas -->
+                        <div class="lb-progress flex flex-col justify-center gap-4">
+                            
+                            <!-- Barra de Finanzas -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1"><i class="ph-fill ph-currency-dollar text-xs"></i> Meta de Ingresos</span>
+                                    <span class="text-xs font-extrabold text-white">${salesPct.toFixed(1)}%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(salesPct, 100)}%"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Barra de Salud (Calculada sobre meta mensual) -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5 px-0.5">
+                                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1"><i class="ph-fill ph-heartbeat text-rose-400 text-xs"></i> Meta de Salud Mensual</span>
+                                    <span class="text-xs font-extrabold text-white">${healthPct > 0 ? healthPct.toFixed(1) + '%' : '--'}</span>
+                                </div>
+                                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(healthPct, 100)}%"></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Columna: Montos y Objetivos -->
+                        <div class="lb-amount flex flex-col justify-center gap-4 text-right">
+                            
+                            <!-- Montos Finanzas -->
+                            <div class="flex flex-col">
+                                <div class="text-base sm:text-lg font-extrabold text-white tracking-tight leading-none">${currencyFormatter.format(salesProg)}</div>
+                                <div class="text-[10px] font-semibold text-slate-400 mt-1">Meta: ${currencyFormatter.format(salesMeta)}</div>
+                            </div>
+                            
+                            <!-- Montos Salud -->
+                            <div class="flex flex-col">
+                                <div class="text-base sm:text-lg font-extrabold text-white tracking-tight leading-none">${healthProgreso > 0 ? healthProgreso + ' lbs' : '--'}</div>
+                                <div class="text-[10px] font-semibold text-slate-400 mt-1">Meta: ${healthMeta > 0 ? healthMeta + ' lbs' : '--'}</div>
+                            </div>
+                            
                         </div>
 
-                        <!-- Columna 2: Progreso Finanzas -->
-                        <div class="w-full lg:w-[35%] flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-700/50 pt-4 lg:pt-0 lg:pl-6">
-                            <div class="flex justify-between items-center mb-1.5 px-0.5">
-                                <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-currency-dollar text-sm"></i> Meta Finanzas</span>
-                                <span class="text-xs font-extrabold text-white">${salesPct.toFixed(1)}%</span>
+                        <!-- Columna: Status Texto Corto -->
+                        <div class="lb-chevron hidden md:flex flex-col items-center justify-center gap-6 text-[9px] font-extrabold uppercase tracking-widest">
+                            <div class="${salesFalta > 0 ? 'text-blue-500/60' : 'text-emerald-400/80 px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20'}">
+                                ${salesFalta > 0 ? 'En curso' : 'Logrado'}
                             </div>
-                            <div class="flex justify-between items-end mb-2 px-0.5">
-                                <div class="text-xl font-extrabold text-white tracking-tight leading-none">${currencyFormatter.format(salesProg)}</div>
-                                <div class="text-[10px] text-slate-400 font-medium">Meta: ${currencyFormatter.format(salesMeta)}</div>
-                            </div>
-                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                                <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: ${Math.min(salesPct, 100)}%"></div>
-                            </div>
-                            <div class="text-[10px] font-bold text-slate-500 mt-1.5 text-right uppercase tracking-wide">
-                                ${salesFalta > 0 ? `Falta ${currencyFormatter.format(salesFalta)}` : '¡Meta Superada!'}
-                            </div>
-                        </div>
-
-                        <!-- Columna 3: Progreso Salud -->
-                        <div class="w-full lg:w-[40%] flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-700/50 pt-4 lg:pt-0 lg:pl-6">
-                             <div class="flex justify-between items-center mb-1.5 px-0.5">
-                                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5"><i class="ph-fill ph-heartbeat text-sm text-rose-400"></i> Progreso Salud (Global)</span>
-                                <span class="text-xs font-extrabold text-white">${healthPct.toFixed(1)}%</span>
-                            </div>
-                            <div class="flex justify-between items-end mb-2 px-0.5">
-                                <div class="text-xl font-extrabold text-white tracking-tight leading-none">${currentWeight !== null ? currentWeight + ' lbs' : '--'}</div>
-                                <div class="text-[10px] text-slate-400 font-medium">Obj. Final: ${finalTarget !== null ? finalTarget + ' lbs' : '--'}</div>
-                            </div>
-                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                                <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: ${healthPct}%"></div>
-                            </div>
-                             <div class="text-[10px] font-bold text-slate-500 mt-1.5 text-right uppercase tracking-wide">
-                                ${missingHealthPct > 0 ? `Falta ${missingHealthPct.toFixed(1)}% para la meta` : weightStatusText}
+                            <div class="${healthFalta > 0 || healthProgreso === 0 ? 'text-emerald-500/60' : 'text-emerald-400/80 px-2 py-0.5 bg-emerald-500/10 rounded border border-emerald-500/20'}">
+                                ${healthFalta > 0 || healthProgreso === 0 ? 'En curso' : 'Logrado'}
                             </div>
                         </div>
 
                     </div>
                 </div>`;
-                container.insertAdjacentHTML('beforeend', cardHtml);
+                container.insertAdjacentHTML('beforeend', rowHtml);
             });
         }
 
