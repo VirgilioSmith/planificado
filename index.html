@@ -181,6 +181,7 @@
 
     <main class="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 py-8 relative z-10">
         
+        <!-- View: Mes Actual -->
         <div id="view-current" class="view-section view-active">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mb-8">
                 <div class="glass-panel p-6 flex flex-col justify-center transition-transform hover:-translate-y-1 duration-300 relative overflow-hidden group">
@@ -219,6 +220,7 @@
             </div>
         </div>
 
+        <!-- View: Histórico -->
         <div id="view-historical" class="view-section view-hidden">
             <div class="glass-panel overflow-hidden flex flex-col mb-8">
                 <div class="px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative overflow-hidden">
@@ -258,6 +260,7 @@
             </div>
         </div>
 
+        <!-- View: Salud -->
         <div id="view-salud" class="view-section view-hidden">
             <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
                 <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
@@ -272,6 +275,7 @@
             </div>
         </div>
 
+        <!-- View: Correlación -->
         <div id="view-correlacion" class="view-section view-hidden">
             <div class="glass-panel px-6 py-5 border-b border-slate-700/50 bg-slate-800/40 relative mb-6">
                 <h3 class="text-xl font-extrabold text-white flex items-center gap-2.5 tracking-tight">
@@ -633,7 +637,10 @@
 
             const historyMonths = matrixData[0].history.map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: 50px minmax(110px, 160px) repeat(${colsCount}, minmax(1fr, 1fr));`; 
+            
+            // CORRECCIÓN CLAVE: En CSS Grid no se puede usar 'fr' como valor mínimo en minmax.
+            // Se debe utilizar '80px' (o '0') para evitar que el grid colapse a una sola columna vertical.
+            const gridStyle = `grid-template-columns: 50px minmax(110px, 160px) repeat(${colsCount}, minmax(80px, 1fr));`; 
 
             let headerHtml = `
                 <div class="sticky-col-racha bg-slate-800/90 flex items-center justify-center p-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-700">Racha</div>
@@ -661,7 +668,8 @@
                     </div>`;
             });
             
-            matrixHeader.style = gridStyle;
+            // Aplicamos estilo estricto para forzar las columnas
+            matrixHeader.setAttribute('style', gridStyle);
             matrixHeader.innerHTML = headerHtml;
 
             matrixData.sort((a, b) => b.totalAcumulado - a.totalAcumulado);
@@ -712,7 +720,9 @@
 
             const historyMonths = data[0].history.filter(h => !h.isPrediction).map(h => h.month);
             const colsCount = historyMonths.length;
-            const gridStyle = `grid-template-columns: minmax(110px, 160px) repeat(${colsCount}, minmax(1fr, 1fr));`;
+            
+            // CORRECCIÓN CLAVE para mantener el grid horizontal
+            const gridStyle = `grid-template-columns: minmax(110px, 160px) repeat(${colsCount}, minmax(80px, 1fr));`;
 
             historyMonths.forEach(month => {
                 let monthPerformances = data.map(p => ({ person: p, h: p.history.find(x => x.month === month) })).filter(item => item.h && item.h.ventas > 0);
@@ -809,18 +819,26 @@
                 const currentMonthData = history.find(h => h.mes.toLowerCase() === currentMonthNameStr) || history[history.length - 1] || {};
                 let currentMonthTarget = currentMonthData.objetivo ? currentMonthData.objetivo : '--';
 
-                // --- KPI: Meta Objetivo Final ---
+                // --- KPI: Meta Objetivo Final (Fecha y Porcentaje) ---
                 const finalRecord = history[history.length - 1] || {};
                 let finalTarget = finalRecord.objetivo ? finalRecord.objetivo : '--';
+                let finalDateStr = finalRecord.mes ? formatMonthName(finalRecord.mes) : '--'; // Extrae "Diciembre 2026"
 
-                // Cálculo del % alcanzado (Meta Mes Actual / Peso Actual)
                 let pctMesHtml = '';
                 if (currentMonthTarget !== '--' && currentWeight !== '--') {
+                    // Cálculo: (Objetivo / Peso Actual) * 100
                     const pctLogro = ((currentMonthTarget / currentWeight) * 100).toFixed(1);
                     pctMesHtml = `<div class="mt-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[11px] font-bold inline-flex items-center gap-1.5"><i class="ph-fill ph-check-circle"></i> Logro alcanzado: ${pctLogro}%</div>`;
                 }
 
-                // Generar tarjetas de cumplimiento mensual SIN el nombre del mes
+                let finalPctHtml = '';
+                if (finalTarget !== '--' && currentWeight !== '--') {
+                    // Cálculo de Logro hacia el Final: (Meta Final / Peso Actual) * 100
+                    const finalPct = ((finalTarget / currentWeight) * 100).toFixed(1);
+                    finalPctHtml = `<div class="mt-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-[11px] font-bold inline-flex items-center gap-1.5"><i class="ph-fill ph-flag-checkered"></i> Logro alcanzado: ${finalPct}%</div>`;
+                }
+
+                // Generar tarjetas de cumplimiento mensual (con mes sutil superior)
                 const monthCardsHtml = history.map(h => {
                     if (!h.progreso || !h.objetivo) return '';
                     
@@ -831,6 +849,9 @@
                     return `
                     <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 min-w-[130px] flex-shrink-0 relative overflow-hidden transition-all hover:bg-slate-700/80">
                         ${isSuccess ? '<div class="absolute top-0 right-0 w-8 h-8 bg-emerald-500/20 rounded-bl-full"></div>' : ''}
+                        
+                        <!-- Etiqueta del Mes sin ser redundante (Ej: "Julio 2026") -->
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">${formatMonthName(h.mes)}</div>
                         
                         <div class="flex flex-col mb-1">
                             <div class="text-3xl font-extrabold ${isSuccess ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 'text-white'} tracking-tight">
@@ -874,10 +895,14 @@
                                         ${pctMesHtml}
                                     </div>
 
-                                    <!-- 3. Meta Objetivo Final -->
+                                    <!-- 3. Meta Objetivo Final con Fecha de logro -->
                                     <div class="bg-emerald-900/10 p-4 rounded-xl border border-emerald-500/20 shadow-inner">
-                                        <p class="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5"><i class="ph-bold ph-flag text-emerald-500"></i> Meta Objetivo Final</p>
+                                        <div class="flex justify-between items-start mb-1">
+                                            <p class="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider flex items-center gap-1.5"><i class="ph-bold ph-flag text-emerald-500"></i> Meta Objetivo Final</p>
+                                            <span class="text-[9px] font-bold bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">${finalDateStr}</span>
+                                        </div>
                                         <p class="text-2xl font-extrabold text-emerald-400/90 tracking-tight">${finalTarget} <span class="text-sm font-normal text-emerald-500/50">lbs</span></p>
+                                        ${finalPctHtml}
                                     </div>
                                 </div>
                             </div>
@@ -991,7 +1016,7 @@
                 let healthFalta = 0;
                 
                 if (healthMeta > 0 && healthProgreso > 0) {
-                    healthPct = (healthMeta / healthProgreso) * 100;
+                    healthPct = (healthMeta / healthProgreso) * 100; // Formula correcta
                     healthFalta = Math.max(0, healthProgreso - healthMeta);
                 }
 
@@ -999,7 +1024,7 @@
                                  (index === 1 ? "bg-slate-300/10 text-slate-300 border-slate-400/40" : 
                                  (index === 2 ? "bg-amber-800/10 text-amber-600 border-amber-700/40" : "bg-slate-800 border-slate-700 text-slate-400"));
 
-                // UTILIZAMOS correlation-row-container (GRID DEDICADO)
+                // UTILIZAMOS correlation-row-container
                 const rowHtml = `
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl transition-all duration-300 hover:bg-slate-800/40 cursor-default animate-fade-in-up" style="animation-delay: ${index * 60}ms">
                     <div class="correlation-row-container">
@@ -1046,7 +1071,7 @@
                             </div>
                         </div>
 
-                        <!-- Estado (Con su propio espacio) -->
+                        <!-- Estado -->
                         <div class="lb-status hidden md:flex flex-col justify-center items-center gap-6 text-[9px] font-extrabold uppercase tracking-widest text-center">
                             <div class="${salesFalta > 0 ? 'text-blue-500/60 w-full' : 'text-emerald-400 w-full py-1 bg-emerald-500/10 rounded border border-emerald-500/20'}">
                                 ${salesFalta > 0 ? 'En curso' : 'Logrado'}
